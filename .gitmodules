@@ -39,7 +39,7 @@
 	url = git://github.com/kien/ctrlp.vim.git
 [submodule "vimfiles/bundle/vim-vividchalk"]
 	path = vimfiles/bundle/vim-vividchalk
-  url = git://github.com/tpope/vim-vividchalk.git
+	url = git://github.com/tpope/vim-vividchalk.git
 [submodule "vimfiles/bundle/vim-markdown"]
 	path = vimfiles/bundle/vim-markdown
 	url = git://github.com/tpope/vim-markdown.git
