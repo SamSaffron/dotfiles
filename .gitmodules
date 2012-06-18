@@ -6,7 +6,7 @@
 	url = git://github.com/scrooloose/nerdtree.git
 [submodule "vimfiles/bundle/ack"]
 	path = vimfiles/bundle/ack
-  	url = git://github.com/mileszs/ack.vim.git
+	url = git://github.com/mileszs/ack.vim.git
 [submodule "vimfiles/bundle/fugitive"]
 	path = vimfiles/bundle/fugitive
 	url = git://github.com/tpope/vim-fugitive.git
@@ -36,17 +36,35 @@
 	url = git://github.com/Townk/vim-autoclose.git
 [submodule "vimfiles/bundle/ctrlp"]
 	path = vimfiles/bundle/ctrlp
-  url = git://github.com/kien/ctrlp.vim.git
+	url = git://github.com/kien/ctrlp.vim.git
 [submodule "vimfiles/bundle/vim-vividchalk"]
 	path = vimfiles/bundle/vim-vividchalk
   url = git://github.com/tpope/vim-vividchalk.git
 [submodule "vimfiles/bundle/vim-markdown"]
 	path = vimfiles/bundle/vim-markdown
-  url = git://github.com/tpope/vim-markdown.git 
+	url = git://github.com/tpope/vim-markdown.git
 [submodule "vimfiles/bundle/syntastic"]
 	path = vimfiles/bundle/syntastic
-  url = https://github.com/scrooloose/syntastic.git 
+	url = git://github.com/scrooloose/syntastic.git
 [submodule "vimfiles/bundle/vim-coffee-script"]
 	path = vimfiles/bundle/vim-coffee-script
-  url = git://github.com/kchmck/vim-coffee-script.git
+	url = git://github.com/kchmck/vim-coffee-script.git
 
+[submodule "vimfiles/bundle/vim-endwise"]
+	path = vimfiles/bundle/vim-endwise
+	url = git://github.com/tpope/vim-endwise.git
+[submodule "vimfiles/bundle/vim-repeat"]
+	path = vimfiles/bundle/vim-repeat
+	url = git://github.com/tpope/vim-repeat.git
+[submodule "vimfiles/bundle/vim-haml"]
+	path = vimfiles/bundle/vim-haml
+	url = git://github.com/tpope/vim-haml.git
+[submodule "vimfiles/bundle/vim-rails"]
+	path = vimfiles/bundle/vim-rails
+	url = git://github.com/tpope/vim-rails.git
+[submodule "vimfiles/bundle/vim-surround"]
+	path = vimfiles/bundle/vim-surround
+	url = git://github.com/tpope/vim-surround.git
+[submodule "vimfiles/bundle/vim-autoclose"]
+	path = vimfiles/bundle/vim-autoclose
+	url = git://github.com/Townk/vim-autoclose.git
