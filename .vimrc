@@ -28,6 +28,8 @@ function MyDiff()
   silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
 endfunction
 
+runtime bundle/vim-pathogen/autoload/pathogen.vim
+call pathogen#infect()
 set nocompatible
 colorscheme vividchalk
 syntax on
@@ -54,7 +56,6 @@ autocmd User Rails Rnavcommand config -glob=*.* -suffix= -default=routes.rb
 " change to current dir - needs work 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR> 
 
-let g:rails_subversion = 1
 silent! ruby nil
 set completeopt=longest,menuone
 inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>" 
