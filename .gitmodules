@@ -68,3 +68,6 @@
 [submodule "vimfiles/bundle/vim-autoclose"]
 	path = vimfiles/bundle/vim-autoclose
 	url = git://github.com/Townk/vim-autoclose.git
+[submodule "vimfiles/bundle/mustache"]
+	path = vimfiles/bundle/mustache
+	url = git://github.com/juvenn/mustache.vim.git
