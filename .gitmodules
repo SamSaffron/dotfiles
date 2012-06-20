@@ -71,3 +71,6 @@
 [submodule "vimfiles/bundle/mustache"]
 	path = vimfiles/bundle/mustache
 	url = git://github.com/juvenn/mustache.vim.git
+[submodule "vimfiles/bundle/vim-indent-guides"]
+	path = vimfiles/bundle/vim-indent-guides
+	url = git://github.com/nathanaelkane/vim-indent-guides.git
