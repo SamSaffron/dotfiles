@@ -51,11 +51,11 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 " add better nav
-autocmd User Rails Rnavcommand dcomponent public/app/assets/javascript/discourse/components -glob=* -suffix=.coffee
-autocmd User Rails Rnavcommand dhelper public/app/assets/javascript/discourse/helpers -glob=* -suffix=.coffee
-autocmd User Rails Rnavcommand dmodel public/app/assets/javascript/discourse/models -glob=* -suffix=.coffee
-autocmd User Rails Rnavcommand dtemplate public/app/assets/javascript/discourse/templates -glob=* -suffix=.handlebars
-autocmd User Rails Rnavcommand dview public/app/assets/javascript/discourse/views -glob=* -suffix=.coffee
+autocmd User Rails Rnavcommand dcomponent app/assets/javascripts/discourse/components -glob=* -suffix=.coffee
+autocmd User Rails Rnavcommand dhelper app/assets/javascripts/discourse/helpers -glob=* -suffix=.coffee
+autocmd User Rails Rnavcommand dmodel app/assets/javascripts/discourse/models -glob=* -suffix=.coffee
+autocmd User Rails Rnavcommand dtemplate app/assets/javascripts/discourse/templates -glob=* -suffix=.handlebars
+autocmd User Rails Rnavcommand dview app/assets/javascripts/discourse/views -glob=* -suffix=.coffee
 autocmd User Rails Rnavcommand config -glob=*.* -suffix= -default=routes.rb
 " change to current dir - needs work 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR> 
