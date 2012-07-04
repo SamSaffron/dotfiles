@@ -51,7 +51,7 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 " add better nav
-autocmd User Rails Rnavcommand dcomponent app/assets/javascripts/discourse/components -glob=* -suffix=.coffee
+autocmd User Rails Rnavcommand dcomponent app/assets/javascripts/discourse/components -glob=* -suffix=
 autocmd User Rails Rnavcommand dhelper app/assets/javascripts/discourse/helpers -glob=* -suffix=.coffee
 autocmd User Rails Rnavcommand dmodel app/assets/javascripts/discourse/models -glob=* -suffix=.coffee
 autocmd User Rails Rnavcommand dtemplate app/assets/javascripts/discourse/templates -glob=* -suffix=.handlebars
@@ -68,3 +68,5 @@ inoremap <expr> <m-;> pumvisible() ? "\<lt>c-n>" : "\<lt>c-x>\<lt>c-o>\<lt>c-n>\
 map <F9> :previous<CR>
 map <f10> :next<CR> 
 imap <C-c> <Esc>:w<cr>
+
+set nohls
