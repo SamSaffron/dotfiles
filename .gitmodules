@@ -74,3 +74,9 @@
 [submodule "vimfiles/bundle/vim-indent-guides"]
 	path = vimfiles/bundle/vim-indent-guides
 	url = git://github.com/nathanaelkane/vim-indent-guides.git
+[submodule "vimfiles/bundle/vim-showmarks"]
+	path = vimfiles/bundle/vim-showmarks
+	url = git://github.com/vim-scripts/ShowMarks.git
+[submodule "vimfiles/bundle/vim-taglist"]
+	path = vimfiles/bundle/vim-taglist
+	url = git://github.com/vim-scripts/taglist.vim.git
