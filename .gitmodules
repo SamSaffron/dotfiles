@@ -80,3 +80,6 @@
 [submodule "vimfiles/bundle/vim-taglist"]
 	path = vimfiles/bundle/vim-taglist
 	url = git://github.com/vim-scripts/taglist.vim.git
+[submodule "vimfiles/bundle/vim-less"]
+	path = vimfiles/bundle/vim-less
+	url = git://github.com/groenewege/vim-less.git
