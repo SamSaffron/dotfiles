@@ -83,3 +83,21 @@
 [submodule "vimfiles/bundle/vim-less"]
 	path = vimfiles/bundle/vim-less
 	url = git://github.com/groenewege/vim-less.git
+[submodule "vimfiles/bundle/trailer-trash"]
+	path = vimfiles/bundle/trailer-trash
+	url = https://github.com/csexton/trailertrash.vim.git
+[submodule "vimfiles/bundle/vim-gocode"]
+	path = vimfiles/bundle/vim-gocode
+	url = https://github.com/Blackrush/vim-gocode
+[submodule "vimfiles/bundle/webapi-vim"]
+	path = vimfiles/bundle/webapi-vim
+	url = https://github.com/mattn/webapi-vim.git
+[submodule "vimfiles/bundle/ctrlp-cmatcher"]
+	path = vimfiles/bundle/ctrlp-cmatcher
+	url = https://github.com/JazzCore/ctrlp-cmatcher.git
+[submodule "vimfiles/bundle/ri-vim"]
+	path = vimfiles/bundle/ri-vim
+	url = https://github.com/danchoi/ri.vim.git
+[submodule "supertab"]
+	path = supertab
+	url = https://github.com/ervandew/supertab.git

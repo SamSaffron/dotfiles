@@ -87,3 +87,5 @@ filetype plugin indent off
 set runtimepath+=/usr/local/go/misc/vim
 filetype plugin indent on
 syntax on
+
+set clipboard=unamedplus
