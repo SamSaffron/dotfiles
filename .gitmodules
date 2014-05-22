@@ -101,3 +101,6 @@
 [submodule "supertab"]
 	path = supertab
 	url = https://github.com/ervandew/supertab.git
+[submodule "vimfiles/bundle/supertab"]
+	path = vimfiles/bundle/supertab
+	url = https://github.com/ervandew/supertab.git
