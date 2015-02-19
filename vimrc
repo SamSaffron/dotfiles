@@ -45,6 +45,7 @@ set noantialias
 au BufNewFile,BufRead Guardfile set filetype=ruby
 au BufNewFile,BufRead *.pill set filetype=ruby
 au BufNewFile,BufRead *.es6 set filetype=javascript
+au BufNewFile,BufRead *.es6.erb set filetype=javascript
 
 nmap <C-a> <Esc>:!touch tmp/restart<CR><CR>
 nmap <C-s> <Esc>:!touch tmp/refresh_browser<CR><CR>
