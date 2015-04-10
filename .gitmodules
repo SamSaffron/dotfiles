@@ -104,3 +104,6 @@
 [submodule "vimfiles/bundle/supertab"]
 	path = vimfiles/bundle/supertab
 	url = https://github.com/ervandew/supertab.git
+[submodule "vimfiles/bundle/vim-godef"]
+	path = vimfiles/bundle/vim-godef
+	url = https://github.com/dgryski/vim-godef.git
