@@ -110,3 +110,6 @@
 [submodule "vimfiles/bundle/tagbar"]
 	path = vimfiles/bundle/tagbar
 	url = https://github.com/majutsushi/tagbar.git
+[submodule "vimfiles/bundle/vim-easytags"]
+	path = vimfiles/bundle/vim-easytags
+	url = https://github.com/xolox/vim-easytags.git
