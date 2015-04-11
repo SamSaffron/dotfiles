@@ -107,3 +107,6 @@
 [submodule "vimfiles/bundle/vim-godef"]
 	path = vimfiles/bundle/vim-godef
 	url = https://github.com/dgryski/vim-godef.git
+[submodule "vimfiles/bundle/tagbar"]
+	path = vimfiles/bundle/tagbar
+	url = https://github.com/majutsushi/tagbar.git
