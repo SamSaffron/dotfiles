@@ -116,3 +116,6 @@
 [submodule "vimfiles/bundle/vim-puppet"]
 	path = vimfiles/bundle/vim-puppet
 	url = git://github.com/rodjek/vim-puppet.git
+[submodule "vimfiles/bundle/qfenter"]
+	path = vimfiles/bundle/qfenter
+	url = https://github.com/yssl/QFEnter.git

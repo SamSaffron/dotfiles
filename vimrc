@@ -129,3 +129,7 @@ if &term =~ "xterm.*"
     cmap <Esc>[200~ <nop>
     cmap <Esc>[201~ <nop>
 endif
+
+autocmd QuickFixCmdPost *grep* cwindow
+
+cabbrev Ack Ack!
