@@ -69,7 +69,7 @@ endfunction
 
 autocmd Filetype c,cpp call MRIIndent()
 
-let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+let g:ctrlp_match_func = {'match' : 'pymatcher#PyMatch' }
 let g:ctrlp_user_command = {
   \ 'types': {
     \ 1: ['.git', 'cd %s && git ls-files --cached --exclude-standard --others']

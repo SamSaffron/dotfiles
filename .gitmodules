@@ -116,3 +116,6 @@
 [submodule "vimfiles/bundle/qfenter"]
 	path = vimfiles/bundle/qfenter
 	url = https://github.com/yssl/QFEnter.git
+[submodule "vimfiles/bundle/ctrlp-py-matcher"]
+	path = vimfiles/bundle/ctrlp-py-matcher
+	url = https://github.com/FelikZ/ctrlp-py-matcher
