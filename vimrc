@@ -133,3 +133,6 @@ endif
 autocmd QuickFixCmdPost *grep* cwindow
 
 cabbrev Ack Ack!
+
+set ttymouse=sgr
+set mouse=a
