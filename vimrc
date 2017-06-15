@@ -136,3 +136,18 @@ cabbrev Ack Ack!
 
 set ttymouse=sgr
 set mouse=a
+
+
+function s:notify_file_change()
+  let root = RailsRoot()
+  let notify = root . "/bin/notify_file_change"
+  if executable(notify)
+    if executable('socat')
+      execute "!" . notify . ' ' . expand("%:p") . " " . line(".")
+    end
+  end
+  " redraw!
+endfunction
+
+autocmd BufWritePost * silent! call s:notify_file_change()
+
