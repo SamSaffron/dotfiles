@@ -139,7 +139,7 @@ set mouse=a
 
 
 function s:notify_file_change()
-  let root = RailsRoot()
+  let root = rails#app().path()
   let notify = root . "/bin/notify_file_change"
   if executable(notify)
     if executable('socat')
