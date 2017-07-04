@@ -69,7 +69,7 @@ endfunction
 
 autocmd Filetype c,cpp call MRIIndent()
 
-let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+let g:ctrlp_match_func = {'match' : 'pymatcher#PyMatch' }
 let g:ctrlp_user_command = {
   \ 'types': {
     \ 1: ['.git', 'cd %s && git ls-files --cached --exclude-standard --others']
@@ -129,3 +129,25 @@ if &term =~ "xterm.*"
     cmap <Esc>[200~ <nop>
     cmap <Esc>[201~ <nop>
 endif
+
+autocmd QuickFixCmdPost *grep* cwindow
+
+cabbrev Ack Ack!
+
+set ttymouse=sgr
+set mouse=a
+
+
+function s:notify_file_change()
+  let root = rails#app().path()
+  let notify = root . "/bin/notify_file_change"
+  if executable(notify)
+    if executable('socat')
+      execute "!" . notify . ' ' . expand("%:p") . " " . line(".")
+    end
+  end
+  " redraw!
+endfunction
+
+autocmd BufWritePost * silent! call s:notify_file_change()
+

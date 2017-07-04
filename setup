@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+ln -s $DIR/vimfiles/after ~/.vim/after
+ln -s $DIR/vimfiles/bundle ~/.vim/bundle

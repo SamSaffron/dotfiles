@@ -92,9 +92,6 @@
 [submodule "vimfiles/bundle/webapi-vim"]
 	path = vimfiles/bundle/webapi-vim
 	url = https://github.com/mattn/webapi-vim.git
-[submodule "vimfiles/bundle/ctrlp-cmatcher"]
-	path = vimfiles/bundle/ctrlp-cmatcher
-	url = https://github.com/JazzCore/ctrlp-cmatcher.git
 [submodule "vimfiles/bundle/ri-vim"]
 	path = vimfiles/bundle/ri-vim
 	url = https://github.com/danchoi/ri.vim.git
@@ -116,3 +113,12 @@
 [submodule "vimfiles/bundle/vim-puppet"]
 	path = vimfiles/bundle/vim-puppet
 	url = git://github.com/rodjek/vim-puppet.git
+[submodule "vimfiles/bundle/qfenter"]
+	path = vimfiles/bundle/qfenter
+	url = https://github.com/yssl/QFEnter.git
+[submodule "vimfiles/bundle/ctrlp-py-matcher"]
+	path = vimfiles/bundle/ctrlp-py-matcher
+	url = https://github.com/FelikZ/ctrlp-py-matcher
+[submodule "vimfiles/bundle/vim-ruby"]
+	path = vimfiles/bundle/vim-ruby
+	url = https://github.com/vim-ruby/vim-ruby.git
