@@ -122,3 +122,6 @@
 [submodule "vimfiles/bundle/vim-ruby"]
 	path = vimfiles/bundle/vim-ruby
 	url = https://github.com/vim-ruby/vim-ruby.git
+[submodule "vimfiles/bundle/ctrl-py-matcher"]
+	path = vimfiles/bundle/ctrl-py-matcher
+	url = https://github.com/FelikZ/ctrlp-py-matcher.git

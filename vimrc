@@ -150,4 +150,5 @@ function s:notify_file_change()
 endfunction
 
 autocmd BufWritePost * silent! call s:notify_file_change()
+set backspace=indent,eol,start
 
