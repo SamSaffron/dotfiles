@@ -114,7 +114,11 @@ let g:tagbar_type_go = {
     \ 'ctagsargs' : '-sort -silent'
     \ }
 
-let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_ruby_checkers = ['mri', 'rubocop']
+let g:ale_linters = { 'javascript': ['eslint'] }
+
+let g:ale_lint_on_text_changed = 'never'
 
 if &term =~ "xterm.*"
     let &t_ti = &t_ti . "\e[?2004h"

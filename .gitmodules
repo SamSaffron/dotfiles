@@ -43,9 +43,6 @@
 [submodule "vimfiles/bundle/vim-markdown"]
 	path = vimfiles/bundle/vim-markdown
 	url = git://github.com/tpope/vim-markdown.git
-[submodule "vimfiles/bundle/syntastic"]
-	path = vimfiles/bundle/syntastic
-	url = git://github.com/scrooloose/syntastic.git
 [submodule "vimfiles/bundle/vim-coffee-script"]
 	path = vimfiles/bundle/vim-coffee-script
 	url = git://github.com/kchmck/vim-coffee-script.git
@@ -125,3 +122,6 @@
 [submodule "vimfiles/bundle/ctrl-py-matcher"]
 	path = vimfiles/bundle/ctrl-py-matcher
 	url = https://github.com/FelikZ/ctrlp-py-matcher.git
+[submodule "vimfiles/bundle/ale"]
+	path = vimfiles/bundle/ale
+	url = https://github.com/w0rp/ale.git
