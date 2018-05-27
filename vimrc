@@ -1,10 +1,60 @@
-runtime bundle/vim-pathogen/autoload/pathogen.vim
-call pathogen#infect()
+call plug#begin('~/.local/share/nvim/plugged')
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-haml'
+Plug 'tpope/vim-vividchalk'
+Plug 'tpope/vim-markdown'
+Plug 'tpope/vim-haml'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-abolish'
+Plug 'machakann/vim-highlightedyank'
+Plug 'mattn/gist-vim'
+Plug 'scrooloose/nerdtree' " , { 'on': 'NERDTreeToggle' }
+Plug 'mileszs/ack.vim'
+Plug 'tomtom/tcomment_vim'
+Plug 'Townk/vim-autoclose'
+Plug 'juvenn/mustache'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'vim-scripts/taglist.vim'
+Plug 'groenewege/vim-less'
+Plug 'csexton/trailertrash.vim'
+Plug 'Blackrush/vim-gocode'
+Plug 'mattn/webapi-vim'
+Plug 'danchoi/ri.vim'
+Plug 'ervandew/supertab'
+Plug 'dgryski/vim-godef'
+Plug 'majutsushi/tagbar'
+Plug 'rodjek/vim-puppet'
+Plug 'yssl/QFEnter'
+Plug 'vim-ruby/vim-ruby'
+Plug 'w0rp/ale'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' }
+Plug 'junegunn/fzf.vim'
+
+if has('nvim')
+  Plug 'vimlab/split-term.vim'
+end
+
+"Plug 'kien/ctrlp.vim'
+"Plug 'FelikZ/ctrlp-py-matcher'
+call plug#end()
+
 set nocompatible
+
+"nmap <leader>h <plug>(fzf-maps-n)
+nmap <C-p> :GFiles<cr>
+
 colorscheme vividchalk
 syntax on
 filetype plugin indent on
 set expandtab
+if has('nvim')
+  set inccommand=nosplit
+  au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+endif
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
@@ -40,7 +90,9 @@ map <f10> :next<CR>
 imap <C-c> <Esc>:w<cr>
 
 let g:ackprg = 'ag --nogroup --nocolor --column'
-set noantialias
+if !has('nvim')
+  set noantialias
+endif
 
 au BufNewFile,BufRead Guardfile set filetype=ruby
 au BufNewFile,BufRead *.pill set filetype=ruby
@@ -69,13 +121,14 @@ endfunction
 
 autocmd Filetype c,cpp call MRIIndent()
 
-let g:ctrlp_match_func = {'match' : 'pymatcher#PyMatch' }
-let g:ctrlp_user_command = {
-  \ 'types': {
-    \ 1: ['.git', 'cd %s && git ls-files --cached --exclude-standard --others']
-    \ },
-  \ 'fallback': 'find %s -type f'
-  \ }
+
+" let g:ctrlp_match_func = {'match' : 'pymatcher#PyMatch' }
+" let g:ctrlp_user_command = {
+"   \ 'types': {
+"     \ 1: ['.git', 'cd %s && git ls-files --cached --exclude-standard --others']
+"     \ },
+"   \ 'fallback': 'find %s -type f'
+"   \ }
 
 se guioptions=agim
 set mouse=a
@@ -120,7 +173,7 @@ let g:ale_linters = { 'javascript': ['eslint'] }
 
 let g:ale_lint_on_text_changed = 'never'
 
-if &term =~ "xterm.*"
+if !has('nvim') && &term =~ "xterm.*"
     let &t_ti = &t_ti . "\e[?2004h"
     let &t_te = "\e[?2004l" . &t_te
     function XTermPasteBegin(ret)
@@ -138,11 +191,13 @@ autocmd QuickFixCmdPost *grep* cwindow
 
 cabbrev Ack Ack!
 
-set ttymouse=sgr
+if !has('nvim')
+  set ttymouse=sgr
+endif
 set mouse=a
 
 
-function s:notify_file_change()
+function s:notify_file_change_discourse()
   let root = rails#app().path()
   let notify = root . "/bin/notify_file_change"
   if executable(notify)
@@ -153,6 +208,23 @@ function s:notify_file_change()
   " redraw!
 endfunction
 
-autocmd BufWritePost * silent! call s:notify_file_change()
+autocmd BufWritePost * silent! call s:notify_file_change_discourse()
 set backspace=indent,eol,start
+
+function! PuppetIndent()
+  setlocal noexpandtab
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal tabstop=4
+  setlocal textwidth=80
+endfunction
+
+autocmd Filetype puppet call PuppetIndent()
+
+let g:puppet_align_hashes = 0
+
+set incsearch
+set hlsearch
+
+highlight IncSearch guifg=237 ctermfg=237 ctermbg=255 guibg=white
 
