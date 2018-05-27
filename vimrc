@@ -1,3 +1,5 @@
+set termguicolors
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-endwise'
@@ -226,5 +228,5 @@ let g:puppet_align_hashes = 0
 set incsearch
 set hlsearch
 
-highlight IncSearch guifg=237 ctermfg=237 ctermbg=255 guibg=white
+highlight IncSearch guifg=#444444 guibg=#dddddd ctermfg=237 ctermbg=255
 
