@@ -8,6 +8,7 @@ Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-haml'
 Plug 'tpope/vim-vividchalk'
+Plug 'morhetz/gruvbox'
 Plug 'tpope/vim-markdown'
 Plug 'tpope/vim-haml'
 Plug 'tpope/vim-rails'
@@ -35,6 +36,7 @@ Plug 'vim-ruby/vim-ruby'
 Plug 'w0rp/ale'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' }
 Plug 'junegunn/fzf.vim'
+Plug 'romainl/vim-cool'
 
 if has('nvim')
   Plug 'vimlab/split-term.vim'
@@ -49,7 +51,6 @@ set nocompatible
 "nmap <leader>h <plug>(fzf-maps-n)
 nmap <C-p> :GFiles<cr>
 
-colorscheme vividchalk
 syntax on
 filetype plugin indent on
 set expandtab
@@ -228,5 +229,11 @@ let g:puppet_align_hashes = 0
 set incsearch
 set hlsearch
 
-highlight IncSearch guifg=#444444 guibg=#dddddd ctermfg=237 ctermbg=255
+" for vividchalk
+" colorscheme vividchalk
+" highlight IncSearch guifg=#444444 guibg=#dddddd ctermfg=237 ctermbg=255
 
+let g:gruvbox_contrast_dark="hard"
+" let g:gruvbox_hls_cursor="bg3"
+colorscheme gruvbox
+set background=dark
