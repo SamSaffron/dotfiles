@@ -5,11 +5,11 @@ packadd minpac
 
 call minpac#init()
 
-
 " color schemes
 call minpac#add('tpope/vim-vividchalk')
 call minpac#add('morhetz/gruvbox')
 call minpac#add('challenger-deep-theme/vim')
+call minpac#add('AlessandroYorba/Alduin')
 
 call minpac#add('tpope/vim-fugitive')
 call minpac#add('tpope/vim-endwise')
@@ -49,6 +49,10 @@ call minpac#add('romainl/vim-cool')
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
+end
+
+if !has('nvim')
+  call minpac#add('tpope/vim-sensible')
 end
 
 "call minpac#add('kien/ctrlp.vim')
@@ -245,4 +249,8 @@ set hlsearch
 
 let g:gruvbox_contrast_dark="hard"
 colorscheme gruvbox
+
 set background=dark
+
+" let g:alduin_Shout_Fire_Ethereal = 1
+" colorscheme alduin
