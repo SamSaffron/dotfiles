@@ -1,53 +1,61 @@
+set nocompatible
 set termguicolors
 
-call plug#begin('~/.local/share/nvim/plugged')
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-endwise'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-haml'
-Plug 'tpope/vim-vividchalk'
-Plug 'tpope/vim-unimpaired'
-Plug 'morhetz/gruvbox'
-Plug 'tpope/vim-markdown'
-Plug 'tpope/vim-haml'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-abolish'
-Plug 'machakann/vim-highlightedyank'
-Plug 'mattn/gist-vim'
-Plug 'scrooloose/nerdtree' " , { 'on': 'NERDTreeToggle' }
-Plug 'mileszs/ack.vim'
-Plug 'tomtom/tcomment_vim'
-Plug 'Townk/vim-autoclose'
-Plug 'juvenn/mustache'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'vim-scripts/taglist.vim'
-Plug 'groenewege/vim-less'
-Plug 'csexton/trailertrash.vim'
-Plug 'Blackrush/vim-gocode'
-Plug 'mattn/webapi-vim'
-Plug 'danchoi/ri.vim'
-Plug 'ervandew/supertab'
-Plug 'dgryski/vim-godef'
-Plug 'majutsushi/tagbar'
-Plug 'rodjek/vim-puppet'
-Plug 'yssl/QFEnter'
-Plug 'vim-ruby/vim-ruby'
-Plug 'w0rp/ale'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' }
-Plug 'junegunn/fzf.vim'
-Plug 'romainl/vim-cool'
+packadd minpac
+
+call minpac#init()
+
+
+" color schemes
+call minpac#add('tpope/vim-vividchalk')
+call minpac#add('morhetz/gruvbox')
+call minpac#add('challenger-deep-theme/vim')
+
+call minpac#add('tpope/vim-fugitive')
+call minpac#add('tpope/vim-endwise')
+call minpac#add('tpope/vim-repeat')
+call minpac#add('tpope/vim-rails')
+call minpac#add('tpope/vim-surround')
+call minpac#add('tpope/vim-haml')
+call minpac#add('tpope/vim-unimpaired')
+call minpac#add('tpope/vim-markdown')
+call minpac#add('tpope/vim-haml')
+call minpac#add('tpope/vim-rails')
+call minpac#add('tpope/vim-abolish')
+call minpac#add('machakann/vim-highlightedyank')
+call minpac#add('mattn/gist-vim')
+call minpac#add('scrooloose/nerdtree')
+call minpac#add('mileszs/ack.vim')
+call minpac#add('tomtom/tcomment_vim')
+call minpac#add('Townk/vim-autoclose')
+call minpac#add('juvenn/mustache')
+call minpac#add('nathanaelkane/vim-indent-guides')
+call minpac#add('vim-scripts/taglist.vim')
+call minpac#add('groenewege/vim-less')
+call minpac#add('csexton/trailertrash.vim')
+call minpac#add('Blackrush/vim-gocode')
+call minpac#add('mattn/webapi-vim')
+call minpac#add('danchoi/ri.vim')
+call minpac#add('ervandew/supertab')
+call minpac#add('dgryski/vim-godef')
+call minpac#add('majutsushi/tagbar')
+call minpac#add('rodjek/vim-puppet')
+call minpac#add('yssl/QFEnter')
+call minpac#add('vim-ruby/vim-ruby')
+call minpac#add('w0rp/ale')
+call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
+call minpac#add('junegunn/fzf.vim')
+call minpac#add('romainl/vim-cool')
 
 if has('nvim')
-  Plug 'vimlab/split-term.vim'
+  call minpac#add('vimlab/split-term.vim')
 end
 
-"Plug 'kien/ctrlp.vim'
-"Plug 'FelikZ/ctrlp-py-matcher'
-call plug#end()
+"call minpac#add('kien/ctrlp.vim')
+"call minpac#add('FelikZ/ctrlp-py-matcher')
 
-set nocompatible
+command! PackUpdate call minpac#update()
+command! PackClean call minpac#clean()
 
 "nmap <leader>h <plug>(fzf-maps-n)
 nmap <C-p> :GFiles<cr>
@@ -230,11 +238,11 @@ let g:puppet_align_hashes = 0
 set incsearch
 set hlsearch
 
-" for vividchalk
+" colorscheme challenger_deep
+
 " colorscheme vividchalk
 " highlight IncSearch guifg=#444444 guibg=#dddddd ctermfg=237 ctermbg=255
 
 let g:gruvbox_contrast_dark="hard"
-" let g:gruvbox_hls_cursor="bg3"
 colorscheme gruvbox
 set background=dark
