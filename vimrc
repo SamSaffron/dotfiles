@@ -45,10 +45,14 @@ call minpac#add('vim-ruby/vim-ruby')
 call minpac#add('w0rp/ale')
 call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
 call minpac#add('junegunn/fzf.vim')
+" stop highlighting on enter
 call minpac#add('romainl/vim-cool')
+call minpac#add('isRuslan/vim-es6')
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
+  " change in place in %s
+  set inccommand=nosplit
 end
 
 if !has('nvim')
@@ -67,10 +71,6 @@ nmap <C-p> :GFiles<cr>
 syntax on
 filetype plugin indent on
 set expandtab
-if has('nvim')
-  set inccommand=nosplit
-  au BufEnter * if &buftype == 'terminal' | :startinsert | endif
-endif
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
