@@ -11,6 +11,8 @@ call minpac#add('morhetz/gruvbox')
 call minpac#add('challenger-deep-theme/vim')
 call minpac#add('AlessandroYorba/Alduin')
 
+call minpac#add('prettier/vim-prettier')
+
 call minpac#add('tpope/vim-fugitive')
 call minpac#add('tpope/vim-endwise')
 call minpac#add('tpope/vim-repeat')
@@ -66,6 +68,8 @@ end
 
 command! PackUpdate call minpac#update()
 command! PackClean call minpac#clean()
+
+let g:prettier#autoformat = 0
 
 "nmap <leader>h <plug>(fzf-maps-n)
 nmap <C-p> :GFiles -co --exclude-standard<cr>
