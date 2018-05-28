@@ -53,6 +53,8 @@ if has('nvim')
   call minpac#add('vimlab/split-term.vim')
   " change in place in %s
   set inccommand=nosplit
+  " cause it likes an I-Beam without this
+  set guicursor=
 end
 
 if !has('nvim')
@@ -66,7 +68,7 @@ command! PackUpdate call minpac#update()
 command! PackClean call minpac#clean()
 
 "nmap <leader>h <plug>(fzf-maps-n)
-nmap <C-p> :GFiles<cr>
+nmap <C-p> :GFiles -co --exclude-standard<cr>
 
 syntax on
 filetype plugin indent on
