@@ -132,6 +132,8 @@ set autoindent
 set smartindent
 set cindent
 set guifont=Consolas\ 14
+set hlsearch
+set incsearch
 
 let mapleader=" "
 nnoremap <SPACE> <Nop>
@@ -167,13 +169,14 @@ au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufNewFile,BufRead *.es6.erb set filetype=javascript
 
 " Discourse specific helpers that force browser refresh / restart
-nmap <leader>a <Esc>:!touch tmp/restart<CR><CR>
-nmap <leader>s <Esc>:!touch tmp/refresh_browser<CR><CR>
+nmap <leader>a :!touch tmp/restart<CR>
+nmap <leader>s :!touch tmp/refresh_browser<CR>
 " I prefer to check in with a GUI then using fugitive or Gina
-nmap <silent> <leader>g <Esc>:!git gui &<CR><CR>
+nmap <silent> <leader>g :!git gui &<CR>
 " hlsearch can be very annoying if you rely on it a lot so
 " leader l is a nice way of quickly hiding it
-nmap <leader>l <Esc>:nohlsearch<CR>
+nmap <silent> <leader>l :nohlsearch<CR>
+nmap <silent> <leader>t :Tagbar<CR>
 
 " I find CTRL-W CTRL-L etc. for changing windows so awkward
 " ALT -> right etc is so much simpler
