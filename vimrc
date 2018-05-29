@@ -178,6 +178,9 @@ nmap <silent> <leader>g :!git gui &<CR><CR>
 nmap <silent> <leader>l :nohlsearch<CR>
 nmap <silent> <leader>t :Tagbar<CR>
 
+nmap <leader>e :ALENext<CR>
+nmap <leader>b :ALEPrevious<CR>
+
 " I find CTRL-W CTRL-L etc. for changing windows so awkward
 " ALT -> right etc is so much simpler
 nmap <silent> <A-Up> :wincmd k<CR>
