@@ -1,6 +1,12 @@
 set nocompatible
 set termguicolors
 
+" cause it is a big button
+set showcmd
+
+let mapleader=" "
+nnoremap <SPACE> <Nop>
+
 packadd minpac
 
 call minpac#init()
@@ -48,8 +54,14 @@ call minpac#add('w0rp/ale')
 call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
 call minpac#add('junegunn/fzf.vim')
 " stop highlighting on enter
-call minpac#add('romainl/vim-cool')
+" call minpac#add('romainl/vim-cool')
 call minpac#add('isRuslan/vim-es6')
+
+" async for extra awesome
+"
+call minpac#add('lambdalisue/gina.vim')
+" call minpac#add('vim-airline/vim-airline')
+let g:gina#core#spinner#delaytime=1
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
@@ -57,6 +69,8 @@ if has('nvim')
   set inccommand=nosplit
   " cause it likes an I-Beam without this
   set guicursor=
+  " paste from x11
+  set mouse=
 end
 
 if !has('nvim')
@@ -92,17 +106,6 @@ let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
-" add better nav
-" autocmd User Rails Rnavcommand dcomponent app/assets/javascripts/discourse/components -glob=* -suffix=.js
-" autocmd User Rails Rnavcommand droute app/assets/javascripts/discourse/routes -glob=* -suffix=.js
-" autocmd User Rails Rnavcommand dcontroller app/assets/javascripts/discourse/controllers -glob=* -suffix=.js
-" autocmd User Rails Rnavcommand dhelper app/assets/javascripts/discourse/helpers -glob=* -suffix=.js
-" autocmd User Rails Rnavcommand dmodel app/assets/javascripts/discourse/models -glob=* -suffix=*
-" autocmd User Rails Rnavcommand dtemplate app/assets/javascripts/discourse/templates -glob=**/* -suffix=.handlebars
-" autocmd User Rails Rnavcommand dview app/assets/javascripts/discourse/views -glob=**/* -suffix=.js
-" autocmd User Rails Rnavcommand config -glob=*.* -suffix= -default=routes.rb
-" autocmd User Rails Rnavcommand serializer app/serializers -glob=* -suffix=.rb
-" change to current dir - needs work
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
 
 silent! ruby nil
@@ -121,13 +124,16 @@ au BufNewFile,BufRead *.pill set filetype=ruby
 au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufNewFile,BufRead *.es6.erb set filetype=javascript
 
-nmap <C-a> <Esc>:!touch tmp/restart<CR><CR>
-nmap <C-s> <Esc>:!touch tmp/refresh_browser<CR><CR>
+nmap <leader>a <Esc>:!touch tmp/restart<CR><CR>
+nmap <leader>s <Esc>:!touch tmp/refresh_browser<CR><CR>
+nmap <silent> <leader>g <Esc>:!git gui &<CR><CR>
+nmap <leader>l <Esc>:nohlsearch<CR>
 
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
+nmap <silent> <A-Up> :wincmd k<CR>
+nmap <silent> <A-Down> :wincmd j<CR>
+nmap <silent> <A-Left> :wincmd h<CR>
+nmap <silent> <A-Right> :wincmd l<CR>
+
 set t_Co=256
 
 function! MRIIndent()
@@ -188,6 +194,34 @@ let g:tagbar_type_go = {
     \ 'ctagsbin'  : 'gotags',
     \ 'ctagsargs' : '-sort -silent'
     \ }
+
+let g:tagbar_type_ruby = {
+    \ 'kinds' : [
+        \ 'm:modules',
+        \ 'c:classes',
+        \ 'd:describes',
+        \ 'C:contexts',
+        \ 'f:methods',
+        \ 'F:singleton methods'
+    \ ]
+\ }
+
+if executable('ripper-tags')
+  let g:tagbar_type_ruby = {
+      \ 'kinds'      : ['m:modules',
+                      \ 'c:classes',
+                      \ 'C:constants',
+                      \ 'F:singleton methods',
+                      \ 'f:methods',
+                      \ 'a:aliases'],
+      \ 'kind2scope' : { 'c' : 'class',
+                       \ 'm' : 'class' },
+      \ 'scope2kind' : { 'class' : 'c' },
+      \ 'ctagsbin'   : 'ripper-tags',
+      \ 'ctagsargs'  : ['-f', '-']
+      \ }
+endif
+
 
 " let g:syntastic_javascript_checkers = ['eslint']
 " let g:syntastic_ruby_checkers = ['mri', 'rubocop']
