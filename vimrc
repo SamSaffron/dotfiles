@@ -85,7 +85,8 @@ command! PackClean call minpac#clean()
 
 let g:prettier#autoformat = 0
 
-"nmap <leader>h <plug>(fzf-maps-n)
+nmap <leader>h <plug>(fzf-maps-n)
+xmap <leader>h <plug>(fzf-maps-x)
 nmap <C-p> :GFiles -co --exclude-standard<cr>
 
 syntax on
