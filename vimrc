@@ -169,10 +169,10 @@ au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufNewFile,BufRead *.es6.erb set filetype=javascript
 
 " Discourse specific helpers that force browser refresh / restart
-nmap <leader>a :!touch tmp/restart<CR>
-nmap <leader>s :!touch tmp/refresh_browser<CR>
+nmap <leader>a :!touch tmp/restart<CR><CR>
+nmap <leader>s :!touch tmp/refresh_browser<CR><CR>
 " I prefer to check in with a GUI then using fugitive or Gina
-nmap <silent> <leader>g :!git gui &<CR>
+nmap <silent> <leader>g :!git gui &<CR><CR>
 " hlsearch can be very annoying if you rely on it a lot so
 " leader l is a nice way of quickly hiding it
 nmap <silent> <leader>l :nohlsearch<CR>
