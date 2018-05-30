@@ -82,6 +82,9 @@ if has('nvim')
   " cause it likes an I-Beam without this
   set guicursor=
   set mouse=a
+
+  " note for clipboard to work we want xsel or xclip installed
+  " see :help clipboard
 end
 
 if !has('nvim')
@@ -280,7 +283,7 @@ cabbrev Ack Ack!
 " Discourse specific, on save we will notify
 " the exact position where a spec was saved
 " this allows us to run the spec at the exact right spot
-function s:notify_file_change_discourse()
+function! s:notify_file_change_discourse()
   let root = rails#app().path()
   let notify = root . "/bin/notify_file_change"
   if executable(notify)
@@ -314,5 +317,36 @@ colorscheme gruvbox
 
 
 " I find the amount folding ruby does to be too much of the folding way too much
+" this simply folds methods
 let ruby_foldable_group="def"
 
+" add git to status line
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+
+" map <leader>g in visual mode to provide a stable link to GitHub source
+" allows us to easily select some text in vim and talk about it
+function! s:GithubLink(line1, line2)
+  let path = resolve(expand('%:p'))
+  let dir = shellescape(fnamemodify(path, ':h'))
+  let repoN = system("cd " . dir .  " && git remote -v | awk '{ tmp = match($2, /github/); if (tmp) { split($2,a,/github.com[:\.]/); c = a[2]; split(c,b,/[.]/); print b[1]; exit; }}'")
+
+  let repo = substitute(repoN, '\r\?\n\+$', '', '')
+  let root = system("cd " . dir . "  && git rev-parse --show-toplevel")
+  let relative = strpart(path, strlen(root) - 1, strlen(path) - strlen(root) + 1)
+
+
+  let repoShaN = system("cd " . dir . " && git rev-parse HEAD")
+  let repoSha = substitute(repoShaN, '\r\?\n\+$', '', '')
+
+  let link = "https://github.com/". repo . "/blob/" . repoSha . relative . "#L". a:line1 . "-L" . a:line2
+
+  let @+ = link
+  let @* = link
+
+  echo link
+endfunction
+
+command! -bar -bang -range -nargs=* GithubLink
+  \ keepjumps call <sid>GithubLink(<line1>, <line2>)
+
+vmap <leader>g :GithubLink<cr>
