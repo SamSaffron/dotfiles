@@ -8,12 +8,13 @@ call minpac#add('morhetz/gruvbox')
 " prettifier of JavaScript es6 code
 call minpac#add('prettier/vim-prettier')
 
-" awesome async syntax linting
+" awesome async syntax linting, errors are highlighted as they happen
 call minpac#add('w0rp/ale')
 
 " Git support note, considering dropping this
 " cause gina is async which helps a lot
 call minpac#add('tpope/vim-fugitive')
+call minpac#add('tpope/vim-rhubarb')
 call minpac#add('lambdalisue/gina.vim')
 
 " es6 syntax in vim appears a bit rough
@@ -26,12 +27,20 @@ call minpac#add('vim-ruby/vim-ruby')
 " awesome rails support
 call minpac#add('tpope/vim-rails')
 
+" wisely adds end when you do an if and so on in Ruby
 call minpac#add('tpope/vim-endwise')
+
+" . (repeat) support for tpope plugins
 call minpac#add('tpope/vim-repeat')
+
+" want to change "testing" to 'testing' cs"' and bang it is done
 call minpac#add('tpope/vim-surround')
-call minpac#add('tpope/vim-haml')
+
+" mappings extracted from tpope's vimrc, [q ]q is very handy
+" for quick navigation around quickfix list that fzf etc populate
 call minpac#add('tpope/vim-unimpaired')
-call minpac#add('tpope/vim-markdown')
+
+" fancy search/replace fancy abbreviation support and coercion
 call minpac#add('tpope/vim-abolish')
 
 " very cool highlighting of recently yanked text
@@ -47,25 +56,30 @@ call minpac#add('scrooloose/nerdtree')
 
 " search across all files quickly
 call minpac#add('mileszs/ack.vim')
+
+" quickly comment out code blocks, highlight them and
+" hit CTRL-__ to toggle comments, tpope also has a version of this
 call minpac#add('tomtom/tcomment_vim')
+
 call minpac#add('Townk/vim-autoclose')
+
 call minpac#add('juvenn/mustache')
+call minpac#add('groenewege/vim-less')
+call minpac#add('Blackrush/vim-gocode')
+call minpac#add('dgryski/vim-godef')
+call minpac#add('rodjek/vim-puppet')
 
 " can be used to see if stuff is indented right
+" to be honest I barely use it and am considering removing
 call minpac#add('nathanaelkane/vim-indent-guides')
-call minpac#add('vim-scripts/taglist.vim')
-call minpac#add('groenewege/vim-less')
-call minpac#add('csexton/trailertrash.vim')
-call minpac#add('Blackrush/vim-gocode')
-call minpac#add('danchoi/ri.vim')
 
 " I prefer using tab for autocompletion
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
 
-call minpac#add('dgryski/vim-godef')
+" A pretty tag browser with hacks to make ruby
+" browsing look better, use :Tagbar to bring it up
 call minpac#add('majutsushi/tagbar')
-call minpac#add('rodjek/vim-puppet')
 
 " tries to keep track of focus when we pick a file
 " from quick fix window, better than always opening the wrong file
@@ -120,6 +134,7 @@ if !has('nvim')
   end
 end
 
+" minpac is so minimal it has no commands, so we map a few
 command! PackUpdate call minpac#update()
 command! PackClean call minpac#clean()
 
@@ -149,8 +164,9 @@ let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
-" disable auto format for now even if // @format comment is there
-let g:prettier#autoformat = 0
+" auto format prettier if // @format comment is there (default on can be
+" disabled)
+let g:prettier#autoformat = 1
 
 " I am used to CTRL-p so use it, additionally allow for some extra
 " help in normal/visual mode
@@ -163,7 +179,7 @@ set completeopt=longest,menuone
 map <F9> :previous<CR>
 map <f10> :next<CR>
 
-" the silver searcher is way faster than ack
+" the silver searcher is way faster than ack we use it
 let g:ackprg = 'ag --nogroup --nocolor --column'
 
 au BufNewFile,BufRead Guardfile set filetype=ruby
@@ -176,10 +192,11 @@ nmap <leader>a :!touch tmp/restart<CR><CR>
 nmap <leader>s :!touch tmp/refresh_browser<CR><CR>
 " I prefer to check in with a GUI then using fugitive or Gina
 nmap <silent> <leader>g :!git gui &<CR><CR>
-" hlsearch can be very annoying if you rely on it a lot so
-" leader l is a nice way of quickly hiding it
-nmap <silent> <leader>l :nohlsearch<CR>
-nmap <silent> <leader>t :Tagbar<CR>
+
+" leader l is a nice way of quickly toggling hlsearch if we need it
+nnoremap <silent><expr> <leader>l (&hls && v:hlsearch ? ':nohls' : ':set hls')."\n"
+
+nnoremap <silent> <leader>t :Tagbar<CR>
 
 nmap <leader>e :ALENext<CR>
 nmap <leader>b :ALEPrevious<CR>
@@ -350,3 +367,15 @@ command! -bar -bang -range -nargs=* GithubLink
   \ keepjumps call <sid>GithubLink(<line1>, <line2>)
 
 vmap <leader>g :GithubLink<cr>
+
+" highlight trailing white space
+highlight ExtraWhitespace ctermbg=red guibg=#CC0000
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
+" incsearch highlighting is annoying usually
+" this hides it after we leave command line
+autocmd CmdlineLeave [/\?] :set nohlsearch
