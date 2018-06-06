@@ -77,6 +77,18 @@ call minpac#add('nathanaelkane/vim-indent-guides')
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
 
+" a bit not my tempo, need to get less annoying tab
+" if has('nvim')
+"   call minpac#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' })
+" else
+"   call minpac#add('Shougo/deoplete.nvim')
+"   call minpac#add('roxma/nvim-yarp')
+"   call minpac#add('roxma/vim-hug-neovim-rpc')
+" endif
+
+" no luck at all with ycm, it is so slow
+"call minpac#add('Valloric/YouCompleteMe')
+
 " A pretty tag browser with hacks to make ruby
 " browsing look better, use :Tagbar to bring it up
 call minpac#add('majutsushi/tagbar')
@@ -153,6 +165,18 @@ set guifont=Consolas\ 14
 set hlsearch
 set incsearch
 
+" history is rediculously low out of the box set at 20
+set history=1000
+
+" makes using cfdo easier and allows us to keep better history
+set hidden
+
+" move swap files out of the way
+" this gets really annoying having to add this to .gitignore
+" or checking them in by mistake when forcing an add
+set directory=$HOME/.vim/swapfiles/
+set backupdir=$HOME/.vim/backupdir/
+
 let mapleader=" "
 nnoremap <SPACE> <Nop>
 
@@ -223,9 +247,6 @@ function! MRIIndent()
   setlocal cinoptions=(0,t0
 endfunction
 
-" Ruby conventions for MRI source code
-autocmd Filetype c,cpp call MRIIndent()
-
 filetype off
 filetype plugin indent off
 set runtimepath+=/usr/local/go/misc/vim
@@ -292,9 +313,6 @@ endif
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
 
-" open quick fix window after :Ggrep
-autocmd QuickFixCmdPost *grep* cwindow
-
 cabbrev Ack Ack!
 
 " Discourse specific, on save we will notify
@@ -310,7 +328,6 @@ function! s:notify_file_change_discourse()
   end
   " redraw!
 endfunction
-autocmd BufWritePost * silent! call s:notify_file_change_discourse()
 
 set backspace=indent,eol,start
 
@@ -322,7 +339,6 @@ function! PuppetIndent()
   setlocal tabstop=4
   setlocal textwidth=80
 endfunction
-autocmd Filetype puppet call PuppetIndent()
 
 " very annoying default behavior
 let g:puppet_align_hashes = 0
@@ -371,11 +387,42 @@ vmap <leader>g :GithubLink<cr>
 " highlight trailing white space
 highlight ExtraWhitespace ctermbg=red guibg=#CC0000
 match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
 
-" incsearch highlighting is annoying usually
-" this hides it after we leave command line
-autocmd CmdlineLeave [/\?] :set nohlsearch
+nmap <leader>v :tabedit ~/.vimrc<CR>
+
+" we group cause then we can cleanly reload all autocmd
+augroup vimrc
+ " this clears all the commands (which we need to do on reload)
+  autocmd!
+  autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+  autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+  autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+  autocmd BufWinLeave * call clearmatches()
+
+  " incsearch highlighting is annoying usually
+  " this hides it after we leave command line
+  autocmd CmdlineLeave [/\?] :set nohlsearch
+	autocmd CmdlineEnter [/,\?] :set hlsearch
+  autocmd BufWinEnter * set nohlsearch
+
+  " easy vimrc editing
+  autocmd bufwritepost .vimrc source $MYVIMRC
+  autocmd bufwritepost .vimrc :set nohlsearch
+
+  " Ruby conventions for MRI source code
+  autocmd Filetype c,cpp call MRIIndent()
+
+  " open quick fix window after :Ggrep
+  autocmd QuickFixCmdPost *grep* cwindow
+
+  " indent pupped files
+  autocmd Filetype puppet call PuppetIndent()
+
+  " discourse refresh
+  autocmd BufWritePost * silent! call s:notify_file_change_discourse()
+augroup END
+
+" let g:deoplete#enable_at_startup = 1
+" packloadall
+" call deoplete#custom#option('auto_complete', v:false)
+" inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#manual_complete()
