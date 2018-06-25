@@ -191,6 +191,18 @@ let g:rubycomplete_rails = 1
 " auto format prettier if // @format comment is there (default on can be
 " disabled)
 let g:prettier#autoformat = 1
+let g:prettier#config#print_width = 80
+let g:prettier#config#tab_width = 2
+let g:prettier#config#use_tabs = 'false'
+let g:prettier#config#semi = 'true'
+let g:prettier#config#single_quote = 'false'
+let g:prettier#config#bracket_spacing = 'true'
+let g:prettier#config#jsx_bracket_same_line = 'false'
+let g:prettier#config#arrow_parens = 'avoid'
+let g:prettier#config#trailing_comma = 'none'
+let g:prettier#config#parser = 'babylon'
+let g:prettier#config#config_precedence = 'prefer-file'
+let g:prettier#config#prose_wrap = 'preserve'
 
 " I am used to CTRL-p so use it, additionally allow for some extra
 " help in normal/visual mode
@@ -420,6 +432,8 @@ augroup vimrc
 
   " discourse refresh
   autocmd BufWritePost * silent! call s:notify_file_change_discourse()
+
+  autocmd BufWritePre *discourse/*.js,*discourse/*.es6,*discourse/*.scss,*discourse/*.css PrettierAsync
 augroup END
 
 " let g:deoplete#enable_at_startup = 1
