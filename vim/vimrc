@@ -1,6 +1,8 @@
 packadd minpac
 
-call minpac#init()
+call minpac#init({'verbose': 3})
+
+call minpac#add('fatih/vim-go')
 
 " a pretty color scheme
 call minpac#add('morhetz/gruvbox')
@@ -63,9 +65,8 @@ call minpac#add('tomtom/tcomment_vim')
 
 call minpac#add('Townk/vim-autoclose')
 
-call minpac#add('juvenn/mustache')
+call minpac#add('mustache/vim-mustache-handlebars')
 call minpac#add('groenewege/vim-less')
-call minpac#add('Blackrush/vim-gocode')
 call minpac#add('dgryski/vim-godef')
 call minpac#add('rodjek/vim-puppet')
 
@@ -222,6 +223,7 @@ au BufNewFile,BufRead Guardfile set filetype=ruby
 au BufNewFile,BufRead *.pill set filetype=ruby
 au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufNewFile,BufRead *.es6.erb set filetype=javascript
+au BufNewFile,BufRead *.pp set filetype=puppet
 
 " Discourse specific helpers that force browser refresh / restart
 nmap <leader>a :!touch tmp/restart<CR><CR>
@@ -324,6 +326,9 @@ endif
 
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_fixers = {'ruby': ['rufo']}
+"let g:ale_rubocop_options = '--safe'
+"let g:ale_fix_on_save = 1
 
 cabbrev Ack Ack!
 
