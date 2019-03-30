@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+cd /home/sam/Source/discourse
+exec nvim -c ':NERDTree|:wincmd w|:vsplit'
