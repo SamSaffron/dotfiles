@@ -59,7 +59,8 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen
 
 # center a floating window
-bindsym $mod+c floating enable; resize set width 1830 px; resize set height 2100 px; move position center; move up 5 px;
+# bindsym $mod+c floating enable; resize set width 1830 px; resize set height 2100 px; move position center; move up 5 px;
+bindsym $mod+c exec "/home/sam/.i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100"
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -130,8 +131,6 @@ bindsym $mod+Shift+0 move container to workspace 10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -209,6 +208,10 @@ bindsym $mod+p [instance="scratch-term"] scratchpad show
 exec firefox
 for_window [class="Firefox"] floating enable, move to scratchpad, scratchpad show
 bindsym $mod+b [class="Firefox"] scratchpad show
+
+# old nagbar is annoying to use
+# exit i3 (logs you out of your X session)
+# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 mode "exit: [l]ogout, [r]eboot, [s]hutdown" {
   bindsym l exec i3-msg exit

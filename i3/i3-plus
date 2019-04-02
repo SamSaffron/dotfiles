@@ -163,6 +163,43 @@ class I3Helper
     @i3.command('[con_mark="_last"] focus')
   end
 
+  def smart_center(arg)
+
+    focused_window = nil
+    is_floating = false
+
+    recurse do |n, depth: , focused: , floating:|
+      if n.respond_to?(:window_properties)
+        if focused
+          focused_window = n
+          is_floating = floating
+        end
+      end
+    end
+
+    sizes = arg.split(',').map do |x|
+      x.split("x").map(&:to_i)
+    end
+
+    if focused_window
+
+      index = sizes.map(&:first).index do |width|
+        (focused_window.rect.width.to_i - width).abs < 15
+      end
+
+      index = -1 if !is_floating
+
+      width, height = sizes[((index || -1) + 1) % sizes.length]
+
+      if index
+        @i3.command("resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px")
+      else
+        @i3.command("floating enable; resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px;")
+      end
+    end
+
+  end
+
   def close
     @i3.close
     @i3 = nil
@@ -188,6 +225,8 @@ when "move" then
   helper.move(ARGV[1])
 when "focus" then
   helper.focus(ARGV[1])
+when "smart_center" then
+  helper.smart_center(ARGV[1])
 else
   puts "unknown command"
   usage
