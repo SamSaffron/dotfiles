@@ -25,6 +25,7 @@ class I3Helper
     recurse(tree.nodes) do |n, focused:, depth:, floating:|
       return true if floating && focused
     end
+    false
   end
 
   def layout_exec(command, cols: 2, rows: 3, balance: :auto)
@@ -154,13 +155,13 @@ class I3Helper
   end
 
   def move(dir)
-    @i3.command("mark _last")
     if is_floating?
+      @i3.command("mark _last")
       @i3.command("move to output #{dir}")
+      @i3.command('[con_mark="_last"] focus')
     else
       @i3.command("move #{dir}")
     end
-    @i3.command('[con_mark="_last"] focus')
   end
 
   def smart_center(arg)
