@@ -407,6 +407,10 @@ match ExtraWhitespace /\s\+$/
 
 nmap <leader>v :tabedit ~/.vimrc<CR>
 
+" resizing windows needs to be simpler
+nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+
 " we group cause then we can cleanly reload all autocmd
 augroup vimrc
  " this clears all the commands (which we need to do on reload)
@@ -439,7 +443,10 @@ augroup vimrc
   autocmd BufWritePost * silent! call s:notify_file_change_discourse()
 
   autocmd BufWritePre *discourse/*.js,*discourse/*.es6,*discourse/*.scss,*discourse/*.css PrettierAsync
+
 augroup END
+
+
 
 " let g:deoplete#enable_at_startup = 1
 " packloadall
