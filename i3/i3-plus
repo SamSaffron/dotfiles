@@ -199,6 +199,35 @@ class I3Helper
       end
     end
 
+
+  end
+
+  def screenshot(args)
+    focused_output = nil
+
+    recurse do |n, depth: , focused: , floating:|
+      if n.type == "output"
+        focused_output = n
+      end
+
+      if focused
+        break
+      end
+    end
+
+    `mkdir -p ~/screenshots`
+
+    rect = focused_output.rect
+
+    filename = "~/screenshots/desktop-#{Time.now.strftime('%Y%m%d-%H%M%S')}.png"
+    cmd = "import -silent -window root -crop #{rect.width}x#{rect.height}+#{rect.x}+#{rect.y} #{filename}"
+    `#{cmd}`
+    cmd = "pngquant -f --output #{filename} #{filename}"
+    `#{cmd}`
+    cmd = "bash -c 'copyq write image/png - < #{filename}' && copyq select 0"
+    `#{cmd}`
+    cmd = "notify-send '#{File.basename(filename)} #{File.size(File.expand_path(filename))/1024}k'"
+    `#{cmd}`
   end
 
   def close
@@ -216,6 +245,7 @@ def usage
   puts " move [DIR]: will move the current window left, if it is floating it will move the window to next monitor "
   puts " focus [DIR]: slightly amended focus that breaks out of floated windows"
   puts " layout_exec: similar to exec except that it tries to maintain a certain layout"
+  puts " screenshot: at the moment this takes a screenshot of current desktop and compresses"
 end
 
 
@@ -228,6 +258,8 @@ when "focus" then
   helper.focus(ARGV[1])
 when "smart_center" then
   helper.smart_center(ARGV[1])
+when "screenshot"
+  helper.screenshot(ARGV[2..-1])
 else
   puts "unknown command"
   usage

@@ -14,6 +14,7 @@ exec --no-startup-id compton
 exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
 exec --no-startup-id skypeforlinux
+exec --no-startup-id copyq
 
 for_window [class="Skype"] floating enable border normal
 
@@ -189,8 +190,10 @@ bar {
 
 bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
 
-bindsym $mod+Print exec "flameshot gui"
-bindsym $mod+Shift+Print exec "flameshot gui -d 2000"
+bindsym Print exec "flameshot gui"
+bindsym $mod+Print exec "flameshot gui -d 2000"
+# fullscreen screenshot
+bindsym $mod+Shift+Print exec "/home/sam/.i3/i3-plus screenshot"
 
 for_window [class="Git-gui" instance="git-gui"] floating enable
 for_window [title="Terminator Preferences"] floating enable
