@@ -191,7 +191,7 @@ bar {
 bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
 
 bindsym Print exec "flameshot gui"
-bindsym $mod+Print exec "/bin/bash -c '/home/sam/.i3/countdown 3 && sleep 0.01 && flameshot gui'"
+bindsym $mod+Print exec "/bin/bash -c '/home/sam/.i3/countdown 3 && sleep 0.1 && flameshot gui'"
 # fullscreen screenshot
 bindsym $mod+Shift+Print exec "/home/sam/.i3/i3-plus screenshot"
 
