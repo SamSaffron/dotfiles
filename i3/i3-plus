@@ -192,7 +192,7 @@ class I3Helper
 
       width, height = sizes[((index || -1) + 1) % sizes.length]
 
-      if index
+      if is_floating
         @i3.command("resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px")
       else
         @i3.command("floating enable; resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px;")
