@@ -133,31 +133,31 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
-# resize window (you can also use the mouse for that)
-mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
-
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 10 px or 10 ppt
-        bindsym Down resize grow height 10 px or 10 ppt
-        bindsym Up resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
-
-        # back to normal: Enter or Escape
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-
-bindsym $mod+r mode "resize"
+# # resize window (you can also use the mouse for that)
+# mode "resize" {
+#         # These bindings trigger as soon as you enter the resize mode
+#
+#         # Pressing left will shrink the window’s width.
+#         # Pressing right will grow the window’s width.
+#         # Pressing up will shrink the window’s height.
+#         # Pressing down will grow the window’s height.
+#         bindsym j resize shrink width 10 px or 10 ppt
+#         bindsym k resize grow height 10 px or 10 ppt
+#         bindsym l resize shrink height 10 px or 10 ppt
+#         bindsym semicolon resize grow width 10 px or 10 ppt
+#
+#         # same bindings, but for the arrow keys
+#         bindsym Left resize shrink width 10 px or 10 ppt
+#         bindsym Down resize grow height 10 px or 10 ppt
+#         bindsym Up resize shrink height 10 px or 10 ppt
+#         bindsym Right resize grow width 10 px or 10 ppt
+#
+#         # back to normal: Enter or Escape
+#         bindsym Return mode "default"
+#         bindsym Escape mode "default"
+# }
+#
+# bindsym $mod+r mode "resize"
 
 bindsym $mod+Ctrl+Right "move workspace to output right"
 bindsym $mod+Ctrl+Left "move workspace to output left"
@@ -191,7 +191,7 @@ bar {
 bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
 
 bindsym Print exec "flameshot gui"
-bindsym $mod+Print exec "flameshot gui -d 2000"
+bindsym $mod+Print exec "/bin/bash -c '/home/sam/.i3/countdown 3 && sleep 0.01 && flameshot gui'"
 # fullscreen screenshot
 bindsym $mod+Shift+Print exec "/home/sam/.i3/i3-plus screenshot"
 
