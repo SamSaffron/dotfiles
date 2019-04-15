@@ -65,14 +65,15 @@ bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 
 # move focused window
-bindsym $mod+Shift+j exec /home/sam/.i3/i3-plus move left
-bindsym $mod+Shift+semicolon exec /home/sam/.i3/i3-plus move right
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
+# bindsym $mod+Shift+j exec /home/sam/.i3/i3-plus move left
+# bindsym $mod+Shift+semicolon exec /home/sam/.i3/i3-plus move right
+# bindsym $mod+Shift+k move down
+# bindsym $mod+Shift+l move up
 
-# alternatively, you can use the cursor keys:
-bindsym $mod+Shift+Left exec /home/sam/.i3/i3-plus move left
-bindsym $mod+Shift+Right exec /home/sam/.i3/i3-plus move right
+#bindsym $mod+Shift+Left exec /home/sam/.i3/i3-plus move left
+#bindsym $mod+Shift+Right exec /home/sam/.i3/i3-plus move right
+bindsym $mod+Shift+Left [con_id="__focused__" tiling] move left;  [con_id="__focused__" floating] move to output left, focus
+bindsym $mod+Shift+Right [con_id="__focused__" tiling] move right; [con_id="__focused__" floating] move to output right, focus
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 
@@ -141,7 +142,8 @@ bar {
    }
 }
 
-bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
+#bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
+bindsym $mod+Shift+d exec cd /home/sam/Source/discourse && i3-sensible-terminal -e nvim -c ':NERDTree|:wincmd w|:vsplit'
 
 # screenshot apps
 bindsym Print exec "flameshot gui"
