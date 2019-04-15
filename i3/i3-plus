@@ -74,7 +74,21 @@ class I3Helper
       if left_aligns.include?(windows[0].output)
         balance = :left
       end
+    end
 
+    dir = nil
+    pid = `xprop -id $(xdotool getactivewindow) _NET_WM_PID`
+    if pid && pid = pid.split(' ').last.to_i
+      if pid > 0
+        lpid = `pstree -aApT #{pid}`
+        lpid = lpid.split("\n").select{|r| r =~ /zsh,|bash,/}.first
+        if lpid && lpid = lpid.split(",").last
+          dir = `readlink /proc/#{lpid}/cwd`.strip
+          if dir && !dir.empty? && !dir.include?("'")
+            command = "cd #{dir} && #{command}"
+          end
+        end
+      end
     end
 
     if windows.length < cols
