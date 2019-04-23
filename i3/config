@@ -12,6 +12,7 @@ exec --no-startup-id firefox
 exec --no-startup-id mattermost
 exec --no-startup-id urxvt -name scratch-term
 exec --no-startup-id yubioath-desktop
+exec --no-startup-id telegram-desktop -startintray
 
 exec_always --no-startup-id xmodmap -e "clear lock"
 exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"
@@ -25,8 +26,9 @@ for_window [class="mattermost-nativefier"] floating enable, move to workspace 3
 for_window [class="simplescreenrecorder"] floating enable
 for_window [instance="scratch-term"] floating enable, move to scratchpad
 for_window [class="Firefox"] floating enable, move to scratchpad, scratchpad show
-for_window [class="Yubico Authenticator"] floating enable, move to scratchpad
+for_window [instance="Yubico Authenticator"] floating enable, move to scratchpad
 for_window [class="mattermost-nativefier"] floating enable, move to scratchpad
+for_window [class="Telegram"] floating enable
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
