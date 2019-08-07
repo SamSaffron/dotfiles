@@ -1,0 +1,15 @@
+eval $(dbus-launch -sh-syntax --exit-with-session)
+dbus-update-activation-environment --systemd DISPLAY
+
+xrdb -merge ~/.Xresources
+
+xrandr --output DVI-D-0 --off --output HDMI-1 --off --output HDMI-0 --mode 3840x2160 --pos 0x0 --rotate normal --output DP-3 --off --output DP-2 --primary --mode 3840x2160 --pos 3840x0 --rotate normal --output DP-1 --off --output DP-0 --mode 3840x2160 --pos 7680x0 --rotate normal
+
+sleep 2
+
+eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
+
+exec i3
+exec xmonad
+# exec /home/sam/Source/dwm/dwm

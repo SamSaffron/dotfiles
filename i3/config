@@ -13,12 +13,14 @@ exec --no-startup-id mattermost
 exec --no-startup-id urxvt -name scratch-term
 exec --no-startup-id yubioath-desktop
 exec --no-startup-id telegram-desktop -startintray
+exec --no-startup-id slack -u
 
 exec_always --no-startup-id xmodmap -e "clear lock"
 exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"
 exec_always --no-startup-id xmodmap -e "keycode 66 = Escape NoSymbol Escape"
 exec_always --no-startup-id xmodmap -e "keysym Menu = Super_R"
 
+for_window [class="Slack"] floating enable border normal
 for_window [class="Skype"] floating enable border normal
 for_window [class="Git-gui" instance="git-gui"] floating enable
 for_window [title="Terminator Preferences"] floating enable
@@ -26,9 +28,11 @@ for_window [class="mattermost-nativefier"] floating enable, move to workspace 3
 for_window [class="simplescreenrecorder"] floating enable
 for_window [instance="scratch-term"] floating enable, move to scratchpad
 for_window [class="Firefox"] floating enable, move to scratchpad, scratchpad show
-for_window [instance="Yubico Authenticator"] floating enable, move to scratchpad
+for_window [class="Yubico Authenticator" window_type="normal"] floating enable, move to scratchpad
 for_window [class="mattermost-nativefier"] floating enable, move to scratchpad
 for_window [class="Telegram"] floating enable
+for_window [class="Chromium"] floating enable
+for_window [class="google-chrome"] floating enable
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -121,10 +125,10 @@ bindsym $mod+Ctrl+Right "move workspace to output right"
 bindsym $mod+Ctrl+Left "move workspace to output left"
 
 # Resizing windows by 10 in i3 using keyboard only
-bindsym $mod+Ctrl+Shift+Right resize shrink width 20 px or 20 ppt
-bindsym $mod+Ctrl+Shift+Up resize grow height 20 px or 20 ppt
-bindsym $mod+Ctrl+Shift+Down resize shrink height 20 px or 20 ppt
-bindsym $mod+Ctrl+Shift+Left resize grow width 20 px or 20 ppt
+bindsym $mod+Ctrl+Shift+Right resize shrink width 20 px or 10 ppt
+bindsym $mod+Ctrl+Shift+Up resize grow height 20 px or 10 ppt
+bindsym $mod+Ctrl+Shift+Down resize shrink height 20 px or 10 ppt
+bindsym $mod+Ctrl+Shift+Left resize grow width 20 px or 10 ppt
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)

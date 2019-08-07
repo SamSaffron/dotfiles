@@ -102,6 +102,8 @@ call minpac#add('yssl/QFEnter')
 call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
 call minpac#add('junegunn/fzf.vim')
 
+call minpac#add('rhysd/git-messenger.vim')
+
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
   " %s/test/test1 will perform replacement in-place
@@ -228,8 +230,13 @@ au BufNewFile,BufRead *.pp set filetype=puppet
 " Discourse specific helpers that force browser refresh / restart
 nmap <leader>a :!touch tmp/restart<CR><CR>
 nmap <leader>s :!touch tmp/refresh_browser<CR><CR>
+
 " I prefer to check in with a GUI then using fugitive or Gina
 nmap <silent> <leader>g :!git gui &<CR><CR>
+
+let g:git_messenger_no_default_mappings=v:true
+let g:git_messenger_always_into_popup=v:true
+nmap <silent> <leader>m <Plug>(git-messenger)
 
 " leader l is a nice way of quickly toggling hlsearch if we need it
 nnoremap <silent><expr> <leader>l (&hls && v:hlsearch ? ':nohls' : ':set hls')."\n"
@@ -336,8 +343,13 @@ cabbrev Ack Ack!
 " the exact position where a spec was saved
 " this allows us to run the spec at the exact right spot
 function! s:notify_file_change_discourse()
-  let root = rails#app().path()
-  let notify = root . "/bin/notify_file_change"
+  let notify = getcwd() . "/bin/notify_file_change"
+
+  if ! executable(notify)
+    let root = rails#app().path()
+    notify = root . "/bin/notify_file_change"
+  end
+
   if executable(notify)
     if executable('socat')
       execute "!" . notify . ' ' . expand("%:p") . " " . line(".")
