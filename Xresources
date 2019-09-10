@@ -1,4 +1,4 @@
-Xft.dpi: 150
+Xft.dpi: 220
 Xft.autohint: 0
 Xft.lcdfilter:  lcddefault
 Xft.hintstyle:  hintfull
@@ -6,10 +6,10 @@ Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
 
-URxvt.font:           xft:Consolas:pixelsize=24
-URxvt.boldFont:       xft:Consolas:bold:pixelsize=24
-URxvt.italicFont:     xft:Consolas:italic:pixelsize=24
-URxvt.boldItalicFont: xft:Consolas:bold:italic:pixelsize=24
+URxvt.font:           xft:Consolas:pixelsize=32
+URxvt.boldFont:       xft:Consolas:bold:pixelsize=32
+URxvt.italicFont:     xft:Consolas:italic:pixelsize=32
+URxvt.boldItalicFont: xft:Consolas:bold:italic:pixelsize=32
 URxvt.scrollBar:      false
 
 ! stop stealing ctrl-shift, to enter magic unicodes
