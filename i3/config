@@ -92,6 +92,8 @@ bindsym $mod+space focus mode_toggle
 # focus the parent container
 bindsym $mod+a focus parent
 
+bindsym $mod+comma exec pkill -USR2 -f 'ruby bin/unicorn'
+
 # switch to workspace
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
