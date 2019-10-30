@@ -11,7 +11,7 @@ call minpac#add('morhetz/gruvbox')
 call minpac#add('prettier/vim-prettier')
 
 " awesome async syntax linting, errors are highlighted as they happen
-call minpac#add('w0rp/ale')
+call minpac#add('dense-analysis/ale')
 
 " Git support note, considering dropping this
 " cause gina is async which helps a lot
@@ -77,6 +77,8 @@ call minpac#add('nathanaelkane/vim-indent-guides')
 " I prefer using tab for autocompletion
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
+
+call minpac#add('burner/vim-svelte')
 
 " a bit not my tempo, need to get less annoying tab
 " if has('nvim')
@@ -226,6 +228,7 @@ au BufNewFile,BufRead *.pill set filetype=ruby
 au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufNewFile,BufRead *.es6.erb set filetype=javascript
 au BufNewFile,BufRead *.pp set filetype=puppet
+au BufNewFile,BufRead *.svelte setf svelte
 
 " Discourse specific helpers that force browser refresh / restart
 nmap <leader>a :!touch tmp/restart<CR><CR>
@@ -333,6 +336,7 @@ endif
 
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
 let g:ale_fixers = {'ruby': ['rufo']}
 "let g:ale_rubocop_options = '--safe'
 "let g:ale_fix_on_save = 1
@@ -454,7 +458,7 @@ augroup vimrc
   " discourse refresh
   autocmd BufWritePost * silent! call s:notify_file_change_discourse()
 
-  autocmd BufWritePre *discourse/*.js,*discourse/*.es6,*discourse/*.scss,*discourse/*.css PrettierAsync
+  autocmd BufWritePre *discourse*/*.js,*discourse*/*.es6,*discourse*/*.scss,*discourse*/*.css PrettierAsync
 
 augroup END
 
