@@ -78,7 +78,8 @@ call minpac#add('nathanaelkane/vim-indent-guides')
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
 
-call minpac#add('burner/vim-svelte')
+" not really fiddling with much svelte these days
+" call minpac#add('burner/vim-svelte')
 
 " a bit not my tempo, need to get less annoying tab
 " if has('nvim')
