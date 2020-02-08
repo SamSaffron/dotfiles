@@ -3,20 +3,19 @@
 set $mod Mod4
 font pango:SF Pro Display 10
 
-exec --no-startup-id compton
+exec --no-startup-id /home/sam/.config/i3/picom
 exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
 exec --no-startup-id skypeforlinux
 exec --no-startup-id copyq
-exec --no-startup-id firefox
 exec --no-startup-id mattermost
 exec --no-startup-id urxvt -name scratch-term
 exec --no-startup-id yubioath-desktop
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id xbanish
-exec --no-startup-id syndaemon -K -i 0.5 -R
 exec --no-startup-id dunst
+exec --no-startup-id firefox
 
 exec_always --no-startup-id xmodmap -e "clear lock"
 exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"

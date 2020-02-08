@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+while [ 1 ]; do
+  picom && break
+  echo "re spawn picom due to fault"
+  sleep 5
+done
