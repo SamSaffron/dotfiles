@@ -123,10 +123,10 @@ bindsym $mod+Ctrl+Right "move workspace to output right"
 bindsym $mod+Ctrl+Left "move workspace to output left"
 
 # Resizing windows by 10 in i3 using keyboard only
-bindsym $mod+Ctrl+Shift+Right resize shrink width 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Up resize grow height 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Down resize shrink height 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Left resize grow width 10 px or 10 ppt
+bindsym $mod+Mod1+Right exec --no-startup-id /home/sam/.config/i3/i3-resize right
+bindsym $mod+Mod1+Left exec --no-startup-id /home/sam/.config/i3/i3-resize left
+bindsym $mod+Mod1+Up exec --no-startup-id /home/sam/.config/i3/i3-resize up
+bindsym $mod+Mod1+Down exec --no-startup-id /home/sam/.config/i3/i3-resize down
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -150,9 +150,9 @@ bindsym $mod+Shift+d exec cd /home/sam/Source/discourse && i3-sensible-terminal 
 
 # screenshot apps
 bindsym Print exec "flameshot gui"
-bindsym $mod+Print exec "/bin/bash -c '/home/sam/.i3/countdown 3 && sleep 0.2 && flameshot gui'"
+bindsym $mod+Print exec "/bin/bash -c '/home/sam/.config/.i3/countdown 3 && sleep 0.2 && flameshot gui'"
 # full desktop screenshot
-bindsym $mod+Shift+Print exec "/home/sam/.i3/i3-plus screenshot"
+bindsym $mod+Shift+Print exec "/home/sam/.config/i3/i3-plus screenshot"
 
 # scratchpad apps
 bindsym $mod+p [instance="scratch-term"] scratchpad show
