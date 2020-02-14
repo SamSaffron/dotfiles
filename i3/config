@@ -51,7 +51,7 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen
 
 # center a floating window
-bindsym $mod+c exec "/home/sam/config/i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100,2500x2100"
+bindsym $mod+c exec "/home/sam/.config/i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100,2500x2100"
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
