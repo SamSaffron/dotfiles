@@ -118,11 +118,11 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Ctrl+Right "move workspace to output right"
 bindsym $mod+Ctrl+Left "move workspace to output left"
 
-# Resizing windows by 10 in i3 using keyboard only
-bindsym $mod+Ctrl+Shift+Right resize shrink width 20 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Up resize grow height 20 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Down resize shrink height 20 px or 10 ppt
-bindsym $mod+Ctrl+Shift+Left resize grow width 20 px or 10 ppt
+# resize commands
+bindsym $mod+Mod1+Right exec --no-startup-id /home/sam/.config/i3/i3-resize right
+bindsym $mod+Mod1+Left exec --no-startup-id /home/sam/.config/i3/i3-resize left
+bindsym $mod+Mod1+Up exec --no-startup-id /home/sam/.config/i3/i3-resize up
+bindsym $mod+Mod1+Down exec --no-startup-id /home/sam/.config/i3/i3-resize down
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
