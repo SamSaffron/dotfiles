@@ -3,7 +3,7 @@
 set $mod Mod4
 font pango:SF Pro Display 10
 
-exec --no-startup-id compton
+exec --no-startup-id picom
 exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
 exec --no-startup-id skypeforlinux
@@ -39,7 +39,7 @@ floating_modifier $mod
 
 # start a terminal
 bindsym $mod+Shift+Return exec i3-sensible-terminal
-bindsym $mod+Return exec /home/sam/.i3/i3-plus layout_exec i3-sensible-terminal
+bindsym $mod+Return exec /home/sam/.config/i3/i3-plus layout_exec i3-sensible-terminal
 
 # kill focused window (usually shift q)
 bindsym $mod+q kill
@@ -51,7 +51,7 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen
 
 # center a floating window
-bindsym $mod+c exec "/home/sam/.i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100"
+bindsym $mod+c exec "/home/sam/config/i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100,2500x2100"
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -61,23 +61,15 @@ bindsym $mod+e layout toggle split
 # change focus
 bindsym $mod+k focus down
 bindsym $mod+l focus up
-bindsym $mod+semicolon exec /home/sam/.i3/i3-plus focus right
-bindsym $mod+j exec /home/sam/.i3/i3-plus focus left
+bindsym $mod+semicolon exec /home/sam/.config/i3/i3-plus focus right
+bindsym $mod+j exec /home/sam/.config/i3/i3-plus focus left
 
 # alternatively, you can use the cursor keys:
-bindsym $mod+Left exec /home/sam/.i3/i3-plus focus left
-bindsym $mod+Right exec /home/sam/.i3/i3-plus focus right
+bindsym $mod+Left exec /home/sam/.config/i3/i3-plus focus left
+bindsym $mod+Right exec /home/sam/.config/i3/i3-plus focus right
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 
-# move focused window
-# bindsym $mod+Shift+j exec /home/sam/.i3/i3-plus move left
-# bindsym $mod+Shift+semicolon exec /home/sam/.i3/i3-plus move right
-# bindsym $mod+Shift+k move down
-# bindsym $mod+Shift+l move up
-
-#bindsym $mod+Shift+Left exec /home/sam/.i3/i3-plus move left
-#bindsym $mod+Shift+Right exec /home/sam/.i3/i3-plus move right
 bindsym $mod+Shift+Left [con_id="__focused__" tiling] move left;  [con_id="__focused__" floating] move to output left, focus
 bindsym $mod+Shift+Right [con_id="__focused__" tiling] move right; [con_id="__focused__" floating] move to output right, focus
 bindsym $mod+Shift+Down move down
@@ -138,7 +130,7 @@ bar {
     tray_output DP-0
     font pango:DejaVu Sans Mono, FontAwesome 12
     position bottom
-    status_command /bin/i3status-rs /home/sam/.i3/status.toml
+    status_command /bin/i3status-rs /home/sam/.config/i3/status.toml
     colors {
         separator #666666
         background #222222
@@ -150,14 +142,13 @@ bar {
    }
 }
 
-#bindsym $mod+Shift+d exec "i3-sensible-terminal -e '/home/sam/.i3/edit_discourse'"
 bindsym $mod+Shift+d exec cd /home/sam/Source/discourse && i3-sensible-terminal -e nvim -c ':NERDTree|:wincmd w|:vsplit'
 
 # screenshot apps
 bindsym Print exec "flameshot gui"
-bindsym $mod+Print exec "/bin/bash -c '/home/sam/.i3/countdown 3 && sleep 0.2 && flameshot gui'"
+bindsym $mod+Print exec "/bin/bash -c '/home/sam/.config/i3/countdown 3 && sleep 0.2 && flameshot gui'"
 # full desktop screenshot
-bindsym $mod+Shift+Print exec "/home/sam/.i3/i3-plus screenshot"
+bindsym $mod+Shift+Print exec "/home/sam/.config/i3/i3-plus screenshot"
 
 workspace 1 output DP-2
 workspace 2 output DP-0
