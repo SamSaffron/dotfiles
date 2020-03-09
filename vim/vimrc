@@ -107,6 +107,8 @@ call minpac#add('junegunn/fzf.vim')
 
 call minpac#add('rhysd/git-messenger.vim')
 
+call minpac#add('Einenlum/yaml-revealer')
+
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
   " %s/test/test1 will perform replacement in-place
