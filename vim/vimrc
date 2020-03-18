@@ -108,6 +108,7 @@ call minpac#add('junegunn/fzf.vim')
 call minpac#add('rhysd/git-messenger.vim')
 
 call minpac#add('Einenlum/yaml-revealer')
+call minpac#add('RRethy/vim-hexokinase', { 'do': 'make hexokinase' })
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
