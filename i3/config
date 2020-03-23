@@ -10,7 +10,7 @@ exec --no-startup-id skypeforlinux
 exec --no-startup-id copyq
 exec --no-startup-id firefox
 exec --no-startup-id mattermost
-exec --no-startup-id urxvt -name scratch-term
+exec --no-startup-id kitty --name scratch-term
 exec --no-startup-id yubioath-desktop
 exec --no-startup-id telegram-desktop -startintray
 exec --no-startup-id slack -u
