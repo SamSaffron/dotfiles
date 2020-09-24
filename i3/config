@@ -27,12 +27,9 @@ for_window [title="Terminator Preferences"] floating enable
 for_window [class="mattermost-nativefier"] floating enable, move to workspace 3
 for_window [class="simplescreenrecorder"] floating enable
 for_window [instance="scratch-term"] floating enable, move to scratchpad
-for_window [class="Firefox"] floating enable, move to scratchpad, scratchpad show
 for_window [class="Yubico Authenticator" window_type="normal"] floating enable, move to scratchpad
 for_window [class="mattermost-nativefier"] floating enable, move to scratchpad
 for_window [class="Telegram"] floating enable
-for_window [class="Chromium"] floating enable
-for_window [class="google-chrome"] floating enable
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod

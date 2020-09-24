@@ -2,6 +2,8 @@ packadd minpac
 
 call minpac#init({'verbose': 3})
 
+call minpac#add('jamessan/vim-gnupg')
+
 call minpac#add('fatih/vim-go')
 
 " a pretty color scheme
@@ -61,7 +63,8 @@ call minpac#add('mileszs/ack.vim')
 
 " quickly comment out code blocks, highlight them and
 " hit CTRL-__ to toggle comments, tpope also has a version of this
-call minpac#add('tomtom/tcomment_vim')
+" call minpac#add('tomtom/tcomment_vim')
+call minpac#add('tpope/vim-commentary')
 
 call minpac#add('Townk/vim-autoclose')
 
@@ -104,6 +107,8 @@ call minpac#add('yssl/QFEnter')
 " fzf is an awesome fuzzy file finder I map it to CTRL-P
 call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
 call minpac#add('junegunn/fzf.vim')
+
+let g:fzf_preview_window=''
 
 call minpac#add('rhysd/git-messenger.vim')
 
@@ -239,7 +244,7 @@ nmap <leader>a :!touch tmp/restart<CR><CR>
 nmap <leader>s :!touch tmp/refresh_browser<CR><CR>
 
 " I prefer to check in with a GUI then using fugitive or Gina
-nmap <silent> <leader>g :!git gui &<CR><CR>
+nmap <silent> <leader>g :Git gui<CR><CR>
 
 let g:git_messenger_no_default_mappings=v:true
 let g:git_messenger_always_into_popup=v:true
@@ -341,7 +346,7 @@ endif
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
-let g:ale_fixers = {'ruby': ['rufo']}
+let g:ale_fixers = {'scss': ['prettier'], 'javascript': ['eslint', 'prettier'] }
 "let g:ale_rubocop_options = '--safe'
 "let g:ale_fix_on_save = 1
 
