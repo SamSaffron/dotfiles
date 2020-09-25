@@ -14,7 +14,7 @@ exec --no-startup-id kitty --name scratch-term
 exec --no-startup-id yubioath-desktop
 exec --no-startup-id telegram-desktop -startintray
 exec --no-startup-id slack -u
-exec --no-startup-id xautolock -detectsleep -time 1 -locker "/home/sam/.config/i3/lock-screen"
+exec --no-startup-id xautolock -detectsleep -time 5 -locker "/home/sam/.config/i3/lock-screen"
 
 exec_always --no-startup-id xmodmap -e "clear lock"
 exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"
