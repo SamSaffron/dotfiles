@@ -1,0 +1,15 @@
+[Unit]
+Description = Lock screen when going to sleep/suspend
+Before=sleep.target
+Before=suspend.target
+
+[Service]
+User=sam
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/home/sam/.config/i3/lock-screen
+ExecStartPre=
+
+[Install]
+WantedBy=sleep.target
+WantedBy=suspend.target
