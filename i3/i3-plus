@@ -56,7 +56,7 @@ class I3Helper
     end
 
     windows = windows.select do |window:, workspace:|
-      workspace == focused_workspace && window.output == focused_window.output && window.window_properties.instance != "i3bar"
+      workspace == focused_workspace && window.output == focused_window.output && window.window_properties.to_h[:class] != "i3bar"
     end.map do |window:, workspace:|
       window
     end
