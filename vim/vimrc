@@ -2,7 +2,7 @@ packadd minpac
 
 call minpac#init({'verbose': 3})
 
-call minpac#add('jamessan/vim-gnupg')
+call minpac#add('jamessan/vim-gnupg', {'branch': 'main'})
 
 call minpac#add('fatih/vim-go')
 
