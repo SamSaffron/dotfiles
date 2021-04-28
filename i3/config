@@ -126,7 +126,7 @@ bindsym $mod+Mod1+Down exec --no-startup-id /home/sam/.config/i3/i3-resize down
 # finds out, if available)
 bar {
     tray_output DP-0
-    font pango:DejaVu Sans Mono, FontAwesome 12
+    font pango:DejaVu Sans Mono, Font Awesome 5 Free
     position bottom
     status_command /bin/i3status-rs /home/sam/.config/i3/status.toml
     colors {

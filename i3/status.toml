@@ -1,5 +1,11 @@
-theme = "solarized-dark"
-icons = "awesome"
+icons = "awesome5"
+
+[theme]
+name = "solarized-dark"
+pen
+
+[theme.overrides]
+separator = ""
 
 [[block]]
 block = "pacman"
@@ -17,7 +23,7 @@ alert = 10.0
 [[block]]
 block = "memory"
 display_type = "memory"
-format_mem = "{mem_used}/{mem_total}%"
+format_mem = "{mem_used}/{mem_total}"
 format_swap = "{swap_used}/{swap_total}"
 
 [[block]]
@@ -30,8 +36,8 @@ interval = 1800
 
 [[block]]
 block = "weather"
-format = "{weather} ({location}) {temp}°"
-service = { name = "openweathermap", api_key = "678978f8279cea134b0fd58200f0bc8a", city_id = "2207748", units = "metric" }
+format = "{weather} ({location}) {temp}"
+service = { name = "openweathermap", api_key = "TOKEN", city_id = "2207748", units = "metric" }
 
 [[block]]
 block = "sound"
