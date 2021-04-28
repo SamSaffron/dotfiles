@@ -114,6 +114,7 @@ call minpac#add('rhysd/git-messenger.vim')
 
 call minpac#add('Einenlum/yaml-revealer')
 call minpac#add('RRethy/vim-hexokinase', { 'do': 'make hexokinase' })
+call minpac#add('pechorin/any-jump.vim')
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
