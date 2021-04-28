@@ -1,0 +1,42 @@
+theme = "solarized-dark"
+icons = "awesome"
+
+[[block]]
+block = "pacman"
+
+[[block]]
+block = "disk_space"
+path = "/"
+alias = "/"
+info_type = "available"
+unit = "GB"
+interval = 20
+warning = 20.0
+alert = 10.0
+
+[[block]]
+block = "memory"
+display_type = "memory"
+format_mem = "{mem_used}/{mem_total}%"
+format_swap = "{swap_used}/{swap_total}"
+
+[[block]]
+block = "cpu"
+interval = 1
+
+[[block]]
+block= "speedtest"
+interval = 1800
+
+[[block]]
+block = "weather"
+format = "{weather} ({location}) {temp}°"
+service = { name = "openweathermap", api_key = "678978f8279cea134b0fd58200f0bc8a", city_id = "2207748", units = "metric" }
+
+[[block]]
+block = "sound"
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d/%m %R"
