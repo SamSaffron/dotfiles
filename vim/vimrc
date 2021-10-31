@@ -10,7 +10,7 @@ call minpac#add('fatih/vim-go')
 call minpac#add('morhetz/gruvbox')
 
 " prettifier of JavaScript es6 code
-call minpac#add('prettier/vim-prettier')
+" call minpac#add('prettier/vim-prettier')
 
 " awesome async syntax linting, errors are highlighted as they happen
 call minpac#add('dense-analysis/ale')
@@ -347,9 +347,9 @@ endif
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
-let g:ale_fixers = {'scss': ['prettier'], 'javascript': ['eslint', 'prettier'] }
+let g:ale_fixers = {'scss': ['prettier'], 'javascript': ['prettier', 'eslint'] }
+let g:ale_fix_on_save = 1
 "let g:ale_rubocop_options = '--safe'
-"let g:ale_fix_on_save = 1
 
 cabbrev Ack Ack!
 
@@ -467,8 +467,6 @@ augroup vimrc
 
   " discourse refresh
   autocmd BufWritePost * silent! call s:notify_file_change_discourse()
-
-  autocmd BufWritePre *discourse*/*.js,*discourse*/*.es6,*discourse*/*.scss,*discourse*/*.css PrettierAsync
 
 augroup END
 
