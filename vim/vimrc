@@ -81,6 +81,8 @@ call minpac#add('nathanaelkane/vim-indent-guides')
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
 
+call minpac#add('hashivim/vim-terraform')
+
 " not really fiddling with much svelte these days
 " call minpac#add('burner/vim-svelte')
 
@@ -347,7 +349,7 @@ endif
 let g:ale_linters = { 'javascript': ['eslint'] }
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
-let g:ale_fixers = {'scss': ['prettier'], 'javascript': ['prettier', 'eslint'] }
+let g:ale_fixers = {'ruby': ['syntax_tree'], 'scss': ['prettier'], 'javascript': ['prettier', 'eslint'] }
 let g:ale_fix_on_save = 1
 "let g:ale_rubocop_options = '--safe'
 
@@ -470,6 +472,71 @@ augroup vimrc
 
 augroup END
 
+" with help from https://github.com/prettier/vim-prettier/blob/master/autoload/prettier/utils/buffer.vim
+function SyntaxTreeRubyFormat()
+
+  let l:contents = join(getline(1, '$'), "\n")
+  let l:path = fnamemodify(expand('%:p'), ':h')
+  let l:found = 0
+
+  while len(l:path) > 2
+    if filereadable(l:path . '/Gemfile')
+
+      let l:gemfile = join(readfile(l:path . '/Gemfile'), "\n")
+
+      if stridx(l:gemfile, 'syntax_tree') > 0
+        let l:found = 1
+        break
+      endif
+    endif
+
+    let l:path = fnamemodify(l:path, ':h')
+  endwhile
+
+  if l:found == 0
+    return
+  endif
+
+  let l:command = "bundle exec stree format --print-width=100 --plugins=plugin/trailing_comma"
+
+
+  let l:old_path = chdir(l:path)
+
+  let l:old_ruby_opt = $RUBYOPT
+  let $RUBYOPT = "-W0"
+  let l:formatted = system(l:command, l:contents)
+
+  let $RUBYOPT = l:old_ruby_opt
+  call chdir(l:old_path)
+
+  let l:winview = winsaveview()
+
+  " https://vim.fandom.com/wiki/Restore_the_cursor_position_after_undoing_text_change_made_by_a_script
+  " create a fake change entry and merge with undo stack prior to do formating
+  execute "normal! i "
+  execute "normal! a\<BS>"
+  try | silent undojoin | catch | endtry
+
+
+   " delete all lines on the current buffer
+  silent! execute 'lockmarks %delete _'
+
+  " replace all lines from the current buffer with output from prettier
+  let l:idx = 0
+  for l:line in split(l:formatted, "\n")
+    silent! lockmarks call append(l:idx, l:line)
+    let l:idx += 1
+  endfor
+
+  " delete trailing newline introduced by the above append procedure
+  silent! lockmarks execute '$delete _'
+
+  " Restore view
+  call winrestview(l:winview)
+
+endfunction
+
+nmap <silent> <leader>s :call SyntaxTreeRubyFormat()<CR>
 
 
 " let g:deoplete#enable_at_startup = 1

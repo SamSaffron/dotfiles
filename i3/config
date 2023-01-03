@@ -8,8 +8,6 @@ exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
 exec --no-startup-id skypeforlinux
 exec --no-startup-id copyq
-exec --no-startup-id firefox
-exec --no-startup-id mattermost
 exec --no-startup-id kitty --name scratch-term
 exec --no-startup-id yubioath-desktop
 exec --no-startup-id telegram-desktop -startintray
@@ -19,10 +17,11 @@ exec --no-startup-id pasystray
 exec --no-startup-id blueman-applet
 exec --no-startup-id signal-desktop --start-in-tray
 
-exec_always --no-startup-id xmodmap -e "clear lock"
-exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"
-exec_always --no-startup-id xmodmap -e "keycode 66 = Escape NoSymbol Escape"
-exec_always --no-startup-id xmodmap -e "keysym Menu = Super_R"
+# trying setxkbmap -option caps:escape in .xinitrc
+# exec_always --no-startup-id xmodmap -e "clear lock"
+# exec_always --no-startup-id xmodmap -e "keycode 9 = Caps_Lock NoSymbol Caps_Lock"
+# exec_always --no-startup-id xmodmap -e "keycode 66 = Escape NoSymbol Escape"
+# exec_always --no-startup-id xmodmap -e "keysym Menu = Super_R"
 
 for_window [class="Slack"] floating enable border normal
 for_window [class="Skype"] floating enable border normal
@@ -34,6 +33,7 @@ for_window [instance="scratch-term"] floating enable, move to scratchpad
 for_window [class="Yubico Authenticator" window_type="normal"] floating enable, move to scratchpad
 for_window [class="mattermost-nativefier"] floating enable, move to scratchpad
 for_window [class="Telegram"] floating enable
+for_window [class="1Password"] floating enable
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -46,24 +46,27 @@ bindsym $mod+Return exec /home/sam/.config/i3/i3-plus layout_exec i3-sensible-te
 bindsym $mod+q kill
 
 bindsym $mod+d exec rofi -combi-modi window#run -show combi -modi combi
+bindsym $mod+e exec rofimoji
 
 bindsym $mod+h split h
 bindsym $mod+v split v
 bindsym $mod+f fullscreen
 
 # center a floating window
-bindsym $mod+c exec "/home/sam/.config/i3/i3-plus smart_center 1830x2100,2030x2100,2230x2100,2500x2100"
+bindsym $mod+c exec "/home/sam/.config/i3/i3-plus smart_center 1500x1500,1700x1500,1900x1500,2100x1500"
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+Shift+e layout toggle split
 
 # change focus
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon exec /home/sam/.config/i3/i3-plus focus right
-bindsym $mod+j exec /home/sam/.config/i3/i3-plus focus left
+#bindsym $mod+k focus down
+#bindsym $mod+l focus up
+#bindsym $mod+semicolon exec /home/sam/.config/i3/i3-plus focus right
+#bindsym $mod+j exec /home/sam/.config/i3/i3-plus focus left
+#
+bindsym $mod+l exec /home/sam/.config/i3/layout_manager.sh
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left exec /home/sam/.config/i3/i3-plus focus left
@@ -116,8 +119,8 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
-bindsym $mod+Ctrl+Right "move workspace to output right"
-bindsym $mod+Ctrl+Left "move workspace to output left"
+#bindsym $mod+Ctrl+Right "move workspace to output right"
+#bindsym $mod+Ctrl+Left "move workspace to output left"
 
 # resize commands
 bindsym $mod+Mod1+Right exec --no-startup-id /home/sam/.config/i3/i3-resize right
@@ -125,10 +128,13 @@ bindsym $mod+Mod1+Left exec --no-startup-id /home/sam/.config/i3/i3-resize left
 bindsym $mod+Mod1+Up exec --no-startup-id /home/sam/.config/i3/i3-resize up
 bindsym $mod+Mod1+Down exec --no-startup-id /home/sam/.config/i3/i3-resize down
 
+bindsym $mod+Shift+b resize shrink width 5 px or 3 ppt
+bindsym $mod+b resize grow width 5 px or 3 ppt
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    tray_output DP-0
+    tray_output DP-2
     font pango:DejaVu Sans Mono, Font Awesome 5 Free
     position bottom
     status_command /bin/i3status-rs /home/sam/.config/i3/status.toml
@@ -151,15 +157,9 @@ bindsym $mod+Print exec "/bin/bash -c '/home/sam/.config/i3/countdown 3 && sleep
 # full desktop screenshot
 bindsym $mod+Shift+Print exec "/home/sam/.config/i3/i3-plus screenshot"
 
-workspace 1 output DP-2
-workspace 2 output DP-0
-workspace 3 output HDMI-0
-
 # scratchpad apps
 bindsym $mod+p [instance="scratch-term"] scratchpad show
-bindsym $mod+b [class="Firefox"] scratchpad show
 bindsym $mod+y [class="Yubico Authenticator"] scratchpad show
-bindsym $mod+m [class="mattermost-nativefier"] scratchpad show
 
 bindsym $mod+x mode "exit: [l]ogout, [r]eboot, [s]hutdown"
 mode "exit: [l]ogout, [r]eboot, [s]hutdown" {

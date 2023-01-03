@@ -12,7 +12,7 @@ BG="#000000ff"
 # -e to ignore empty password
 
 i3lock \
---greeter-text="hello" \
+--greeter-text="" \
 -c $BG \
 --insidever-color=$C   \
 --ringver-color=$V     \

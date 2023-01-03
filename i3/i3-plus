@@ -28,7 +28,7 @@ class I3Helper
     false
   end
 
-  def layout_exec(command, cols: 2, rows: 3, balance: :auto)
+  def layout_exec(command, cols: 3, rows: 3, balance: :auto)
     windows = []
 
     focused_window = nil
