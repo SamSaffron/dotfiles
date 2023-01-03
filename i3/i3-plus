@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'i3ipc'
+require "i3ipc"
 
 class I3Helper
   def initialize
@@ -14,7 +14,10 @@ class I3Helper
   def recurse(nodes = nil, focused: false, floating: false, depth: 0, &blk)
     nodes ||= tree.nodes
     nodes.each do |n|
-      blk.call n, focused: n.focused || focused, depth: depth, floating: floating
+      blk.call n,
+               focused: n.focused || focused,
+               depth: depth,
+               floating: floating
       depth += 1
       recurse(n.nodes, depth: depth, floating: floating, &blk)
       recurse(n.floating_nodes, depth: depth, floating: true, &blk)
@@ -36,13 +39,13 @@ class I3Helper
 
     workspace = nil
 
-    recurse do |n, depth: , focused: , floating:|
+    recurse do |n, depth:, focused:, floating:|
       # dim = n.type == "con" ? " #{n.rect.width}x#{n.rect.height}" : ""
       # puts "#{"  " * depth} #{n.name} #{n.type}#{dim} #{n.layout}  #{focused ? "*" : ""} #{floating ? "f" : ""}"
       workspace = n.name if n.type == "workspace"
 
       if n.respond_to?(:window_properties) && !floating
-        windows << {window: n, workspace: workspace}
+        windows << { window: n, workspace: workspace }
         if focused
           focused_window = n if focused
           focused_workspace = workspace
@@ -55,14 +58,19 @@ class I3Helper
       return
     end
 
-    windows = windows.select do |window:, workspace:|
-      workspace == focused_workspace && window.output == focused_window.output && window.window_properties.to_h[:class] != "i3bar"
-    end.map do |window:, workspace:|
-      window
-    end
+    windows =
+      windows
+        .select do |hash|
+          window = hash[:window]
+          workspace = hash[:workspace]
+          workspace == focused_workspace &&
+            window.output == focused_window.output &&
+            window.window_properties.to_h[:class] != "i3bar"
+        end
+        .map { |hash| hash[:window] }
 
     if balance == :auto && windows.length > 0
-      outputs = @i3.outputs.sort{|a,b| a.rect.x <=> b.rect.x}
+      outputs = @i3.outputs.sort { |a, b| a.rect.x <=> b.rect.x }
 
       left_aligns = []
       take = false
@@ -71,17 +79,15 @@ class I3Helper
         take = true if output.primary
       end
 
-      if left_aligns.include?(windows[0].output)
-        balance = :left
-      end
+      balance = :left if left_aligns.include?(windows[0].output)
     end
 
     dir = nil
     pid = `xprop -id $(xdotool getactivewindow) _NET_WM_PID`
-    if pid && pid = pid.split(' ').last.to_i
+    if pid && pid = pid.split(" ").last.to_i
       if pid > 0
         lpid = `pstree -aApT #{pid}`
-        lpid = lpid.split("\n").select{|r| r =~ /zsh,|bash,/}.first
+        lpid = lpid.split("\n").select { |r| r =~ /zsh,|bash,/ }.first
         if lpid && lpid = lpid.split(",").last
           dir = `readlink /proc/#{lpid}/cwd`.strip
           if dir && !dir.empty? && !dir.include?("'")
@@ -98,13 +104,11 @@ class I3Helper
       full_rows = (windows.length - cols) % (rows - 1)
       index = cols - full_cols - 1
 
-      if balance == :left
-        index = full_cols * rows
-      end
+      index = full_cols * rows if balance == :left
 
       window = windows[index]
 
-      split = full_rows == 0 ?  " split v;" : ""
+      split = full_rows == 0 ? " split v;" : ""
       @i3.command("[con_id=\"#{window.id}\"] focus; #{split} exec #{command}")
     end
 
@@ -116,12 +120,11 @@ class I3Helper
     focused_window = nil
     focused_workspace = nil
 
-    recurse do |n, depth: , focused: , floating:|
-
+    recurse do |n, depth:, focused:, floating:|
       workspace = n.name if n.type == "workspace"
 
       if n.respond_to?(:window_properties) && floating
-        floating_windows << {node: n, workspace: workspace}
+        floating_windows << { node: n, workspace: workspace }
         if focused
           focused_window = n
           focused_workspace = workspace
@@ -131,30 +134,30 @@ class I3Helper
 
     # we are on a floating window
     if focused_window
-
-      floating_windows = floating_windows.filter do |node:, workspace:|
-        workspace == focused_workspace && node.output != '__i3'
-      end.map do |node:, workspace:|
-
-        pos = begin
-          case dir
-          when "right", "left" then
-            node.rect.x + node.rect.width / 2
-          when "up", "down" then
-            node.rect.y + node.rect.width / 2
+      floating_windows =
+        floating_windows
+          .filter do |node:, workspace:|
+            workspace == focused_workspace && node.output != "__i3"
           end
-        end
+          .map do |node:, workspace:|
+            pos =
+              begin
+                case dir
+                when "right", "left"
+                  node.rect.x + node.rect.width / 2
+                when "up", "down"
+                  node.rect.y + node.rect.width / 2
+                end
+              end
 
-
-        { node: node, pos: pos }
-      end.sort_by {|hash| hash[:pos]}
-        .map {|node:, pos:| node}
-
+            { node: node, pos: pos }
+          end
+          .sort_by { |hash| hash[:pos] }
+          .map { |node:, pos:| node }
 
       pos = floating_windows.index(focused_window)
 
       new_pos = pos + (dir == "right" || dir == "down" ? 1 : -1)
-
 
       if new_pos >= floating_windows.length || new_pos < 0
         @i3.command("focus parent; focus #{dir}")
@@ -179,11 +182,10 @@ class I3Helper
   end
 
   def smart_center(arg)
-
     focused_window = nil
     is_floating = false
 
-    recurse do |n, depth: , focused: , floating:|
+    recurse do |n, depth:, focused:, floating:|
       if n.respond_to?(:window_properties)
         if focused
           focused_window = n
@@ -192,55 +194,53 @@ class I3Helper
       end
     end
 
-    sizes = arg.split(',').map do |x|
-      x.split("x").map(&:to_i)
-    end
+    sizes = arg.split(",").map { |x| x.split("x").map(&:to_i) }
 
     if focused_window
-
-      index = sizes.map(&:first).index do |width|
-        (focused_window.rect.width.to_i - width).abs < 15
-      end
+      index =
+        sizes
+          .map(&:first)
+          .index { |width| (focused_window.rect.width.to_i - width).abs < 15 }
 
       index = -1 if !is_floating
 
       width, height = sizes[((index || -1) + 1) % sizes.length]
 
       if is_floating
-        @i3.command("resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px")
+        @i3.command(
+          "resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px"
+        )
       else
-        @i3.command("floating enable; resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px;")
+        @i3.command(
+          "floating enable; resize set width #{width} px; resize set height #{height} px; move position center; move up 5 px;"
+        )
       end
     end
-
-
   end
 
   def screenshot(args)
     focused_output = nil
 
-    recurse do |n, depth: , focused: , floating:|
-      if n.type == "output"
-        focused_output = n
-      end
+    recurse do |n, depth:, focused:, floating:|
+      focused_output = n if n.type == "output"
 
-      if focused
-        break
-      end
+      break if focused
     end
 
     `mkdir -p ~/screenshots`
 
     rect = focused_output.rect
 
-    filename = "~/screenshots/desktop-#{Time.now.strftime('%Y%m%d-%H%M%S')}.png"
-    cmd = "import -silent -window root -crop #{rect.width}x#{rect.height}+#{rect.x}+#{rect.y} #{filename}"
+    filename = "~/screenshots/desktop-#{Time.now.strftime("%Y%m%d-%H%M%S")}.png"
+    cmd =
+      "import -silent -window root -crop #{rect.width}x#{rect.height}+#{rect.x}+#{rect.y} #{filename}"
     `#{cmd}`
     cmd = "pngquant -f --output #{filename} #{filename}"
     `#{cmd}`
     cmd = "bash -c 'copyq write image/png - < #{filename}' && copyq select 0"
     `#{cmd}`
-    cmd = "notify-send '#{File.basename(filename)} #{File.size(File.expand_path(filename))/1024}k'"
+    cmd =
+      "notify-send '#{File.basename(filename)} #{File.size(File.expand_path(filename)) / 1024}k'"
     `#{cmd}`
   end
 
@@ -262,15 +262,14 @@ def usage
   puts " screenshot: at the moment this takes a screenshot of current desktop and compresses"
 end
 
-
 case ARGV[0]
-when "layout_exec" then
+when "layout_exec"
   helper.layout_exec "i3-sensible-terminal"
-when "move" then
+when "move"
   helper.move(ARGV[1])
-when "focus" then
+when "focus"
   helper.focus(ARGV[1])
-when "smart_center" then
+when "smart_center"
   helper.smart_center(ARGV[1])
 when "screenshot"
   helper.screenshot(ARGV[2..-1])
@@ -280,6 +279,5 @@ else
   helper.close
   exit 1
 end
-
 
 helper.close
