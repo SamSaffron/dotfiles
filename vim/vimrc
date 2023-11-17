@@ -2,15 +2,14 @@ packadd minpac
 
 call minpac#init({'verbose': 3})
 
+call minpac#add('github/copilot.vim')
+
 call minpac#add('jamessan/vim-gnupg', {'branch': 'main'})
 
 call minpac#add('fatih/vim-go')
 
 " a pretty color scheme
 call minpac#add('morhetz/gruvbox')
-
-" prettifier of JavaScript es6 code
-" call minpac#add('prettier/vim-prettier')
 
 " awesome async syntax linting, errors are highlighted as they happen
 call minpac#add('dense-analysis/ale')
@@ -63,7 +62,6 @@ call minpac#add('mileszs/ack.vim')
 
 " quickly comment out code blocks, highlight them and
 " hit CTRL-__ to toggle comments, tpope also has a version of this
-" call minpac#add('tomtom/tcomment_vim')
 call minpac#add('tpope/vim-commentary')
 
 call minpac#add('Townk/vim-autoclose')
@@ -83,20 +81,7 @@ call minpac#add('ervandew/supertab')
 
 call minpac#add('hashivim/vim-terraform')
 
-" not really fiddling with much svelte these days
-" call minpac#add('burner/vim-svelte')
-
-" a bit not my tempo, need to get less annoying tab
-" if has('nvim')
-"   call minpac#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' })
-" else
-"   call minpac#add('Shougo/deoplete.nvim')
-"   call minpac#add('roxma/nvim-yarp')
-"   call minpac#add('roxma/vim-hug-neovim-rpc')
-" endif
-
-" no luck at all with ycm, it is so slow
-"call minpac#add('Valloric/YouCompleteMe')
+call minpac#add('joukevandermaas/vim-ember-hbs')
 
 " A pretty tag browser with hacks to make ruby
 " browsing look better, use :Tagbar to bring it up
@@ -117,6 +102,16 @@ call minpac#add('rhysd/git-messenger.vim')
 call minpac#add('Einenlum/yaml-revealer')
 call minpac#add('RRethy/vim-hexokinase', { 'do': 'make hexokinase' })
 call minpac#add('pechorin/any-jump.vim')
+call minpac#add('davidhalter/jedi-vim')
+
+" if has('nvim')
+"  call minpac#add('williamboman/mason.nvim')
+"  call minpac#add('williamboman/mason-lspconfig.nvim')
+"  call minpac#add('neovim/nvim-lspconfig')
+"  lua require('mason').setup()
+"  lua require('mason-lspconfig').setup()
+" end
+
 
 if has('nvim')
   call minpac#add('vimlab/split-term.vim')
@@ -204,22 +199,6 @@ map <C-S-TAB> :tabprevious<CR>
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
-
-" auto format prettier if // @format comment is there (default on can be
-" disabled)
-let g:prettier#autoformat = 1
-let g:prettier#config#print_width = 80
-let g:prettier#config#tab_width = 2
-let g:prettier#config#use_tabs = 'false'
-let g:prettier#config#semi = 'true'
-let g:prettier#config#single_quote = 'false'
-let g:prettier#config#bracket_spacing = 'true'
-let g:prettier#config#jsx_bracket_same_line = 'false'
-let g:prettier#config#arrow_parens = 'avoid'
-let g:prettier#config#trailing_comma = 'none'
-let g:prettier#config#parser = 'babylon'
-let g:prettier#config#config_precedence = 'prefer-file'
-let g:prettier#config#prose_wrap = 'preserve'
 
 " I am used to CTRL-p so use it, additionally allow for some extra
 " help in normal/visual mode
@@ -346,12 +325,20 @@ if executable('ripper-tags')
       \ }
 endif
 
-let g:ale_linters = { 'javascript': ['eslint'] }
+let g:ale_linters = { 'javascript': ['eslint','prettier'], 'html.handlebars': ['embertemplatelint', 'prettier'], 'javascript.glimmer': ['eslint','prettier'] }
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
-let g:ale_fixers = {'ruby': ['syntax_tree'], 'scss': ['prettier'], 'javascript': ['prettier', 'eslint'] }
+let g:ale_fixers = {'ruby': ['syntax_tree'] , 'javascript.glimmer': ['eslint','prettier'] ,  'handlebars': ['prettier'], 'html.handlebars': ['prettier'], 'scss': ['prettier'], 'javascript': ['eslint','prettier'] }
 let g:ale_fix_on_save = 1
-"let g:ale_rubocop_options = '--safe'
+let g:ale_linters_explicit = 1
+" let g:ale_javascript_prettier_executable = 'yarn prettier'
+
+" this was to deal with the newline at the end of each file
+autocmd FileType html.handlebars setlocal noeol binary
+
+" using the glimmer parser when formatting via prettier
+autocmd FileType html.handlebars let b:ale_javascript_prettier_options = '--parser=glimmer'
+
 
 cabbrev Ack Ack!
 
@@ -363,8 +350,14 @@ function! s:notify_file_change_discourse()
 
   if ! executable(notify)
     let root = rails#app().path()
-    notify = root . "/bin/notify_file_change"
+    let notify = root . "/bin/notify_file_change"
   end
+
+  if ! executable(notify)
+    let notify = getcwd() . "../../bin/notify_file_change"
+  end
+
+  echom notify
 
   if executable(notify)
     if executable('socat')
@@ -434,6 +427,7 @@ highlight ExtraWhitespace ctermbg=red guibg=#CC0000
 match ExtraWhitespace /\s\+$/
 
 nmap <leader>v :tabedit ~/.vimrc<CR>
+nmap <leader>V :tabedit ~/.config/nvim/lua/init.lua<CR>
 
 " resizing windows needs to be simpler
 nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
@@ -472,74 +466,10 @@ augroup vimrc
 
 augroup END
 
-" with help from https://github.com/prettier/vim-prettier/blob/master/autoload/prettier/utils/buffer.vim
-function SyntaxTreeRubyFormat()
+nmap <silent> <leader>f :NERDTreeFind<CR>
 
-  let l:contents = join(getline(1, '$'), "\n")
-  let l:path = fnamemodify(expand('%:p'), ':h')
-  let l:found = 0
+let g:python3_host_prog = '/usr/bin/python3'
 
-  while len(l:path) > 2
-    if filereadable(l:path . '/Gemfile')
-
-      let l:gemfile = join(readfile(l:path . '/Gemfile'), "\n")
-
-      if stridx(l:gemfile, 'syntax_tree') > 0
-        let l:found = 1
-        break
-      endif
-    endif
-
-    let l:path = fnamemodify(l:path, ':h')
-  endwhile
-
-  if l:found == 0
-    return
-  endif
-
-  let l:command = "bundle exec stree format --print-width=100 --plugins=plugin/trailing_comma"
-
-
-  let l:old_path = chdir(l:path)
-
-  let l:old_ruby_opt = $RUBYOPT
-  let $RUBYOPT = "-W0"
-  let l:formatted = system(l:command, l:contents)
-
-  let $RUBYOPT = l:old_ruby_opt
-  call chdir(l:old_path)
-
-  let l:winview = winsaveview()
-
-  " https://vim.fandom.com/wiki/Restore_the_cursor_position_after_undoing_text_change_made_by_a_script
-  " create a fake change entry and merge with undo stack prior to do formating
-  execute "normal! i "
-  execute "normal! a\<BS>"
-  try | silent undojoin | catch | endtry
-
-
-   " delete all lines on the current buffer
-  silent! execute 'lockmarks %delete _'
-
-  " replace all lines from the current buffer with output from prettier
-  let l:idx = 0
-  for l:line in split(l:formatted, "\n")
-    silent! lockmarks call append(l:idx, l:line)
-    let l:idx += 1
-  endfor
-
-  " delete trailing newline introduced by the above append procedure
-  silent! lockmarks execute '$delete _'
-
-  " Restore view
-  call winrestview(l:winview)
-
-endfunction
-
-nmap <silent> <leader>s :call SyntaxTreeRubyFormat()<CR>
-
-
-" let g:deoplete#enable_at_startup = 1
-" packloadall
-" call deoplete#custom#option('auto_complete', v:false)
-" inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#manual_complete()
+if has('nvim')
+  "lua require("init")
+endif

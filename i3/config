@@ -3,7 +3,7 @@
 set $mod Mod4
 font pango:SF Pro Display 10
 
-exec --no-startup-id picom
+exec --no-startup-id picom --backend glx --vsync
 exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
 exec --no-startup-id skypeforlinux
@@ -39,7 +39,8 @@ for_window [class="1Password"] floating enable
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Shift+Return exec i3-sensible-terminal
+bindsym $mod+Shift+Ctrl+Return split h; exec i3-sensible-terminal
+bindsym $mod+Shift+Return split v; exec i3-sensible-terminal
 bindsym $mod+Return exec /home/sam/.config/i3/i3-plus layout_exec i3-sensible-terminal
 
 # kill focused window (usually shift q)
@@ -134,7 +135,7 @@ bindsym $mod+b resize grow width 5 px or 3 ppt
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    tray_output DP-2
+    tray_output DP-0
     font pango:DejaVu Sans Mono, Font Awesome 5 Free
     position bottom
     status_command /bin/i3status-rs /home/sam/.config/i3/status.toml
