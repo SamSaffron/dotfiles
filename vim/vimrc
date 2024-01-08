@@ -325,7 +325,7 @@ if executable('ripper-tags')
       \ }
 endif
 
-let g:ale_linters = { 'javascript': ['eslint','prettier'], 'html.handlebars': ['embertemplatelint', 'prettier'], 'javascript.glimmer': ['eslint','prettier'] }
+let g:ale_linters = { 'ruby': ['ruby','rubocop'], 'javascript': ['eslint','embertemplatelint'], 'handlebars': ['embertemplatelint', 'prettier'], 'glimmer' : ['eslint','embertemplatelint'] }
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
 let g:ale_fixers = {'ruby': ['syntax_tree'] , 'javascript.glimmer': ['eslint','prettier'] ,  'handlebars': ['prettier'], 'html.handlebars': ['prettier'], 'scss': ['prettier'], 'javascript': ['eslint','prettier'] }
@@ -356,8 +356,6 @@ function! s:notify_file_change_discourse()
   if ! executable(notify)
     let notify = getcwd() . "../../bin/notify_file_change"
   end
-
-  echom notify
 
   if executable(notify)
     if executable('socat')
@@ -469,6 +467,19 @@ augroup END
 nmap <silent> <leader>f :NERDTreeFind<CR>
 
 let g:python3_host_prog = '/usr/bin/python3'
+
+" Define a function to change the NERDTree root to Vim's current working directory
+function! SyncNERDTreeRoot()
+  if exists("g:NERDTree") " && g:NERDTree.IsOpen()
+    NERDTreeCWD
+  endif
+endfunction
+
+" Create an autocmd that triggers the above function whenever the working directory is changed
+augroup NERDTreeSync
+  autocmd!
+  autocmd DirChanged * call SyncNERDTreeRoot()
+augroup END
 
 if has('nvim')
   "lua require("init")
