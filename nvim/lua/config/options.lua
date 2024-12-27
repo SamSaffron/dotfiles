@@ -9,5 +9,5 @@ vim.opt.incsearch = true
 vim.opt.expandtab = true
 vim.opt.history = 1000
 
-vim.opt.directory = "$HOME/.vim/swapfiles"
-vim.opt.backupdir = "$HOME/.vim/backupdir"
+vim.opt.directory = vim.fn.expand("$HOME/.vim/swapfiles//")
+vim.opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")
