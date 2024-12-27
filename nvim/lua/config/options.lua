@@ -8,6 +8,7 @@ vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.expandtab = true
 vim.opt.history = 1000
+vim.opt.wrap = true
 
 vim.opt.directory = vim.fn.expand("$HOME/.vim/swapfiles//")
 vim.opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")

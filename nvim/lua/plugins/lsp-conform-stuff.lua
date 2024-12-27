@@ -20,9 +20,9 @@ return {
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort", "black" },
-        javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { "prettier", "eslint" },
         ruby = { "stree", "rubocop" },
-        ["javascript.glimmer"] = { "prettierd", "prettier", stop_after_first = true },
+        ["javascript.glimmer"] = { "prettier", "eslint" },
       },
       -- Set default options
       default_format_opts = {
@@ -35,6 +35,10 @@ return {
       formatters = {
         shfmt = {
           prepend_args = { "-i", "2" },
+        },
+        eslint = {
+          prepend_args = { "eslint --fix" },
+          command = "pnpm",
         },
       },
     },
