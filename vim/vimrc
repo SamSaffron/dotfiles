@@ -9,8 +9,11 @@ call minpac#add('jamessan/vim-gnupg', {'branch': 'main'})
 call minpac#add('fatih/vim-go')
 
 " a pretty color scheme
-call minpac#add('morhetz/gruvbox')
+" call minpac#add('morhetz/gruvbox')
+call minpac#add('ellisonleao/gruvbox.nvim')
+" call minpac#add('rebelot/kanagawa.nvim')
 
+"call minpac#add('catppuccin/nvim')
 " awesome async syntax linting, errors are highlighted as they happen
 call minpac#add('dense-analysis/ale')
 
@@ -40,7 +43,7 @@ call minpac#add('tpope/vim-repeat')
 call minpac#add('tpope/vim-surround')
 
 " mappings extracted from tpope's vimrc, [q ]q is very handy
-" for quick navigation around quickfix list that fzf etc populate
+" for quick navigation around quickfix list
 call minpac#add('tpope/vim-unimpaired')
 
 " fancy search/replace fancy abbreviation support and coercion
@@ -63,7 +66,6 @@ call minpac#add('mileszs/ack.vim')
 " quickly comment out code blocks, highlight them and
 " hit CTRL-__ to toggle comments, tpope also has a version of this
 call minpac#add('tpope/vim-commentary')
-
 call minpac#add('Townk/vim-autoclose')
 
 call minpac#add('mustache/vim-mustache-handlebars')
@@ -78,9 +80,7 @@ call minpac#add('nathanaelkane/vim-indent-guides')
 " I prefer using tab for autocompletion
 " habit from old visual studio days
 call minpac#add('ervandew/supertab')
-
 call minpac#add('hashivim/vim-terraform')
-
 call minpac#add('joukevandermaas/vim-ember-hbs')
 
 " A pretty tag browser with hacks to make ruby
@@ -92,17 +92,40 @@ call minpac#add('majutsushi/tagbar')
 call minpac#add('yssl/QFEnter')
 
 " fzf is an awesome fuzzy file finder I map it to CTRL-P
-call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
-call minpac#add('junegunn/fzf.vim')
+" well it started failing ... so lets remove
+" call minpac#add('junegunn/fzf', { 'dir': '~/.fzf', 'do': './install -all' })
+" call minpac#add('junegunn/fzf.vim')
 
-let g:fzf_preview_window=''
+" I am used to CTRL-p so use it, additionally allow for some extra
+" help in normal/visual mode
+" nmap <leader>h <plug>(fzf-maps-n)
+" xmap <leader>h <plug>(fzf-maps-x)
+" let g:fzf_preview_window=''
 
 call minpac#add('rhysd/git-messenger.vim')
-
 call minpac#add('Einenlum/yaml-revealer')
 call minpac#add('RRethy/vim-hexokinase', { 'do': 'make hexokinase' })
 call minpac#add('pechorin/any-jump.vim')
 call minpac#add('davidhalter/jedi-vim')
+
+call minpac#add('madox2/vim-ai')
+
+if has('nvim')
+  call minpac#add('nvim-tree/nvim-web-devicons')
+  call minpac#add('otavioschwanck/arrow.nvim')
+  call minpac#add('nvim-lua/plenary.nvim')
+  call minpac#add('nvim-telescope/telescope.nvim')
+  call minpac#add('dangduc/fzf-native')
+  call minpac#add('nvim-telescope/telescope-fzf-native.nvim')
+
+  nmap <C-p> <cmd>Telescope find_files theme=get_ivy disable_devicons=true<cr>
+  " nmap <C-p> <cmd>Telescope find_files find_command=rg,--ignore,--hidden,--files theme=get_ivy<cr>
+  nnoremap <leader>ff <cmd>Telescope find_files<cr>
+  nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+  nnoremap <leader>fb <cmd>Telescope buffers<cr>
+  nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+  lua require('init')
+end
 
 " if has('nvim')
 "  call minpac#add('williamboman/mason.nvim')
@@ -200,11 +223,6 @@ let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
-" I am used to CTRL-p so use it, additionally allow for some extra
-" help in normal/visual mode
-nmap <leader>h <plug>(fzf-maps-n)
-xmap <leader>h <plug>(fzf-maps-x)
-nmap <C-p> :GFiles -co --exclude-standard<cr>
 
 silent! ruby nil
 set completeopt=longest,menuone
@@ -222,8 +240,10 @@ au BufNewFile,BufRead *.pp set filetype=puppet
 au BufNewFile,BufRead *.svelte setf svelte
 
 " Discourse specific helpers that force browser refresh / restart
-nmap <leader>a :!touch tmp/restart<CR><CR>
+" nmap <leader>a :!touch tmp/restart<CR><CR>
 nmap <leader>s :!touch tmp/refresh_browser<CR><CR>
+
+nmap <leader>a :ALEFix<CR>
 
 " I prefer to check in with a GUI then using fugitive or Gina
 nmap <silent> <leader>g :Git gui<CR><CR>
@@ -329,7 +349,7 @@ let g:ale_linters = { 'ruby': ['ruby','rubocop'], 'javascript': ['eslint','ember
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
 let g:ale_fixers = {'ruby': ['syntax_tree'] , 'javascript.glimmer': ['eslint','prettier'] ,  'handlebars': ['prettier'], 'html.handlebars': ['prettier'], 'scss': ['prettier'], 'javascript': ['eslint','prettier'] }
-let g:ale_fix_on_save = 1
+let g:ale_fix_on_save = 0
 let g:ale_linters_explicit = 1
 " let g:ale_javascript_prettier_executable = 'yarn prettier'
 
@@ -383,6 +403,8 @@ let g:puppet_align_hashes = 0
 let g:gruvbox_contrast_dark="hard"
 set background=dark
 colorscheme gruvbox
+"colorscheme catppuccin
+" colorscheme kanagawa
 
 
 " I find the amount folding ruby does to be too much of the folding way too much
@@ -482,5 +504,8 @@ augroup NERDTreeSync
 augroup END
 
 if has('nvim')
-  "lua require("init")
+  lua require("init")
 endif
+
+let g:vim_ai_debug = "1"
+
