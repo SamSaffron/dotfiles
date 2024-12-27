@@ -23,9 +23,9 @@ local function notify_file_change()
   end
 end
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = "*",
-  callback = function()
-    notify_file_change()
-  end,
-})
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   pattern = "*",
+--   callback = function()
+--     notify_file_change()
+--   end,
+-- })
