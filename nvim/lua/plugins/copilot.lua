@@ -1,5 +1,17 @@
 return {
   {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({
+        suggestions = {
+          auto_trigger = true,
+        },
+      })
+    end,
+  },
+  {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
       { "zbirenbaum/copilot.lua" },

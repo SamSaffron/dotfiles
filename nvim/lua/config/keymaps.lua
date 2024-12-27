@@ -8,3 +8,5 @@ vim.keymap.set("n", "<leader>ccq", function()
     require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
   end
 end)
+
+vim.keymap.set("n", "<c-P>", require("fzf-lua").files, { desc = "Fzf Files" })
