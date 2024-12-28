@@ -52,6 +52,7 @@ return {
     ---@class PluginLspOpts
     opts = {
       ---@type lspconfig.options
+      document_highlight = { enabled = false },
       servers = {
         syntax_tree = {
           enabled = true,

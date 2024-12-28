@@ -13,3 +13,4 @@ vim.opt.wrap = true
 vim.opt.directory = vim.fn.expand("$HOME/.vim/swapfiles//")
 vim.opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")
 vim.g.autoformat = true
+vim.g.snacks_animate = false
