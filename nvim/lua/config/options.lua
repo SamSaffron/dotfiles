@@ -14,3 +14,7 @@ vim.opt.directory = vim.fn.expand("$HOME/.vim/swapfiles//")
 vim.opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")
 vim.g.autoformat = true
 vim.g.snacks_animate = false
+
+-- vim.api.nvim_set_hl(0, 'LspReferenceText', {})
+-- vim.api.nvim_set_hl(0, 'LspReferenceRead', {})
+-- vim.api.nvim_set_hl(0, 'LspReferenceWrite', {})
