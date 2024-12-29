@@ -21,7 +21,7 @@ return {
         lua = { "stylua" },
         python = { "isort", "black" },
         javascript = { "prettier", "eslint" },
-        ruby = { "stree", "rubocop" },
+        ruby = { "syntax_tree", "rubocop" },
         ["javascript.glimmer"] = { "prettier", "eslint" },
       },
       -- Set default options
