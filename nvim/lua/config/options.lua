@@ -1,20 +1,41 @@
--- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
---
-vim.opt.number = true
-vim.opt.relativenumber = false
-vim.opt.guifont = "Consolas 14"
-vim.opt.hlsearch = true
-vim.opt.incsearch = true
-vim.opt.expandtab = true
-vim.opt.history = 1000
-vim.opt.wrap = true
+local opt = vim.opt
 
-vim.opt.directory = vim.fn.expand("$HOME/.vim/swapfiles//")
-vim.opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")
-vim.g.autoformat = true
-vim.g.snacks_animate = false
+-- General
+opt.mouse = "a"
+opt.clipboard = "unnamedplus"
+opt.swapfile = true
+opt.dir = vim.fn.expand("$HOME/.vim/swapfiles//")
+opt.backup = true
+opt.backupdir = vim.fn.expand("$HOME/.vim/backupdir//")
+opt.undofile = true
+opt.history = 1000
+opt.hidden = true
 
--- vim.api.nvim_set_hl(0, 'LspReferenceText', {})
--- vim.api.nvim_set_hl(0, 'LspReferenceRead', {})
--- vim.api.nvim_set_hl(0, 'LspReferenceWrite', {})
+-- UI
+opt.number = false
+opt.termguicolors = true
+opt.background = "dark"
+opt.signcolumn = "yes"
+opt.showmode = false
+opt.showcmd = true
+opt.cmdheight = 1
+opt.guicursor = ""
+
+-- Indenting
+opt.expandtab = true
+opt.shiftwidth = 2
+opt.tabstop = 2
+opt.softtabstop = 2
+opt.autoindent = true
+opt.smartindent = true
+opt.cindent = true
+
+-- Search
+opt.hlsearch = false
+opt.incsearch = true
+opt.ignorecase = true
+opt.smartcase = true
+
+-- Appearance
+opt.guifont = "Consolas:h14"
+opt.cursorline = true
