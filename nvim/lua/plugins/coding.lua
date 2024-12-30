@@ -137,6 +137,10 @@ return {
 				},
 				eslint = {
 					enabled = true,
+					on_init = function(client)
+						-- TODO figure this out
+						-- client.server_capabilities.documentForattingProvider = true
+					end,
 				},
 				ts_ls = {
 					enabled = true,
@@ -162,44 +166,24 @@ return {
 		event = "InsertEnter",
 	},
 	{
-		"saghen/blink.cmp",
-		-- optional: provides snippets for the snippet source
-		dependencies = "rafamadriz/friendly-snippets",
-
-		-- use a release tag to download pre-built binaries
-		version = "*",
-
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
-		opts = {
-			keymap = { preset = "super-tab" },
-
-			appearance = {
-				-- Sets the fallback highlight groups to nvim-cmp's highlight groups
-				-- Useful for when your theme doesn't support blink.cmp
-				-- Will be removed in a future release
-				use_nvim_cmp_as_default = true,
-				-- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-				-- Adjusts spacing to ensure icons are aligned
-				nerd_font_variant = "mono",
-			},
-
-			completion = {
-				trigger = {
-					show_on_trigger_character = true,
-					show_on_keyword = false,
-				},
-				menu = {
-					auto_show = true,
-				},
-			},
-			-- Default list of enabled providers defined so that you can extend it
-			-- elsewhere in your config, without redefining it, due to `opts_extend`
-			sources = {
-				default = { "lsp", "path", "snippets", "buffer" },
-			},
+		"hrsh7th/nvim-cmp",
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-path",
+			"hrsh7th/cmp-cmdline",
+			"hrsh7th/nvim-cmp",
 		},
-		opts_extend = { "sources.default" },
+		config = function()
+			require("cmp").setup({
+				sources = {
+					{ name = "nvim_lsp" },
+					{ name = "buffer" },
+					{ name = "path" },
+					{ name = "cmdline" },
+				},
+			})
+		end,
 	},
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
@@ -253,12 +237,10 @@ return {
 		cmd = { "ConformInfo" },
 		keys = {
 			{
-				-- Customize or remove this keymap to your liking
-				"<leader>ff",
+				"<leader>a",
 				function()
 					require("conform").format({ async = true })
 				end,
-				mode = "",
 				desc = "Format buffer",
 			},
 		},
@@ -270,7 +252,7 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 				python = { "isort", "black" },
-				javascript = { "prettier" },
+				javascript = { "prettier", "eslint" },
 				ruby = { "syntax_tree" },
 			},
 			-- Set default options

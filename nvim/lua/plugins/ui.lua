@@ -6,10 +6,15 @@ return {
 		---@type snacks.Config
 		opts = {
 			words = { enabled = true },
-			--notifier = { enabled = true },
+			notifier = { enabled = true },
 			bigfile = { enabled = true },
 			debug = { enabled = true },
 		},
+    -- stylua: ignore
+    keys = {
+      { "<leader>n", function() Snacks.notifier.show_history() end, desc = "Notification History" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    },
 	},
 	{
 		"ellisonleao/gruvbox.nvim",
@@ -28,6 +33,17 @@ return {
 		end,
 	},
 	{
+		"uga-rosa/ccc.nvim",
+		config = function()
+			require("ccc").setup({
+				highlighter = {
+					auto_enable = true,
+					lsp = true,
+				},
+			})
+		end,
+	},
+	{
 		"nvim-tree/nvim-web-devicons",
 		lazy = false,
 		config = function()
@@ -36,6 +52,21 @@ return {
 				default = true,
 				strict = true,
 				variant = "dark",
+				override = (function()
+					-- technically we need to also fix the name, so
+					-- rake is now white, but Rb is red
+					local files = { "rb", "rakefile", "Gemfile", "Brewfile" }
+					local result = {}
+					for _, ext in ipairs(files) do
+						result[ext] = {
+							icon = "",
+							color = "#bb2222",
+							cterm_color = "52",
+							name = "Rb",
+						}
+					end
+					return result
+				end)(),
 			})
 		end,
 	},
