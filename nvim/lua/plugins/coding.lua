@@ -138,6 +138,9 @@ return {
 				eslint = {
 					enabled = true,
 				},
+				ts_ls = {
+					enabled = true,
+				},
 			},
 		},
 		config = function(_, opts)
