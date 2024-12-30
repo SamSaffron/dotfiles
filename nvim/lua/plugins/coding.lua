@@ -199,11 +199,25 @@ return {
 			{
 				"<leader>c",
 				function()
+					local visualmode = vim.fn.mode()
 					local input = vim.fn.input("Quick Chat: ")
 					if input ~= "" then
-						require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
+						local chat = require("CopilotChat")
+						local select = require("CopilotChat.select")
+
+						vim.notify("Visual mode: " .. visualmode)
+						local selection
+						-- if we have a line in visual mode then select it
+						if visualmode == "V" or visualmode == "v" then
+							selection = select.visual
+						else
+							selection = select.buffer
+						end
+
+						chat.ask(input, { selection = selection })
 					end
 				end,
+				mode = { "n", "v" },
 				desc = "Start Copilot Chat",
 			},
 		},
