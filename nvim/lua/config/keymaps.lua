@@ -9,7 +9,6 @@ map("n", "<F10>", ":next<CR>", { silent = true })
 
 -- Leader mappings
 map("n", "<leader>s", ":!touch tmp/refresh_browser<CR><CR>", { silent = true })
-map("n", "<leader>a", ":ALEFix<CR>", { silent = true })
 map("n", "<leader>g", ":Git gui<CR><CR>", { silent = true })
 map("n", "<leader>m", "<Plug>(git-messenger)", { silent = true })
 map("n", "<leader>l", function()

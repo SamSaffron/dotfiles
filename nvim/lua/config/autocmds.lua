@@ -102,37 +102,6 @@ api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
 	command = "set filetype=puppet",
 })
 
-api.nvim_create_autocmd("BufWritePost", {
-	group = group,
-	pattern = "*",
-	callback = function()
-		local function file_exists(path)
-			local f = io.open(path, "r")
-			if f ~= nil then
-				io.close(f)
-				return true
-			else
-				return false
-			end
-		end
-
-		local notify = vim.fn.getcwd() .. "/bin/notify_file_change"
-		if not file_exists(notify) then
-			-- Try to find it in Rails app path
-			if vim.fn.exists("*rails#app") == 1 then
-				local root = vim.fn.rails.app().path()
-				notify = root .. "/bin/notify_file_change"
-			end
-		end
-		if not file_exists(notify) then
-			notify = vim.fn.getcwd() .. "../../bin/notify_file_change"
-		end
-		if file_exists(notify) and vim.fn.executable("socat") == 1 then
-			vim.fn.system(string.format("%s %s %s", notify, vim.fn.expand("%:p"), vim.fn.line(".")))
-		end
-	end,
-})
-
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
 		local client = vim.lsp.get_client_by_id(args.data.client_id)

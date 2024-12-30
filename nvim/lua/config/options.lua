@@ -36,5 +36,6 @@ opt.ignorecase = true
 opt.smartcase = true
 
 -- Appearance
+-- opt.guifont = "Consolas:h14"
 opt.guifont = "Consolas:h14"
 opt.cursorline = true
