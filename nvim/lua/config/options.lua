@@ -15,7 +15,6 @@ opt.hidden = true
 opt.number = false
 opt.termguicolors = true
 opt.background = "dark"
-opt.signcolumn = "yes"
 opt.showmode = false
 opt.showcmd = true
 opt.cmdheight = 1
