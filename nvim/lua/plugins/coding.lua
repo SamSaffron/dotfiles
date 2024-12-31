@@ -207,7 +207,7 @@ return {
 
 						local selection
 						-- if we have a line in visual mode then select it
-						if visualmode == "V" or visualmode == "v" then
+						if visualmode == "V" or visualmode == "v" or visualmode == "\22" then
 							selection = select.visual
 						else
 							selection = select.buffer

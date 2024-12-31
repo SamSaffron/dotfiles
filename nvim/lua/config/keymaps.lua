@@ -31,8 +31,10 @@ map("n", "<Leader>-", ':exe "resize " . (winheight(0) * 2/3)<CR>', { silent = tr
 
 -- GitHub link in visual mode (converted from original vimfunc)
 local function github_link()
-	local start_line = vim.fn.line("'<")
-	local end_line = vim.fn.line("'>")
+	local start_pos = vim.fn.getpos("v")
+	local start_line = start_pos[2]
+	local end_line = vim.api.nvim_win_get_cursor(0)[1]
+
 	local path = vim.fn.resolve(vim.fn.expand("%:p"))
 	local dir = vim.fn.shellescape(vim.fn.fnamemodify(path, ":h"))
 
@@ -46,11 +48,11 @@ local function github_link()
 		:gsub("%s+$", "")
 
 	local root = vim.fn.system(string.format("cd %s && git rev-parse --show-toplevel", dir)):gsub("%s+$", "")
-	local relative = string.sub(path, string.len(root) - 1)
+	local relative = string.sub(path, string.len(root) + 2)
 	local repo_sha = vim.fn.system(string.format("cd %s && git rev-parse HEAD", dir)):gsub("%s+$", "")
 
 	local link =
-		string.format("https://github.com/%s/blob/%s%s#L%d-L%d", repo, repo_sha, relative, start_line, end_line)
+		string.format("https://github.com/%s/blob/%s/%s#L%d-L%d", repo, repo_sha, relative, start_line, end_line)
 
 	vim.fn.setreg("+", link)
 	vim.fn.setreg("*", link)
