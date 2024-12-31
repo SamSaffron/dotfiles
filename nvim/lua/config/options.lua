@@ -40,3 +40,5 @@ opt.smartcase = true
 -- this inherits from kitty, no need to set anything here
 -- opt.guifont = "Consolas:h14"
 opt.cursorline = true
+-- keep lualine at the bottom where it is not annoying
+opt.laststatus = 3
