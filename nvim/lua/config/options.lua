@@ -17,7 +17,8 @@ opt.termguicolors = true
 opt.background = "dark"
 opt.showmode = false
 opt.showcmd = true
-opt.cmdheight = 1
+-- cause lualine will not be at the bottom
+opt.cmdheight = 0
 opt.guicursor = ""
 
 -- Indenting
