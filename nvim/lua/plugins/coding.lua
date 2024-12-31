@@ -205,7 +205,6 @@ return {
 						local chat = require("CopilotChat")
 						local select = require("CopilotChat.select")
 
-						vim.notify("Visual mode: " .. visualmode)
 						local selection
 						-- if we have a line in visual mode then select it
 						if visualmode == "V" or visualmode == "v" then

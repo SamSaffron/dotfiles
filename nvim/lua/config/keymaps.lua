@@ -1,37 +1,33 @@
 local map = vim.keymap.set
 
 -- General mappings
-map("n", "<F12>", ":set number!<CR>", { silent = true })
-map("n", "<C-TAB>", ":tabnext<CR>", { silent = true })
-map("n", "<C-S-TAB>", ":tabprevious<CR>", { silent = true })
-map("n", "<F9>", ":previous<CR>", { silent = true })
-map("n", "<F10>", ":next<CR>", { silent = true })
+map("n", "<F12>", ":set number!<CR>", { silent = true, desc = "Toggle line numbers" })
+map("n", "<C-TAB>", ":tabnext<CR>", { silent = true, desc = "Go to next tab" })
+map("n", "<C-S-TAB>", ":tabprevious<CR>", { silent = true, desc = "Go to previous tab" })
+map("n", "<F9>", ":previous<CR>", { silent = true, desc = "Go to previous buffer" })
+map("n", "<F10>", ":next<CR>", { silent = true, desc = "Go to next buffer" })
 
 -- Leader mappings
-map("n", "<leader>s", ":!touch tmp/refresh_browser<CR><CR>", { silent = true })
-map("n", "<leader>g", ":Git gui<CR><CR>", { silent = true })
-map("n", "<leader>m", "<Plug>(git-messenger)", { silent = true })
+map("n", "<leader>s", ":!touch tmp/refresh_browser<CR><CR>", { silent = true, desc = "Touch browser refresh file" })
+map("n", "<leader>g", ":Git gui<CR><CR>", { silent = true, desc = "Open Git GUI" })
+map("n", "<leader>m", "<Plug>(git-messenger)", { silent = true, desc = "Show Git message" })
 map("n", "<leader>l", function()
 	if vim.o.hlsearch and vim.v.hlsearch == 1 then
 		return ":nohls<CR>"
 	else
 		return ":set hls<CR>"
 	end
-end, { expr = true, silent = true })
+end, { expr = true, silent = true, desc = "Toggle search highlighting" })
 
 -- Window navigation (Alt + Arrow keys)
-map("n", "<A-Up>", ":wincmd k<CR>", { silent = true })
-map("n", "<A-Down>", ":wincmd j<CR>", { silent = true })
-map("n", "<A-Left>", ":wincmd h<CR>", { silent = true })
-map("n", "<A-Right>", ":wincmd l<CR>", { silent = true })
+map("n", "<A-Up>", ":wincmd k<CR>", { silent = true, desc = "Move to window above" })
+map("n", "<A-Down>", ":wincmd j<CR>", { silent = true, desc = "Move to window below" })
+map("n", "<A-Left>", ":wincmd h<CR>", { silent = true, desc = "Move to window left" })
+map("n", "<A-Right>", ":wincmd l<CR>", { silent = true, desc = "Move to window right" })
 
 -- Window resizing
-map("n", "<Leader>=", ':exe "resize " . (winheight(0) * 3/2)<CR>', { silent = true })
-map("n", "<Leader>-", ':exe "resize " . (winheight(0) * 2/3)<CR>', { silent = true })
-
--- Quick vimrc editing
-map("n", "<leader>v", ":tabedit ~/.config/nvim/init.lua<CR>", { silent = true })
-map("n", "<leader>V", ":tabedit ~/.config/nvim/lua/init.lua<CR>", { silent = true })
+map("n", "<Leader>=", ':exe "resize " . (winheight(0) * 3/2)<CR>', { silent = true, desc = "Increase window height" })
+map("n", "<Leader>-", ':exe "resize " . (winheight(0) * 2/3)<CR>', { silent = true, desc = "Decrease window height" })
 
 -- GitHub link in visual mode (converted from original vimfunc)
 local function github_link()
@@ -61,4 +57,4 @@ local function github_link()
 	print(link)
 end
 
-map("v", "<leader>g", github_link, { silent = true })
+map("v", "<leader>g", github_link, { silent = true, desc = "Copy GitHub permalink to clipboard" })
