@@ -37,6 +37,6 @@ opt.ignorecase = true
 opt.smartcase = true
 
 -- Appearance
+-- this inherits from kitty, no need to set anything here
 -- opt.guifont = "Consolas:h14"
-opt.guifont = "Consolas:h14"
 opt.cursorline = true
