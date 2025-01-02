@@ -110,10 +110,42 @@ return {
 		},
 	},
 	{
+		"cuducos/yaml.nvim",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-telescope/telescope.nvim", -- optional
+		},
+	},
+	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
-			require("lualine").setup()
+			local old_position
+			local old_result
+
+			local function get_yaml_key()
+				if vim.bo.filetype ~= "yaml" then
+					return ""
+				end
+
+				local position = vim.api.nvim_win_get_cursor(0)
+
+				if old_position and old_position[1] == position[1] and old_position[2] == position[2] then
+					return old_result
+				end
+
+				local result = require("yaml_nvim").get_yaml_key()
+
+				old_position = position
+				old_result = result
+
+				return result or ""
+			end
+			require("lualine").setup({
+				sections = {
+					lualine_x = { get_yaml_key, "encoding", "fileformat", "filetype" },
+				},
+			})
 		end,
 	},
 }
