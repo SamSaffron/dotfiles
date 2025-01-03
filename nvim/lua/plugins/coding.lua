@@ -192,10 +192,63 @@ return {
 			{ "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
 		},
 		build = "make tiktoken", -- Only on MacOS or Linux
+		init = function()
+			-- Buffer customization goes here
+			vim.api.nvim_create_autocmd("BufEnter", {
+				pattern = "copilot-*",
+				callback = function()
+					vim.b.copilot = false -- Disable copilot in chat buffers
+				end,
+			})
+		end,
 		opts = {
 			model = "claude-3.5-sonnet",
+			auto_insert_mode = true,
+			chat_autocomplete = false,
+			-- log_level = "debug",
+			contexts = {
+				file = {
+					input = function(callback)
+						local telescope = require("telescope.builtin")
+						local actions = require("telescope.actions")
+						local action_state = require("telescope.actions.state")
+						telescope.find_files({
+							attach_mappings = function(prompt_bufnr)
+								actions.select_default:replace(function()
+									actions.close(prompt_bufnr)
+									local selection = action_state.get_selected_entry()
+									callback(selection[1])
+								end)
+								return true
+							end,
+						})
+					end,
+				},
+				git_main = {
+					input = function(callback)
+						callback("main") -- or "master" depending on your default branch name
+					end,
+					resolve = function()
+						-- Get diff against main branch including staged and unstaged changes
+						local cmd = "git diff main HEAD && git diff"
+						local output = vim.fn.system(cmd)
+						return {
+							{
+								content = output,
+								filename = "git_diff_main",
+								filetype = "diff",
+							},
+						}
+					end,
+				},
+			},
 		},
 		keys = {
+			{
+				"<leader>p",
+				"<cmd>CopilotChatToggle<cr>",
+				{ desc = "Toggle Copilot Chat" },
+			},
 			{
 				"<leader>c",
 				function()

@@ -20,6 +20,7 @@ opt.showcmd = true
 -- cause lualine will not be at the bottom
 opt.cmdheight = 0
 opt.guicursor = ""
+opt.splitright = true
 
 -- Indenting
 opt.expandtab = true
@@ -39,6 +40,5 @@ opt.smartcase = true
 -- Appearance
 -- this inherits from kitty, no need to set anything here
 -- opt.guifont = "Consolas:h14"
-opt.cursorline = true
 -- keep lualine at the bottom where it is not annoying
 opt.laststatus = 3
