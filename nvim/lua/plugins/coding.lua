@@ -76,9 +76,7 @@ return {
 					on_init = function(client)
 						if client.workspace_folders then
 							local path = client.workspace_folders[1].name
-							if
-								vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc")
-							then
+							if vim.uv.fs_stat(path .. "/.luarc.json") or vim.uv.fs_stat(path .. "/.luarc.jsonc") then
 								return
 							end
 						end
@@ -186,10 +184,12 @@ return {
 		end,
 	},
 	{
-		"CopilotC-Nvim/CopilotChat.nvim",
+		-- "CopilotC-Nvim/CopilotChat.nvim",
+		dir = "/home/sam/Source/CopilotChat.nvim",
+		name = "ccchat",
 		dependencies = {
 			{ "github/copilot.vim" },
-			{ "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+			{ "nvim-lua/plenary.nvim" }, -- for curl, log and async functions
 		},
 		build = "make tiktoken", -- Only on MacOS or Linux
 		init = function()
@@ -203,6 +203,7 @@ return {
 		end,
 		opts = {
 			model = "claude-3.5-sonnet",
+			debug = true,
 			auto_insert_mode = true,
 			chat_autocomplete = false,
 			-- log_level = "debug",

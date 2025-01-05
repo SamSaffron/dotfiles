@@ -1,5 +1,17 @@
 return {
 	{
+		"nvim-lua/plenary.nvim",
+		config = function()
+			local log = require("plenary.log")
+			local original_new = log.new
+
+			log.new = function(config, standalone)
+				local merged_config = vim.tbl_deep_extend("force", { use_console = false }, config or {})
+				return original_new(merged_config, standalone)
+			end
+		end,
+	},
+	{
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,

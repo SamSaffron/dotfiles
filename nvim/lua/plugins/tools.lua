@@ -4,6 +4,7 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			"nvim-telescope/telescope-ui-select.nvim",
 		},
 		keys = {
 			{ "<C-p>", "<cmd>Telescope find_files theme=ivy disable_devicons=true<CR>" },
@@ -13,11 +14,15 @@ return {
 			{ "<leader>fh", "<cmd>Telescope help_tags<CR>" },
 		},
 		config = function()
-			require("telescope").setup({
+			local telescope = require("telescope")
+			telescope.setup({
 				defaults = {
 					file_ignore_patterns = { "node_modules", "tmp", "log" },
 				},
 			})
+
+			telescope.load_extension("fzf")
+			telescope.load_extension("ui-select")
 		end,
 	},
 	{
