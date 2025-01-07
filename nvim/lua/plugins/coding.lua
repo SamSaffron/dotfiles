@@ -90,14 +90,14 @@ return {
 							-- Make the server aware of Neovim runtime files
 							workspace = {
 								checkThirdParty = false,
-								library = {
-									vim.env.VIMRUNTIME,
-									-- Depending on the usage, you might want to add additional paths here.
-									-- "${3rd}/luv/library"
-									-- "${3rd}/busted/library",
-								},
-								-- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
-								-- library = vim.api.nvim_get_runtime_file("", true)
+								--library = {
+								--	vim.env.VIMRUNTIME,
+								-- Depending on the usage, you might want to add additional paths here.
+								-- "${3rd}/luv/library"
+								-- "${3rd}/busted/library",
+								--},
+								-- slow but I only use lua for editing nvim
+								library = vim.api.nvim_get_runtime_file("", true),
 							},
 						})
 					end,
@@ -124,31 +124,35 @@ return {
 					},
 				},
 				-- Add other language servers you need here
-				ruby_lsp = {
-					enabled = true,
-				},
-				rubocop = {
-					enabled = true,
-				},
-				glint = {
-					enabled = true,
-				},
+				ruby_lsp = {},
+				rubocop = {},
+				glint = {},
+				ember = {},
 				eslint = {
-					enabled = true,
-					on_init = function(client)
-						-- TODO figure this out
-						-- client.server_capabilities.documentForattingProvider = true
+					filetypes = {
+						"javascript",
+						"typescript",
+						"typescript.glimmer",
+						"javascript.glimmer",
+						"json",
+						"markdown",
+					},
+					on_attach = function(client, bufnr)
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							buffer = bufnr,
+							command = "EslintFixAll",
+						})
 					end,
 				},
-				ts_ls = {
-					enabled = true,
-				},
+				ts_ls = {},
+				cssls = {},
 			},
 		},
 		config = function(_, opts)
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(opts.servers),
+				automatic_installation = true,
 				handlers = {
 					function(server)
 						require("lspconfig")[server].setup(opts.servers[server] or {})

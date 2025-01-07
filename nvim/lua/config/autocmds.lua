@@ -108,6 +108,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		if client then
 			-- very annoying highlighting of current word
 			client.server_capabilities.documentHighlightProvider = false
+
+			if client.name == "eslint" then
+				client.server_capabilities.documentFormattingProvider = true
+			end
 		end
 	end,
 })
