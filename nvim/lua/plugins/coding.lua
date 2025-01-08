@@ -64,12 +64,9 @@ return {
 			diagnostics = {
 				underline = true,
 				update_in_insert = false,
-				virtual_text = {
-					spacing = 4,
-					source = "if_many",
-					prefix = "●",
-				},
+				virtual_text = false,
 				severity_sort = true,
+				signs = true,
 			},
 			servers = {
 				lua_ls = {
@@ -149,23 +146,41 @@ return {
 			},
 		},
 		config = function(_, opts)
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(opts.servers),
 				automatic_installation = true,
 				handlers = {
 					function(server)
-						require("lspconfig")[server].setup(opts.servers[server] or {})
+						local options = opts.servers[server] or {}
+						options.capabilities = capabilities
+						require("lspconfig")[server].setup(options)
 					end,
 				},
 			})
-			-- Configure diagnostics
+
 			vim.diagnostic.config(opts.diagnostics)
+
+			vim.lsp.handlers["textDocument/publishDiagnostics"] =
+				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+					underline = true,
+					virtual_text = false,
+					signs = true,
+					update_in_insert = false,
+				})
 		end,
 	},
 	{
 		"github/copilot.vim",
 		event = "InsertEnter",
+		config = function()
+			vim.cmd("Copilot")
+			vim.g.copilot_no_tab_map = true
+			vim.api.nvim_set_keymap("i", "<Tab>", 'copilot#Accept("<Tab>")', { silent = true, expr = true })
+			vim.api.nvim_set_keymap("i", "<C-e>", "copilot#Dismiss()", { silent = true, expr = true })
+		end,
 	},
 	{
 		"hrsh7th/nvim-cmp",
@@ -177,7 +192,68 @@ return {
 			"hrsh7th/nvim-cmp",
 		},
 		config = function()
-			require("cmp").setup({
+			local cmp = require("cmp")
+
+			local has_copilot_suggestion = function()
+				local suggestion = vim.fn["copilot#GetDisplayedSuggestion"]()
+				return suggestion.item ~= nil and not vim.tbl_isempty(suggestion.item)
+			end
+			cmp.setup({
+				completion = {
+					autocomplete = false,
+				},
+				mapping = {
+					["<Tab>"] = cmp.mapping({
+						i = function(fallback)
+							if cmp.visible() then
+								cmp.select_next_item()
+							elseif has_copilot_suggestion() then
+								fallback()
+							else
+								cmp.complete()
+							end
+						end,
+					}),
+					["<C-i>"] = cmp.mapping({
+						i = function()
+							-- Ctrl Tab is very annoying and flaky to map
+							-- going with ctrl-i instead for the override
+							if cmp.visible() then
+								cmp.select_next_item()
+							else
+								cmp.complete()
+							end
+						end,
+					}),
+					["<S-Tab>"] = cmp.mapping({
+						i = function(fallback)
+							if cmp.visible() then
+								cmp.select_prev_item()
+							else
+								fallback()
+							end
+						end,
+					}),
+					["<Down>"] = cmp.mapping({
+						i = function()
+							if cmp.visible() then
+								cmp.select_next_item()
+							else
+								cmp.complete()
+							end
+						end,
+					}),
+					["<Up>"] = cmp.mapping({
+						i = function()
+							if cmp.visible() then
+								cmp.select_prev_item()
+							else
+								cmp.complete()
+							end
+						end,
+					}),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+				},
 				sources = {
 					{ name = "nvim_lsp" },
 					{ name = "buffer" },
@@ -428,6 +504,7 @@ return {
 					"diff",
 					"html",
 					"javascript",
+					"glimmer",
 					"jsdoc",
 					"json",
 					"jsonc",

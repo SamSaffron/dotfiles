@@ -116,6 +116,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+-- highligh current yanked text
+api.nvim_create_autocmd("TextYankPost", {
+	group = group,
+	pattern = "*",
+	callback = function()
+		vim.highlight.on_yank({ higroup = "Visual", timeout = 300 })
+	end,
+})
+
 -- vim.api.nvim_create_autocmd("InsertLeave", {
 -- 	callback = function()
 -- 		vim.opt.cursorline = false
