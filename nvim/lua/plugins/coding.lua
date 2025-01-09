@@ -299,6 +299,15 @@ return {
 		end,
 	},
 	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+		---@module 'render-markdown'
+		---@type render.md.UserConfig
+		opts = {
+			file_types = { "markdown", "copilot-chat" },
+		},
+	},
+	{
 		-- "CopilotC-Nvim/CopilotChat.nvim",
 		dir = "/home/sam/Source/CopilotChat.nvim",
 		name = "ccchat",
@@ -320,8 +329,12 @@ return {
 			model = "claude-3.5-sonnet",
 			debug = true,
 			auto_insert_mode = true,
+			insert_at_end = true,
 			chat_autocomplete = false,
-			-- log_level = "debug",
+			highlight_selection = false,
+			highlight_headers = false,
+			seperator = "---",
+			error_header = "> [!ERROR] Error",
 			contexts = {
 				file = {
 					input = function(callback)
