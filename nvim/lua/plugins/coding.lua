@@ -64,9 +64,19 @@ return {
 			diagnostics = {
 				underline = true,
 				update_in_insert = false,
-				virtual_text = false,
-				severity_sort = true,
-				signs = true,
+				virtual_text = {
+					spacing = 4,
+					source = "if_many",
+					prefix = "●",
+				},
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
+					},
+				},
 			},
 			servers = {
 				lua_ls = {
@@ -78,23 +88,42 @@ return {
 							end
 						end
 
+						local runtime_files = vim.api.nvim_get_runtime_file("", true)
+						for k, v in ipairs(runtime_files) do
+							if v == "/home/sam/.config/nvim/after" or v == "/home/sam/.config/nvim" then
+								table.remove(runtime_files, k)
+							end
+						end
+
+						table.insert(runtime_files, "${3rd}/luv/library")
+
+						local function get_all_plugin_paths()
+							local paths = {}
+							-- Get all plugin specs from lazy
+							for _, plugin in pairs(require("lazy.core.config").plugins) do
+								if type(plugin.dir) == "string" then
+									table.insert(paths, plugin.dir)
+								end
+							end
+							return paths
+						end
+
+						-- add all missing runtime paths
+						for _, path in ipairs(get_all_plugin_paths()) do
+							if not vim.tbl_contains(runtime_files, path) then
+								table.insert(runtime_files, path)
+							end
+						end
+
 						client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
 							runtime = {
 								-- Tell the language server which version of Lua you're using
 								-- (most likely LuaJIT in the case of Neovim)
 								version = "LuaJIT",
 							},
-							-- Make the server aware of Neovim runtime files
 							workspace = {
 								checkThirdParty = false,
-								--library = {
-								--	vim.env.VIMRUNTIME,
-								-- Depending on the usage, you might want to add additional paths here.
-								-- "${3rd}/luv/library"
-								-- "${3rd}/busted/library",
-								--},
-								-- slow but I only use lua for editing nvim
-								library = vim.api.nvim_get_runtime_file("", true),
+								library = runtime_files,
 							},
 						})
 					end,
@@ -120,7 +149,6 @@ return {
 						},
 					},
 				},
-				-- Add other language servers you need here
 				ruby_lsp = {},
 				rubocop = {},
 				glint = {},
@@ -134,7 +162,7 @@ return {
 						"json",
 						"markdown",
 					},
-					on_attach = function(client, bufnr)
+					on_attach = function(_, bufnr)
 						vim.api.nvim_create_autocmd("BufWritePre", {
 							buffer = bufnr,
 							command = "EslintFixAll",
@@ -163,13 +191,13 @@ return {
 
 			vim.diagnostic.config(opts.diagnostics)
 
-			vim.lsp.handlers["textDocument/publishDiagnostics"] =
-				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-					underline = true,
-					virtual_text = false,
-					signs = true,
-					update_in_insert = false,
-				})
+			-- vim.lsp.handlers["textDocument/publishDiagnostics"] =
+			-- 	vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+			-- 		underline = true,
+			-- 		virtual_text = false,
+			-- 		signs = true,
+			-- 		update_in_insert = false,
+			-- 	})
 		end,
 	},
 	{
@@ -205,12 +233,19 @@ return {
 				mapping = {
 					["<Tab>"] = cmp.mapping({
 						i = function(fallback)
+							local col = vim.fn.col(".") - 1
+							local line = vim.api.nvim_get_current_line()
+							local char_before = col > 0 and line:sub(col, col)
+							local trigger_chars = char_before and string.match(char_before, "[%a%.<]")
+
 							if cmp.visible() then
 								cmp.select_next_item()
 							elseif has_copilot_suggestion() then
 								fallback()
-							else
+							elseif trigger_chars then
 								cmp.complete()
+							else
+								fallback()
 							end
 						end,
 					}),
@@ -235,20 +270,20 @@ return {
 						end,
 					}),
 					["<Down>"] = cmp.mapping({
-						i = function()
+						i = function(fallback)
 							if cmp.visible() then
 								cmp.select_next_item()
 							else
-								cmp.complete()
+								fallback()
 							end
 						end,
 					}),
 					["<Up>"] = cmp.mapping({
-						i = function()
+						i = function(fallback)
 							if cmp.visible() then
 								cmp.select_prev_item()
 							else
-								cmp.complete()
+								fallback()
 							end
 						end,
 					}),
@@ -368,11 +403,9 @@ return {
 				desc = "Format buffer",
 			},
 		},
-		-- This will provide type hinting with LuaLS
 		---@module "conform"
 		---@type conform.setupOpts
 		opts = {
-			-- Define your formatters
 			formatters_by_ft = {
 				lua = { "stylua" },
 				python = { "isort", "black" },
@@ -381,13 +414,10 @@ return {
 				handlebars = { "prettier" },
 				hbs = { "prettier" },
 			},
-			-- Set default options
 			default_format_opts = {
 				lsp_format = "fallback",
 			},
-			-- Set up format-on-save
 			format_on_save = { timeout_ms = 500 },
-			-- Customize formatters
 			formatters = {
 				shfmt = {
 					prepend_args = { "-i", "2" },
@@ -434,7 +464,7 @@ return {
     keys = {
       {"<leader>t", "", desc = "+test"},
       { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File (Neotest)" },
-      { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Run All Test Files (Neotest)" },
+      { "<leader>tT", function() require("neotest").run.run(vim.fn.getcwd()) end, desc = "Run All Test Files (Neotest)" },
       { "<leader>tr", function() require("neotest").run.run() end, desc = "Run Nearest (Neotest)" },
       { "<leader>tl", function() require("neotest").run.run_last() end, desc = "Run Last (Neotest)" },
       { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Toggle Summary (Neotest)" },
