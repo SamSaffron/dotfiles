@@ -353,7 +353,7 @@ return {
 						})
 					end,
 				},
-				git_main = {
+				gitmain = {
 					input = function(callback)
 						callback("main") -- or "master" depending on your default branch name
 					end,
@@ -426,6 +426,8 @@ return {
 				ruby = { "syntax_tree" },
 				handlebars = { "prettier" },
 				hbs = { "prettier" },
+				css = { "prettier" },
+				scss = { "prettier" },
 			},
 			default_format_opts = {
 				lsp_format = "fallback",

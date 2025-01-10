@@ -42,3 +42,9 @@ opt.smartcase = true
 -- opt.guifont = "Consolas:h14"
 -- keep lualine at the bottom where it is not annoying
 opt.laststatus = 3
+
+opt.shortmess:append("c") -- Avoid showing extra messages when using completion
+opt.shortmess:append("I") -- No intro message when starting Vim
+opt.shortmess:append("s") -- Don't show "search hit BOTTOM" type messages
+opt.shortmess:append("W") -- Don't show "written" message when saving
+opt.shortmess:append("F") -- Don't show file info when editing
