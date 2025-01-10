@@ -376,7 +376,7 @@ return {
 			{
 				"<leader>p",
 				"<cmd>CopilotChatToggle<cr>",
-				{ desc = "Toggle Copilot Chat" },
+				desc = "Toggle Copilot Chat",
 			},
 			{
 				"<leader>c",
