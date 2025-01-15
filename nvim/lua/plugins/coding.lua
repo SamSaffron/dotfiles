@@ -226,6 +226,14 @@ return {
 				local suggestion = vim.fn["copilot#GetDisplayedSuggestion"]()
 				return suggestion.item ~= nil and not vim.tbl_isempty(suggestion.item)
 			end
+
+			-- has its own version of completions, not super polished but go with it
+			cmp.setup.filetype("copilot-chat", {
+				enabled = false,
+				sources = {},
+				mapping = {},
+			})
+
 			cmp.setup({
 				completion = {
 					autocomplete = false,
@@ -321,7 +329,7 @@ return {
 			vim.api.nvim_create_autocmd("BufEnter", {
 				pattern = "copilot-*",
 				callback = function()
-					vim.b.copilot = false -- Disable copilot in chat buffers
+					vim.b.copilot_enabled = false
 				end,
 			})
 		end,
@@ -330,7 +338,7 @@ return {
 			debug = true,
 			auto_insert_mode = true,
 			insert_at_end = true,
-			chat_autocomplete = false,
+			chat_autocomplete = false, -- this is very annoying just lean on Tab
 			highlight_selection = false,
 			highlight_headers = false,
 			seperator = "---",
@@ -354,6 +362,7 @@ return {
 					end,
 				},
 				gitmain = {
+					description = "Get diff against main branch",
 					input = function(callback)
 						callback("main") -- or "master" depending on your default branch name
 					end,
