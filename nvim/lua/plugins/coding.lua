@@ -344,7 +344,7 @@ return {
 			model = "claude-3.5-sonnet",
 			debug = true,
 			auto_insert_mode = true,
-			insert_at_end = true,
+			insert_at_end = false,
 			chat_autocomplete = false, -- this is very annoying just lean on Tab
 			highlight_selection = false,
 			highlight_headers = false,
@@ -393,6 +393,7 @@ return {
 				"<leader>p",
 				"<cmd>CopilotChatToggle<cr>",
 				desc = "Toggle Copilot Chat",
+				mode = { "n", "v" },
 			},
 			{
 				"<leader>c",
