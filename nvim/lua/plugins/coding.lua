@@ -325,11 +325,18 @@ return {
 		},
 		build = "make tiktoken", -- Only on MacOS or Linux
 		init = function()
-			-- Buffer customization goes here
+			-- copilot is annoying in copilot chat
 			vim.api.nvim_create_autocmd("BufEnter", {
 				pattern = "copilot-*",
 				callback = function()
 					vim.b.copilot_enabled = false
+				end,
+			})
+			-- errors are also super annoying
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "copilot-chat",
+				callback = function()
+					vim.cmd("highlight Error NONE")
 				end,
 			})
 		end,
