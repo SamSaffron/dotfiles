@@ -153,6 +153,7 @@ return {
 				rubocop = {},
 				glint = {},
 				ember = {},
+				stylelint_lsp = {},
 				eslint = {
 					filetypes = {
 						"javascript",
@@ -443,8 +444,8 @@ return {
 				ruby = { "syntax_tree" },
 				handlebars = { "prettier" },
 				hbs = { "prettier" },
-				css = { "prettier" },
-				scss = { "prettier" },
+				css = { "prettier", "stylelint" },
+				scss = { "prettier", "stylelint" },
 			},
 			default_format_opts = {
 				lsp_format = "fallback",
