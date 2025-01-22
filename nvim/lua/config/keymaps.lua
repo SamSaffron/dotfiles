@@ -60,3 +60,21 @@ local function github_link()
 end
 
 map("v", "<leader>g", github_link, { desc = "Copy GitHub permalink to clipboard" })
+
+local function restart_discourse()
+	local pid_file = "/home/sam/Source/discourse/tmp/pids/unicorn.pid"
+
+	-- Check if pid file exists
+	local f = io.open(pid_file, "r")
+	if f == nil then
+		vim.notify("ERROR: unicorn not started")
+		return
+	end
+	f:close()
+
+	-- Execute the HUP signal
+	vim.fn.system(string.format("kill -HUP $(cat %s)", pid_file))
+	vim.notify("Restarting Discourse...")
+end
+
+map("n", "<leader>d", restart_discourse, { desc = "Restart Discourse server" })
