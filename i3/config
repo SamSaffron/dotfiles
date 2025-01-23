@@ -23,6 +23,7 @@ exec --no-startup-id signal-desktop --start-in-tray
 # exec_always --no-startup-id xmodmap -e "keycode 66 = Escape NoSymbol Escape"
 # exec_always --no-startup-id xmodmap -e "keysym Menu = Super_R"
 
+for_window [class="discourse-status" window_role="discourse-status-dialog"] floating enable
 for_window [class="kruler"] floating enable
 for_window [class="Slack"] floating enable border normal
 for_window [class="Skype"] floating enable border normal
