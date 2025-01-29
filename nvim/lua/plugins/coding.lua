@@ -441,7 +441,7 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 				python = { "isort", "black" },
-				javascript = { "prettier", "eslint" },
+				javascript = { "prettier", "eslint_d" },
 				ruby = { "syntax_tree" },
 				handlebars = { "prettier" },
 				hbs = { "prettier" },
