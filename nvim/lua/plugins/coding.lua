@@ -163,12 +163,6 @@ return {
 						"json",
 						"markdown",
 					},
-					on_attach = function(_, bufnr)
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							buffer = bufnr,
-							command = "EslintFixAll",
-						})
-					end,
 				},
 				ts_ls = {},
 				cssls = {},
@@ -435,32 +429,69 @@ return {
 				desc = "Format buffer",
 			},
 		},
-		---@module "conform"
-		---@type conform.setupOpts
-		opts = {
-			formatters_by_ft = {
-				lua = { "stylua" },
-				python = { "isort", "black" },
-				javascript = { "prettier", "eslint_d" },
-				ruby = { "syntax_tree" },
-				handlebars = { "prettier" },
-				hbs = { "prettier" },
-				css = { "prettier", "stylelint" },
-				scss = { "prettier", "stylelint" },
-			},
-			default_format_opts = {
-				lsp_format = "fallback",
-			},
-			format_on_save = { timeout_ms = 500 },
-			formatters = {
-				shfmt = {
-					prepend_args = { "-i", "2" },
-				},
-			},
-		},
 		init = function()
-			-- If you want the formatexpr, here is the place to set it
 			vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+
+			local util = require("conform.util")
+
+			local function create_stree_formatter()
+				-- Check if Gemfile.lock exists and contains syntax_tree using grep
+				local has_stree_in_bundle = function()
+					local gemfile_lock = vim.fn.findfile("Gemfile.lock", ".;")
+					if gemfile_lock ~= "" then
+						local grep_result = vim.fn.system("grep -q syntax_tree " .. vim.fn.shellescape(gemfile_lock))
+						return vim.v.shell_error == 0
+					end
+					return false
+				end
+
+				return {
+					command = function()
+						if has_stree_in_bundle() then
+							return "bundle"
+						else
+							return "stree"
+						end
+					end,
+					args = function()
+						if has_stree_in_bundle() then
+							return { "exec", "stree", "write", "$FILENAME" }
+						else
+							return { "write", "$FILENAME" }
+						end
+					end,
+					stdin = false,
+					cwd = util.root_file({ ".streerc" }),
+				}
+			end
+
+			-- eslint_d is simply a daemon that actually runs eslint
+			-- from current directory
+			-- it is required cause eslint has no fix to console
+			require("conform").setup({
+				formatters_by_ft = {
+					lua = { "stylua" },
+					python = { "isort", "black" },
+					javascript = { "prettier", "eslint_d" },
+					ruby = { "syntax_tree" },
+					handlebars = { "prettier" },
+					hbs = { "prettier" },
+					css = { "prettier", "stylelint" },
+					scss = { "prettier", "stylelint" },
+				},
+				default_format_opts = {
+					lsp_format = "fallback",
+				},
+				format_after_save = {
+					lsp_format = "fallback",
+				},
+				formatters = {
+					shfmt = {
+						prepend_args = { "-i", "2" },
+					},
+					syntax_tree = create_stree_formatter(),
+				},
+			})
 		end,
 	},
 	{
