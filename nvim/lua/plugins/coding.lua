@@ -196,16 +196,6 @@ return {
 		end,
 	},
 	{
-		"github/copilot.vim",
-		event = "InsertEnter",
-		config = function()
-			vim.cmd("Copilot")
-			vim.g.copilot_no_tab_map = true
-			vim.api.nvim_set_keymap("i", "<Tab>", 'copilot#Accept("<Tab>")', { silent = true, expr = true })
-			vim.api.nvim_set_keymap("i", "<C-e>", "copilot#Dismiss()", { silent = true, expr = true })
-		end,
-	},
-	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
@@ -306,115 +296,7 @@ return {
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
 		---@module 'render-markdown'
 		---@type render.md.UserConfig
-		opts = {
-			file_types = { "markdown", "copilot-chat", "Avante" },
-		},
-		ft = { "markdown", "Avante" },
-	},
-	{
-		-- "CopilotC-Nvim/CopilotChat.nvim",
-		dir = "/home/sam/Source/CopilotChat.nvim",
-		name = "ccchat",
-		dependencies = {
-			{ "github/copilot.vim" },
-			{ "nvim-lua/plenary.nvim" }, -- for curl, log and async functions
-		},
-		build = "make tiktoken", -- Only on MacOS or Linux
-		init = function()
-			-- copilot is annoying in copilot chat
-			vim.api.nvim_create_autocmd("BufEnter", {
-				pattern = "copilot-*",
-				callback = function()
-					vim.b.copilot_enabled = false
-				end,
-			})
-			-- errors are also super annoying
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "copilot-chat",
-				callback = function()
-					vim.cmd("highlight Error NONE")
-				end,
-			})
-		end,
-		opts = {
-			model = "claude-3.5-sonnet",
-			debug = true,
-			auto_insert_mode = true,
-			insert_at_end = false,
-			chat_autocomplete = false, -- this is very annoying just lean on Tab
-			highlight_selection = false,
-			highlight_headers = false,
-			seperator = "---",
-			error_header = "> [!ERROR] Error",
-			contexts = {
-				file = {
-					input = function(callback)
-						local telescope = require("telescope.builtin")
-						local actions = require("telescope.actions")
-						local action_state = require("telescope.actions.state")
-						telescope.find_files({
-							attach_mappings = function(prompt_bufnr)
-								actions.select_default:replace(function()
-									actions.close(prompt_bufnr)
-									local selection = action_state.get_selected_entry()
-									callback(selection[1])
-								end)
-								return true
-							end,
-						})
-					end,
-				},
-				gitmain = {
-					description = "Get diff against main branch",
-					input = function(callback)
-						callback("main") -- or "master" depending on your default branch name
-					end,
-					resolve = function()
-						-- Get diff against main branch including staged and unstaged changes
-						local cmd = "git diff main HEAD && git diff"
-						local output = vim.fn.system(cmd)
-						return {
-							{
-								content = output,
-								filename = "git_diff_main",
-								filetype = "diff",
-							},
-						}
-					end,
-				},
-			},
-		},
-		keys = {
-			{
-				"<leader>p",
-				"<cmd>CopilotChatToggle<cr>",
-				desc = "Toggle Copilot Chat",
-				mode = { "n", "v" },
-			},
-			{
-				"<leader>c",
-				function()
-					local visualmode = vim.fn.mode()
-					local input = vim.fn.input("Quick Chat: ")
-					if input ~= "" then
-						local chat = require("CopilotChat")
-						local select = require("CopilotChat.select")
-
-						local selection
-						-- if we have a line in visual mode then select it
-						if visualmode == "V" or visualmode == "v" or visualmode == "\22" then
-							selection = select.visual
-						else
-							selection = select.buffer
-						end
-
-						chat.ask(input, { selection = selection })
-					end
-				end,
-				mode = { "n", "v" },
-				desc = "Start Copilot Chat",
-			},
-		},
+		ft = { "markdown", "Avante", "codecompanion" },
 	},
 	{
 		"stevearc/conform.nvim",
@@ -501,6 +383,15 @@ return {
 	{
 		"tpope/vim-rails",
 		ft = { "ruby", "eruby", "haml", "slim" },
+		config = function()
+			-- disable autocmd set filetype=eruby.yaml, this breaks syntax highlighting
+			vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
+				pattern = { "*.yml" },
+				callback = function()
+					vim.bo.filetype = "yaml"
+				end,
+			})
+		end,
 	},
 	{
 		"tpope/vim-endwise",

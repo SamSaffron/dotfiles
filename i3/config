@@ -55,6 +55,11 @@ bindsym $mod+h split h
 bindsym $mod+v split v
 bindsym $mod+f fullscreen
 
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1% 
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+
 # center a floating window
 bindsym $mod+c exec "/home/sam/.config/i3/i3-plus smart_center 1500x1500,1700x1500,1900x1500,2100x1500"
 
