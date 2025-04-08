@@ -21,11 +21,58 @@ return {
 			notifier = { enabled = true },
 			bigfile = { enabled = true },
 			debug = { enabled = true },
+			picker = {
+				enabled = true,
+				sources = {
+					grep = {
+						cmd = "rg", -- Explicitly use ripgrep
+						args = {
+							"--color=never",
+							"--no-heading",
+							"--with-filename",
+							"--line-number",
+							"--column",
+							"--smart-case",
+							"--hidden", -- Include hidden files
+							"--glob=!.git/", -- Exclude .git directory
+							-- Add any other ripgrep flags you prefer
+						},
+						live = true, -- Disable live search for the quickfix workflow
+					},
+				},
+				layouts = {
+					quickfix_modal = {
+						-- preview = false, -- No preview
+						layout = {
+							backdrop = false,
+							width = 0.5, -- Half screen width
+							height = 0.1, -- Just enough for input
+							border = "rounded",
+							box = "vertical",
+							{ win = "input", height = 1, border = "none" },
+						},
+					},
+				},
+			},
 		},
     -- stylua: ignore
     keys = {
       { "<leader>n", function() Snacks.notifier.show_history() end, desc = "Notification History" },
       { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+      { "<leader>fj", function()
+        Snacks.picker.pick({
+          source = "grep",
+          live = true,
+          focus = "input",
+          layout = "quickfix_modal", -- Use our custom minimal layout
+          confirm = function(picker, item)
+            require("snacks.picker.actions").qflist(picker)
+            picker:close()
+          end,
+        })
+      end,
+      desc = "Grep to Quickfix"
+      },
     },
 	},
 	{
