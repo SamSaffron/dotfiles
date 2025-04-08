@@ -25,11 +25,4 @@ return {
 			telescope.load_extension("ui-select")
 		end,
 	},
-	{
-		"mileszs/ack.vim",
-		cmd = "Ack",
-		init = function()
-			vim.g.ackprg = "ag --nogroup --nocolor --column"
-		end,
-	},
 }
