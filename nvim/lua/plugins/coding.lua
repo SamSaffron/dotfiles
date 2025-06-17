@@ -171,6 +171,10 @@ return {
 		config = function(_, opts)
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+			for server, config in pairs(opts.servers) do
+				vim.lsp.config(server, config)
+			end
+
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(opts.servers),
@@ -179,7 +183,7 @@ return {
 					function(server)
 						local options = opts.servers[server] or {}
 						options.capabilities = capabilities
-						require("lspconfig")[server].setup(options)
+						vim.lsp.config(server, options)
 					end,
 				},
 			})
@@ -354,7 +358,7 @@ return {
 				formatters_by_ft = {
 					lua = { "stylua" },
 					python = { "isort", "black" },
-					javascript = { "prettier", "eslint_d" },
+					javascript = { "eslint_d", "prettier" },
 					ruby = { "syntax_tree" },
 					handlebars = { "prettier" },
 					hbs = { "prettier" },

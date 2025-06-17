@@ -3,10 +3,13 @@
 set $mod Mod4
 font pango:SF Pro Display 10
 
+exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id picom --backend glx --vsync
 exec --no-startup-id hsetroot
 exec --no-startup-id flameshot
-exec --no-startup-id skypeforlinux
+# skype is retired
+#exec --no-startup-id skypeforlinux
+exec --no-startup-id 1password --silent
 exec --no-startup-id copyq
 exec --no-startup-id kitty --name scratch-term
 exec --no-startup-id yubioath-desktop

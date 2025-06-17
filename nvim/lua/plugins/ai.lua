@@ -1,4 +1,28 @@
 return {
+	-- {
+	-- 	{
+	-- 		"codota/tabnine-nvim",
+	-- 		build = "./dl_binaries.sh",
+	-- 		init = function()
+	-- 			require("tabnine").setup({
+	-- 				disable_auto_comment = true,
+	-- 				accept_keymap = "<Tab>",
+	-- 				dismiss_keymap = "<C-]>",
+	-- 				debounce_ms = 800,
+	-- 				suggestion_color = { gui = "#808080", cterm = 244 },
+	-- 				exclude_filetypes = { "TelescopePrompt", "NvimTree" },
+	-- 				log_file_path = nil, -- absolute path to Tabnine log file
+	-- 				ignore_certificate_errors = false,
+	-- 				-- workspace_folders = {
+	-- 				--   paths = { "/your/project" },
+	-- 				--   get_paths = function()
+	-- 				--       return { "/your/project" }
+	-- 				--   end,
+	-- 				-- },
+	-- 			})
+	-- 		end,
+	-- 	},
+	-- },
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
 		-- dir = "/home/sam/Source/CopilotChat.nvim",
@@ -25,7 +49,7 @@ return {
 			})
 		end,
 		opts = {
-			model = "claude-3.7-sonnet-thought",
+			model = "claude-sonnet-4",
 			debug = true,
 			auto_insert_mode = true,
 			insert_at_end = false,
