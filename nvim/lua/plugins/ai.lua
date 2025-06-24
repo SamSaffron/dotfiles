@@ -49,8 +49,9 @@ return {
 			})
 		end,
 		opts = {
-			model = "claude-sonnet-4",
+			model = "claude-opus-4",
 			debug = true,
+			include_contexts_in_prompt = false,
 			auto_insert_mode = true,
 			insert_at_end = false,
 			chat_autocomplete = false, -- this is very annoying just lean on Tab

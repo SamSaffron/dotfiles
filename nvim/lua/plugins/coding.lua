@@ -151,7 +151,7 @@ return {
 				},
 				ruby_lsp = {},
 				rubocop = {},
-				glint = {},
+				-- glint = {}, not working at the moment
 				ember = {},
 				stylelint_lsp = {},
 				eslint = {
@@ -177,6 +177,7 @@ return {
 
 			require("mason").setup()
 			require("mason-lspconfig").setup({
+				automatic_enable = true,
 				ensure_installed = vim.tbl_keys(opts.servers),
 				automatic_installation = true,
 				handlers = {
