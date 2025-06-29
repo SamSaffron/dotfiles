@@ -16,6 +16,7 @@
         "network",
         "memory",
         "cpu",
+        "wireplumber",
         "custom/weather",
         "tray",
         "clock#date",
@@ -25,8 +26,8 @@
 
     "clock#time": {
         "interval": 1,
-        "format": "{:%H:%M:%S}",
-        "tooltip": false
+        "format": "{:%H:%M}",
+        "tooltip": true
     },
 
     "clock#date": {
@@ -36,12 +37,19 @@
     },
 
     "cpu": {
-        "interval": 5,
+        "ybainterval": 5,
         "format": "  {usage}% ({load})", // Icon: microchip
         "states": {
           "warning": 70,
           "critical": 90
         }
+    },
+
+    "wireplumber": {
+      "format": "{volume}% {icon}",
+      "format-muted": "",
+      "on-click": "helvum",
+      "format-icons": ["", "", ""]
     },
 
     "memory": {
