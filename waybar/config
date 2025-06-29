@@ -14,6 +14,7 @@
     ],
     "modules-right": [
         "network",
+        "disk",
         "memory",
         "cpu",
         "wireplumber",
@@ -22,6 +23,12 @@
         "clock#date",
         "clock#time"
     ],
+
+    "disk": {
+      "interval": 30,
+      "format": "{percentage_used}%",
+      "path": "/"
+    },
 
 
     "clock#time": {

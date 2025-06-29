@@ -54,14 +54,17 @@
 #pulseaudio,
 #backlight,
 #custom-temperature,
+#custom-weather,
 #memory,
+#wireplumber,
 #weather,
+#disk,
 #cpu {
   background-color: rgba(15, 27, 53, 0.9);
-  margin-top: 6px; /* 与屏幕顶部留出距离 */
-  /*margin-bottom: 4px;*/
-  padding: 4px 2px; /* 保持内部间距 */
+  margin-top: 6px;
+  padding: 4px 2px;
   border-width: 0px;
+  margin-left: 6px;
 }
 
 #custpm-temperature.critical,
