@@ -52,6 +52,7 @@
 #backlight,
 #custom-temperature,
 #custom-weather,
+#custom-updates,
 #memory,
 #wireplumber,
 #weather,
@@ -73,6 +74,7 @@
 #bluetooth:hover,
 #network:hover,
 #custom-weather:hover,
+#custom-updates:hover,
 /*#tray:hover,*/
 #backlight:hover,
 #battery:hover,
