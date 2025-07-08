@@ -2,6 +2,9 @@ return {
 	{
 		"nvim-lua/plenary.nvim",
 		config = function()
+			-- very annoying but copilot will not find gjs files without this
+			require("plenary.filetype").add_file("gjs")
+
 			local log = require("plenary.log")
 			local original_new = log.new
 
