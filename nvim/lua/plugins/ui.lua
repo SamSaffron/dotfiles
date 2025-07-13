@@ -176,6 +176,16 @@ return {
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-telescope/telescope.nvim", -- optional
+			"folke/snacks.nvim", -- optional
+		},
+		keys = {
+			{
+				"<leader>fy",
+				function()
+					require("yaml_nvim").snacks()
+				end,
+				desc = "Find YAML Key",
+			},
 		},
 	},
 	{
