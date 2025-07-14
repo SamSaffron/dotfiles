@@ -20,6 +20,7 @@ if [ -f "$PIDFILE" ]; then
 
   if [ -f "$RECORDED_FILE" ]; then
     notify-send "Screen Recording" "Recording saved to $RECORDED_FILE" -i video-x-generic
+    echo "file://$RECORDED_FILE" | wl-copy -t text/uri-list
   else
     notify-send "Screen Recording" "Failed to find recording file" -i dialog-error
   fi
