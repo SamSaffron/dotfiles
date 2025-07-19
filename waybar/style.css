@@ -119,3 +119,13 @@
 #window {
   font-weight: 500;
 }
+
+#tray menu {
+  background-color: #202124;
+  color: #e0e0e0;
+}
+#tray menu *:hover,
+#tray menu *:selected {
+  background-color: #3a3b3c;
+  color: #ffffff;
+}
