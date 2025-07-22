@@ -49,7 +49,7 @@ return {
 			})
 		end,
 		opts = {
-			model = "claude-opus-4",
+			model = "gpt-4.1",
 			debug = true,
 			include_contexts_in_prompt = false,
 			auto_insert_mode = true,
