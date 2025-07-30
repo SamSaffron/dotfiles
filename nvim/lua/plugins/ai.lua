@@ -56,7 +56,10 @@ return {
 			insert_at_end = false,
 			chat_autocomplete = false, -- this is very annoying just lean on Tab
 			highlight_selection = false,
-			highlight_headers = false,
+			highlight_headers = true,
+			headers = {
+				user = "Sam ",
+			},
 			seperator = "---",
 			error_header = "> [!ERROR] Error",
 			contexts = {

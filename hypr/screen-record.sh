@@ -35,6 +35,8 @@ else
     GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
   fi
 
+  echo GEOMETRY: "$GEOMETRY"
+
   wf-recorder -g "$GEOMETRY" -c h264_nvenc -p preset=fast -p rc=vbr -p cq=35 -p b:v=1M -r 30 -f "$RECORDING_FILE" &
   echo $! >"$PIDFILE"
 fi

@@ -32,7 +32,7 @@ if is_workspace_empty; then
   sleep 0.3
 
   # Launch kitty terminal with vim in discourse directory
-  hyprctl dispatch exec "kitty -e bash -c 'cd ~/Source/discourse && vim'"
+  hyprctl dispatch exec "kitty --hold -d '/home/sam/Source/discourse' -e bash -c 'vim'"
 
   # Small delay before launching chromium
   sleep 0.5
