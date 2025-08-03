@@ -49,7 +49,7 @@ return {
 			})
 		end,
 		opts = {
-			model = "gpt-4.1",
+			model = "claude-sonnet-4",
 			debug = true,
 			include_contexts_in_prompt = false,
 			auto_insert_mode = true,
@@ -62,6 +62,11 @@ return {
 			},
 			seperator = "---",
 			error_header = "> [!ERROR] Error",
+			mappings = {
+				complete = {
+					insert = "<Tab>",
+				},
+			},
 			contexts = {
 				file = {
 					input = function(callback)
