@@ -49,9 +49,9 @@ return {
 			})
 		end,
 		opts = {
-			model = "claude-sonnet-4",
-			debug = true,
-			include_contexts_in_prompt = false,
+			-- model = "claude-sonnet-4",
+			model = "gpt-4.1",
+			debug = false,
 			auto_insert_mode = true,
 			insert_at_end = false,
 			chat_autocomplete = false, -- this is very annoying just lean on Tab
@@ -67,38 +67,96 @@ return {
 					insert = "<Tab>",
 				},
 			},
-			contexts = {
+			functions = {
 				file = {
-					input = function(callback)
-						local telescope = require("telescope.builtin")
-						local actions = require("telescope.actions")
-						local action_state = require("telescope.actions.state")
-						telescope.find_files({
-							attach_mappings = function(prompt_bufnr)
-								actions.select_default:replace(function()
-									actions.close(prompt_bufnr)
-									local selection = action_state.get_selected_entry()
-									callback(selection[1])
-								end)
-								return true
-							end,
-						})
+					group = "copilot",
+					uri = "file://{path}",
+					description = "Reads content from a specified file path",
+					schema = {
+						type = "object",
+						required = { "path" },
+						properties = {
+							path = {
+								type = "string",
+								description = "Path to file to include in chat context.",
+								enum = function(source)
+									local chat_winid = vim.api.nvim_get_current_win()
+									local async = require("plenary.async")
+									local fn = async.wrap(function(callback)
+										local telescope = require("telescope.builtin")
+										local actions = require("telescope.actions")
+										local action_state = require("telescope.actions.state")
+
+										telescope.find_files({
+											cwd = source.cwd(), -- Use source working directory
+											attach_mappings = function(prompt_bufnr)
+												actions.select_default:replace(function()
+													actions.close(prompt_bufnr)
+													local selection = action_state.get_selected_entry()
+
+													-- Return focus to the chat window
+													if vim.api.nvim_win_is_valid(chat_winid) then
+														vim.api.nvim_set_current_win(chat_winid)
+														vim.cmd("normal! a")
+													end
+
+													vim.schedule(function()
+														callback(selection)
+													end)
+												end)
+												return true
+											end,
+										})
+									end, 1)
+
+									return fn()
+								end,
+							},
+						},
+					},
+					resolve = function(input, source)
+						local utils = require("CopilotChat.utils")
+						local resources = require("CopilotChat.resources")
+
+						-- Handle relative path - make it absolute for reading
+						local full_path = input.path
+						if not vim.startswith(full_path, "/") then
+							full_path = source.cwd() .. "/" .. input.path
+						end
+
+						utils.schedule_main()
+						local data, mimetype = resources.get_file(full_path)
+						if not data then
+							error("File not found: " .. input.path)
+						end
+
+						return {
+							{
+								uri = "file://" .. input.path, -- Keep relative path in URI
+								mimetype = mimetype,
+								data = data,
+							},
+						}
 					end,
 				},
 				gitmain = {
+					group = "copilot",
 					description = "Get diff against main branch",
-					input = function(callback)
-						callback("main") -- or "master" depending on your default branch name
-					end,
+					uri = "gitmain://diff",
+					schema = {
+						type = "object",
+						required = {},
+						properties = {},
+					},
 					resolve = function()
 						-- Get diff against main branch including staged and unstaged changes
 						local cmd = "git diff main HEAD && git diff"
 						local output = vim.fn.system(cmd)
 						return {
 							{
-								content = output,
-								filename = "git_diff_main",
-								filetype = "diff",
+								uri = "gitmain://diff",
+								mimetype = "text/x-diff",
+								data = output,
 							},
 						}
 					end,
