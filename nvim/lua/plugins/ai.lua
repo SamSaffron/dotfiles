@@ -49,8 +49,8 @@ return {
 			})
 		end,
 		opts = {
-			-- model = "claude-sonnet-4",
-			model = "gpt-4.1",
+			model = "claude-sonnet-4",
+			-- model = "gpt-4.1",
 			debug = false,
 			auto_insert_mode = true,
 			insert_at_end = false,
