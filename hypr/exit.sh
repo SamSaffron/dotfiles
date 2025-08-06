@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Options
-reboot="󰜉 Reboot"
-exit="󰈆 Exit"
-cancel="󰅖 Cancel"
+options="󰜉 Reboot\n󰈆 Exit\n󰅖 Cancel"
 
-# Rofi command
-chosen=$(echo -e "$exit\n$reboot\n$cancel" | rofi -dmenu -theme-str 'window {width: 20%;}' -p "Power Menu:")
+chosen=$(echo -e "$options" | walker -H --placeholder 'Power Menu:' --dmenu --label 1 --separator '\n')
 
-case $chosen in
-$reboot)
+case "$chosen" in
+"󰜉 Reboot")
   systemctl reboot
   ;;
-$exit)
+"󰈆 Exit")
   hyprctl dispatch exit
   ;;
-$cancel)
+"󰅖 Cancel")
   exit 0
   ;;
 esac

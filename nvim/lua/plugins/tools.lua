@@ -12,6 +12,7 @@ return {
 			{ "<leader>fg", "<cmd>Telescope live_grep<CR>" },
 			{ "<leader>fb", "<cmd>Telescope buffers<CR>" },
 			{ "<leader>fh", "<cmd>Telescope help_tags<CR>" },
+			{ "<leader>fo", "<cmd>Telescope oldfiles<CR>" },
 		},
 		config = function()
 			local telescope = require("telescope")
