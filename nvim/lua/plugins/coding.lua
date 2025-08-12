@@ -434,6 +434,7 @@ return {
   },
   {
     "nvim-neotest/neotest",
+    commit = "52fca6717ef972113ddd6ca223e30ad0abb2800c",
     lazy = true,
     dependencies = {
       "olimorris/neotest-rspec",
@@ -457,10 +458,10 @@ return {
       { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end,                 desc = "Toggle Watch (Neotest)" },
     },
     config = function()
-      ensure_d_rspec()
+      local neotest_rspec = require("neotest-rspec")
       require("neotest").setup({
         adapters = {
-          require("neotest-rspec")({
+          neotest_rspec({
             rspec_cmd = "/tmp/d-rspec",
           }),
         },
@@ -468,6 +469,7 @@ return {
           open = "botright vsplit | vertical resize 80",
         },
       })
+      ensure_d_rspec()
     end,
   },
   {
@@ -478,6 +480,10 @@ return {
     config = function()
       require("dap-ruby").setup()
     end,
+  },
+  {
+    "nvim-treesitter/playground",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
   {
     "nvim-treesitter/nvim-treesitter",
