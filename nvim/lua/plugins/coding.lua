@@ -76,6 +76,32 @@ return {
     opts = {}
   },
   {
+    "ray-x/go.nvim",
+    dependencies = { -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {
+      -- lsp_keymaps = false,
+      -- other options
+    },
+    config = function(_, opts)
+      require("go").setup(opts)
+      local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = "*.go",
+        callback = function()
+          require('go.format').goimports()
+        end,
+        group = format_sync_grp,
+      })
+    end,
+    event = { "CmdlineEnter" },
+    ft = { "go", 'gomod' },
+    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+  },
+  {
     "mason-org/mason-lspconfig.nvim",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     opts = { ensure_installed = { "erb-formatter", "erb-lint" } },
@@ -348,7 +374,7 @@ return {
         local has_stree_in_bundle = function()
           local gemfile_lock = vim.fn.findfile("Gemfile.lock", ".;")
           if gemfile_lock ~= "" then
-            local grep_result = vim.fn.system("grep -q syntax_tree " .. vim.fn.shellescape(gemfile_lock))
+            vim.fn.system("grep -q syntax_tree " .. vim.fn.shellescape(gemfile_lock))
             return vim.v.shell_error == 0
           end
           return false
@@ -387,6 +413,7 @@ return {
           hbs = { "prettier" },
           css = { "prettier", "stylelint" },
           scss = { "prettier", "stylelint" },
+          go = { "goimports", "gofmt" },
         },
         default_format_opts = {
           lsp_format = "fallback",
