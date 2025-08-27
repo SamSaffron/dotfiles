@@ -2,7 +2,7 @@
 
 options="󰜉 Reboot\n󰈆 Exit\n󰅖 Cancel"
 
-chosen=$(echo -e "$options" | walker -H --placeholder 'Power Menu:' --dmenu --label 1 --separator '\n')
+chosen=$(echo -e "$options" | walker --placeholder 'Power Menu:' --dmenu)
 
 case "$chosen" in
 "󰜉 Reboot")
