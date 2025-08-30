@@ -19,9 +19,8 @@
   background-color: rgba(15, 27, 53, 0.9);
   padding: 4px 6px;
   margin-top: 6px;
-  margin-left: 6px;
+  margin-left: 0px;
   margin-right: 6px;
-  border-radius: 10px;
   border-width: 0px;
 }
 
@@ -60,9 +59,9 @@
 #cpu {
   background-color: rgba(15, 27, 53, 0.9);
   margin-top: 6px;
-  padding: 4px 4px;
+  padding: 4px 15px;
   border-width: 0px;
-  margin-left: 10px;
+  margin-left: 0px;
 }
 
 #custpm-temperature.critical,
