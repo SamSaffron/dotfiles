@@ -1,8 +1,8 @@
 _G.dd = function(...)
-	Snacks.debug.inspect(...)
+  Snacks.debug.inspect(...)
 end
 _G.bt = function()
-	Snacks.debug.backtrace()
+  Snacks.debug.backtrace()
 end
 vim.print = _G.dd
 -- see: https://github.com/neovim/neovim/issues/31675
