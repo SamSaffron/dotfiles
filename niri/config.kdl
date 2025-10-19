@@ -36,6 +36,7 @@ layout {
 window-rule {
     match app-id=r#"(?i)^git-gui$"#
     open-floating true
+    open-focused true
 }
 
 spawn-sh-at-startup "systemctl --user start hyprpolkitagent"
