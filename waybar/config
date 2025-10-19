@@ -8,6 +8,7 @@
 
     "modules-left": [
         "hyprland/workspaces",
+        "niri/workspaces"
     ],
     "modules-center": [
         "hyprland/window"
@@ -28,6 +29,11 @@
       "interval": 30,
       "format": "󰋊 {percentage_used}%",
       "path": "/"
+    },
+
+    "niri/workspaces": {
+        "format": "{index}",
+        "all-outputs": true
     },
 
 

@@ -32,6 +32,12 @@ layout {
     }
 }
 
+// Force Git GUI windows (Tk/XWayland) to open floating for easier use.
+window-rule {
+    match app-id=r#"(?i)^git-gui$"#
+    open-floating true
+}
+
 spawn-sh-at-startup "systemctl --user start hyprpolkitagent"
 spawn-sh-at-startup "1password --silent"
 spawn-sh-at-startup "env QT_QPA_PLATFORM=xcb copyq"
