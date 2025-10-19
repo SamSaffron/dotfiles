@@ -1,0 +1,114 @@
+// Niri configuration derived from the existing Hyprland setup.
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            options "caps:swapescape"
+        }
+        numlock
+    }
+
+    touchpad {
+        tap
+        // natural-scroll
+    }
+
+    focus-follows-mouse max-scroll-amount="0%"
+}
+
+output "DP-1" {
+    mode "5120x2160@120.000"
+    scale 1.6
+}
+
+layout {
+    gaps 4
+
+    focus-ring {
+        width 1
+        active-color "#505050aa"
+        inactive-color "#595959aa"
+    }
+}
+
+spawn-sh-at-startup "systemctl --user start hyprpolkitagent"
+spawn-sh-at-startup "1password --silent"
+spawn-sh-at-startup "env QT_QPA_PLATFORM=xcb copyq"
+spawn-sh-at-startup "telegram-desktop -startintray"
+spawn-sh-at-startup "slack -u"
+spawn-sh-at-startup "signal-desktop --start-in-tray"
+spawn-sh-at-startup "blueman-applet"
+spawn-sh-at-startup "swww-daemon"
+spawn-sh-at-startup "hypridle"
+spawn-sh-at-startup "waybar"
+spawn-sh-at-startup "dunst"
+spawn-sh-at-startup "opendeck --hide"
+
+binds {
+    Super+Return { spawn "~/.config/niri/scripts/terminal.sh"; }
+    Super+Q repeat=false { close-window; }
+    Super+F { spawn "dolphin"; }
+    Super+V { toggle-window-floating; }
+    Super+D { spawn "fuzzel"; }
+    Super+J { toggle-column-tabbed-display; }
+    Super+X { spawn "~/.config/niri/scripts/power-menu.sh"; }
+    Super+T { switch-preset-column-width; }
+
+    Super+Left  { focus-column-left; }
+    Super+Right { focus-column-right; }
+    Super+Up    { focus-window-up; }
+    Super+Down  { focus-window-down; }
+
+    Super+Shift+Right { swap-window-right; }
+    Super+Shift+Left  { swap-window-left; }
+
+    Super+1 { focus-workspace 1; }
+    Super+2 { focus-workspace 2; }
+    Super+3 { focus-workspace 3; }
+    Super+4 { focus-workspace 4; }
+    Super+5 { focus-workspace 5; }
+    Super+6 { focus-workspace 6; }
+    Super+7 { focus-workspace 7; }
+    Super+8 { focus-workspace 8; }
+    Super+9 { focus-workspace 9; }
+    Super+0 { focus-workspace 10; }
+
+    Super+Shift+1 { move-window-to-workspace 1 focus=false; }
+    Super+Shift+2 { move-window-to-workspace 2 focus=false; }
+    Super+Shift+3 { move-window-to-workspace 3 focus=false; }
+    Super+Shift+4 { move-window-to-workspace 4 focus=false; }
+    Super+Shift+5 { move-window-to-workspace 5 focus=false; }
+    Super+Shift+6 { move-window-to-workspace 6 focus=false; }
+    Super+Shift+7 { move-window-to-workspace 7 focus=false; }
+    Super+Shift+8 { move-window-to-workspace 8 focus=false; }
+    Super+Shift+9 { move-window-to-workspace 9 focus=false; }
+    Super+Shift+0 { move-window-to-workspace 10 focus=false; }
+
+    Super+S { spawn "~/.config/niri/scripts/toggle-magic-workspace.sh"; }
+    Super+Shift+S { spawn "~/.config/niri/scripts/send-to-magic-workspace.sh"; }
+
+    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Mod+WheelScrollRight      { focus-column-right; }
+    Mod+WheelScrollLeft       { focus-column-left; }
+
+    Print { spawn "hyprshot" "-m" "region" "--clipboard-only"; }
+    Shift+Print { spawn-sh "~/.config/hypr/countdown 3 && hyprshot -z -m region --clipboard-only"; }
+    Ctrl+Print { spawn "hyprshot" "-z" "-m" "output" "-m" "DP-1" "--clipboard-only"; }
+    Super+E { spawn-sh "wl-paste --type image/png --no-newline | swappy -f -"; }
+    Super+R { spawn "~/.config/niri/scripts/screen-record.sh"; }
+
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl -e4 -n2 set 5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl -e4 -n2 set 5%-"; }
+
+    XF86AudioNext { spawn "playerctl" "next"; }
+    XF86AudioPause { spawn "playerctl" "play-pause"; }
+    XF86AudioPlay { spawn "playerctl" "play-pause"; }
+    XF86AudioPrev { spawn "playerctl" "previous"; }
+}
