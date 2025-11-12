@@ -214,6 +214,7 @@ return {
         },
         ts_ls = {},
         cssls = {},
+        copilot = {},
       },
     },
     config = function(_, opts)
