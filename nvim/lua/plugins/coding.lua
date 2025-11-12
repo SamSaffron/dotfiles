@@ -29,25 +29,24 @@ done
 
   # If we found an output file, process it
   if [[ -n "$output_file" && -f "$output_file" ]]; then
-    plugin_id=$(jq -r '.examples[0].id'        "$output_file")
-    test_file=$(jq -r '.examples[0].file_path' "$output_file")
+    plugin_id=$(jq -r '.examples[0].id // ""'        "$output_file")
+    test_file=$(jq -r '.examples[0].file_path // ""' "$output_file")
 
     skip_remap=false
     if [[ "$plugin_id" =~ ^\./plugins/[^/]+/ ]]; then
-      plugin_abs=$(realpath "${plugin_id#./}")
-      test_abs=$(realpath "$test_file")
-
-      plugin_root=$(git -C "$(dirname "$plugin_abs")" rev-parse --show-toplevel 2>/dev/null || true)
-      test_root=$(git  -C "$(dirname "$test_abs")"  rev-parse --show-toplevel 2>/dev/null || true)
-
-      if [[ -n "$plugin_root" && "$plugin_root" == "$test_root" ]]; then
+      # Extract plugin name from the path
+      plugin_name=$(echo "$plugin_id" | sed -n 's|^\./plugins/\([^/]*\)/.*|\1|p')
+      plugin_dir="/home/sam/Source/discourse/plugins/$plugin_name"
+      
+      # Check if plugin has its own git repository
+      if [[ -d "$plugin_dir/.git" ]]; then
         skip_remap=true
       fi
     fi
 
     if [[ "$skip_remap" == false ]]; then
       temp_file=$(mktemp)
-      jq '(.examples[] | select(.id != null) | .id) |= sub("\\./plugins/[^/]+/"; "./")' \
+      jq '(.examples[]? | select(.id != null) | .id) |= sub("^\\./plugins/[^/]+/"; "./")' \
         "$output_file" >"$temp_file"
       mv "$temp_file" "$output_file"
     fi
