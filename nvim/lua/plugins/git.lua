@@ -11,10 +11,6 @@ return {
     dependencies = { "tpope/vim-fugitive" },
   },
   {
-    "lambdalisue/gina.vim",
-    cmd = "Gina",
-  },
-  {
     "rhysd/git-messenger.vim",
     keys = {
       { "<leader>m", "<Plug>(git-messenger)", desc = "Git Messenger" },
@@ -24,4 +20,24 @@ return {
       vim.g.git_messenger_always_into_popup = true
     end,
   },
+  {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+  }
 }
