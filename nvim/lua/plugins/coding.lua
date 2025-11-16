@@ -37,7 +37,7 @@ done
       # Extract plugin name from the path
       plugin_name=$(echo "$plugin_id" | sed -n 's|^\./plugins/\([^/]*\)/.*|\1|p')
       plugin_dir="/home/sam/Source/discourse/plugins/$plugin_name"
-      
+
       # Check if plugin has its own git repository
       if [[ -d "$plugin_dir/.git" ]]; then
         skip_remap=true
@@ -212,8 +212,7 @@ return {
           },
         },
         ts_ls = {},
-        cssls = {},
-        copilot = {},
+        cssls = {}
       },
     },
     config = function(_, opts)
