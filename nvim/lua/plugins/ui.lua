@@ -156,7 +156,7 @@ return {
     },
     keys = {
       {
-        "<leader>f",
+        "<leader>e",
         function()
           require("neo-tree.command").execute({
             action = "show",
