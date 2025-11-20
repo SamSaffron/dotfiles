@@ -33,7 +33,12 @@ return {
 
           pickers.new({}, {
             prompt_title = "Modified (vs " .. branch .. " base)",
-            finder = finders.new_oneshot_job({ "sh", "-c", "git diff --name-only --relative " .. merge_base .. " && git ls-files --others --exclude-standard" }),
+            -- Use separate command calls and combine, avoiding && which stops on empty
+            finder = finders.new_oneshot_job({
+              "sh", "-c",
+              "(git diff --name-only --relative " ..
+              merge_base .. "; git ls-files --others --exclude-standard) | sort -u"
+            }, {}),
             sorter = sorters.get_fuzzy_file(),
             previewer = previewers.new_termopen_previewer({
               get_command = function(entry)
@@ -48,13 +53,14 @@ return {
         end,
         desc = "Changed files (main)"
       },
-      { "<leader>fw", "<cmd>Telescope git_status<CR>",                                 desc = "Git changed files" },
+      { "<leader>fw", "<cmd>Telescope git_status<CR>", desc = "Git changed files" },
     },
     config = function()
       local telescope = require("telescope")
       telescope.setup({
         defaults = {
-          file_ignore_patterns = { "node_modules", "tmp", "log" },
+          file_ignore_patterns = { "node_modules/", "tmp/", "log/" },
+          path_display = { "smart" },
         },
       })
 
