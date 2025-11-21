@@ -60,7 +60,7 @@ return {
       telescope.setup({
         defaults = {
           file_ignore_patterns = { "node_modules/", "tmp/", "log/" },
-          path_display = { "smart" },
+          -- path_display = { "smart" },
         },
       })
 
