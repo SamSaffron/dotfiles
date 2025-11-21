@@ -196,7 +196,15 @@ return {
             },
           },
         },
-        ruby_lsp = {},
+        ruby_lsp = {
+          init_options = {
+            addonSettings = {
+              ["Ruby LSP Rails"] = {
+                enablePendingMigrationsPrompt = false,
+              },
+            },
+          }
+        },
         rubocop = {},
         -- glint = {}, not working at the moment
         ember = {},
