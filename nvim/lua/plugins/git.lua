@@ -14,6 +14,20 @@ return {
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
 
+        local function get_main_branch()
+          -- Try to get default branch from remote
+          local result = vim.fn.systemlist("git rev-parse --abbrev-ref origin/HEAD 2>/dev/null")[1]
+          if result and not result:match("^fatal") then
+            return result:gsub("origin/", "")
+          end
+          -- Check if main branch exists
+          vim.fn.system("git show-ref --verify --quiet refs/heads/main")
+          if vim.v.shell_error == 0 then
+            return "main"
+          end
+          return "master"
+        end
+
         local function map(mode, l, r, opts)
           opts = opts or {}
           opts.buffer = bufnr
@@ -49,6 +63,8 @@ return {
         map("n", "<leader>hd", gs.diffthis, { desc = "Diff this" })
         map("n", "<leader>hD", function() gs.diffthis("~") end, { desc = "Diff this ~" })
         map("n", "<leader>td", gs.toggle_deleted, { desc = "Toggle deleted" })
+        map("n", "<leader>hm", function() gs.change_base(get_main_branch(), true) end, { desc = "Show changes from main branch" })
+        map("n", "<leader>hH", function() gs.reset_base(true) end, { desc = "Reset base to HEAD" })
 
         -- Text object
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })
