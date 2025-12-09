@@ -2,6 +2,8 @@ local function ensure_d_rspec()
   local script = [=[
 #!/bin/bash
 
+echo "$@" > /tmp/d-rspec-args.log
+
 args=()
 for arg in "$@"; do
   if [[ "$arg" == ./* ]]; then
@@ -11,47 +13,118 @@ for arg in "$@"; do
   fi
 done
 
-(
-  cd /home/sam/Source/discourse || exit 1
-  if [[ "${args[*]}" == *"plugins"* ]]; then
-    export LOAD_PLUGINS=1
-  fi
-  ./bin/rspec "${args[@]}"
+# Check if any file argument is in a share/dv directory
+use_dv=false
+formatter_file=""
+output_file=""
 
-  # Find the output file from arguments
-  output_file=""
+for ((i = 0; i < ${#args[@]}; i++)); do
+  arg="${args[i]}"
+  file_path="${arg%%:*}"
+
+  if [[ "$file_path" == *.rb && -f "$file_path" && "$arg" == */share/dv/* ]]; then
+    use_dv=true
+  fi
+  if [[ "$arg" == "--require" && -f "${args[i + 1]}" ]]; then
+    formatter_file="${args[i + 1]}"
+  fi
+  if [[ "$arg" == "-o" ]]; then
+    output_file="${args[i + 1]}"
+  fi
+done
+
+if [[ "$use_dv" == true ]]; then
+  # Path mapping constants
+  local_dv_prefix="/home/sam/.local/share/dv/discourse_src"
+  container_prefix="/var/www/discourse"
+
+  # Copy formatter into container
+  if [[ -n "$formatter_file" ]]; then
+    container_formatter="/tmp/$(basename "$formatter_file")"
+    dv cp "$formatter_file" "@:$container_formatter"
+
+    # Update args to use container formatter path
+    for ((i = 0; i < ${#args[@]}; i++)); do
+      if [[ "${args[i]}" == "$formatter_file" ]]; then
+        args[i]="$container_formatter"
+      fi
+    done
+  fi
+
+  # Run rspec in container
+  container_output="/tmp/$(basename "$output_file")"
+
+  # Update output file arg to container path
   for ((i = 0; i < ${#args[@]}; i++)); do
-    if [[ "${args[i]}" == "-o" ]]; then
-      output_file="${args[i + 1]}"
-      break
+    if [[ "${args[i]}" == "$output_file" ]]; then
+      args[i]="$container_output"
     fi
   done
 
-  # If we found an output file, process it
-  if [[ -n "$output_file" && -f "$output_file" ]]; then
-    plugin_id=$(jq -r '.examples[0].id // ""'        "$output_file")
-    test_file=$(jq -r '.examples[0].file_path // ""' "$output_file")
-
-    skip_remap=false
-    if [[ "$plugin_id" =~ ^\./plugins/[^/]+/ ]]; then
-      # Extract plugin name from the path
-      plugin_name=$(echo "$plugin_id" | sed -n 's|^\./plugins/\([^/]*\)/.*|\1|p')
-      plugin_dir="/home/sam/Source/discourse/plugins/$plugin_name"
-
-      # Check if plugin has its own git repository
-      if [[ -d "$plugin_dir/.git" ]]; then
-        skip_remap=true
-      fi
+  # Remap local dv paths to container paths in args
+  for ((i = 0; i < ${#args[@]}; i++)); do
+    if [[ "${args[i]}" == "$local_dv_prefix"* ]]; then
+      args[i]="${args[i]/$local_dv_prefix/$container_prefix}"
     fi
+  done
 
-    if [[ "$skip_remap" == false ]]; then
-      temp_file=$(mktemp)
-      jq '(.examples[]? | select(.id != null) | .id) |= sub("^\\./plugins/[^/]+/"; "./")' \
-        "$output_file" >"$temp_file"
-      mv "$temp_file" "$output_file"
+  dv run -- bin/rspec "${args[@]}"
+
+  # Copy results back
+  if [[ -n "$output_file" ]]; then
+    dv cp "@:$container_output" "$output_file"
+
+    cp "$output_file" "/tmp/d-rspec-output-backup.json"
+
+    # Remap container paths back to local paths in the output file
+    if [[ -f "$output_file" ]]; then
+      sed -i "s|$container_prefix|$local_dv_prefix|g" "$output_file"
     fi
   fi
-)
+else
+  # Original behavior for non-dv files
+  (
+    cd /home/sam/Source/discourse || exit 1
+    if [[ "${args[*]}" == *"plugins"* ]]; then
+      export LOAD_PLUGINS=1
+    fi
+    ./bin/rspec "${args[@]}"
+
+    # Find the output file from arguments
+    output_file=""
+    for ((i = 0; i < ${#args[@]}; i++)); do
+      if [[ "${args[i]}" == "-o" ]]; then
+        output_file="${args[i + 1]}"
+        break
+      fi
+    done
+
+    # If we found an output file, process it
+    if [[ -n "$output_file" && -f "$output_file" ]]; then
+      plugin_id=$(jq -r '.examples[0].id // ""'        "$output_file")
+      test_file=$(jq -r '.examples[0].file_path // ""' "$output_file")
+
+      skip_remap=false
+      if [[ "$plugin_id" =~ ^\./plugins/[^/]+/ ]]; then
+        # Extract plugin name from the path
+        plugin_name=$(echo "$plugin_id" | sed -n 's|^\./plugins/\([^/]*\)/.*|\1|p')
+        plugin_dir="/home/sam/Source/discourse/plugins/$plugin_name"
+
+        # Check if plugin has its own git repository
+        if [[ -d "$plugin_dir/.git" ]]; then
+          skip_remap=true
+        fi
+      fi
+
+      if [[ "$skip_remap" == false ]]; then
+        temp_file=$(mktemp)
+        jq '(.examples[]? | select(.id != null) | .id) |= sub("^\\./plugins/[^/]+/"; "./")' \
+          "$output_file" >"$temp_file"
+        mv "$temp_file" "$output_file"
+      fi
+    fi
+  )
+fi
 ]=]
   local script_path = "/tmp/d-rspec"
   local f = io.open(script_path, "w")
@@ -466,46 +539,46 @@ return {
     "tpope/vim-surround",
     event = { "BufReadPre", "BufNewFile" },
   },
-  {
-    "nvim-neotest/neotest",
-    --- commit = "52fca6717ef972113ddd6ca223e30ad0abb2800c",
-    lazy = true,
-    dependencies = {
-      "olimorris/neotest-rspec",
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "mfussenegger/nvim-dap",
-      "antoinemadec/FixCursorHold.nvim",
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>t",  "",                                                                                 desc = "+test" },
-      { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end,                      desc = "Run File (Neotest)" },
-      { "<leader>tT", function() require("neotest").run.run(vim.fn.getcwd()) end,                         desc = "Run All Test Files (Neotest)" },
-      { "<leader>tr", function() require("neotest").run.run() end,                                        desc = "Run Nearest (Neotest)" },
-      { "<leader>tl", function() require("neotest").run.run_last() end,                                   desc = "Run Last (Neotest)" },
-      { "<leader>ts", function() require("neotest").summary.toggle() end,                                 desc = "Toggle Summary (Neotest)" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output (Neotest)" },
-      { "<leader>tO", function() require("neotest").output_panel.toggle() end,                            desc = "Toggle Output Panel (Neotest)" },
-      { "<leader>tS", function() require("neotest").run.stop() end,                                       desc = "Stop (Neotest)" },
-      { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end,                 desc = "Toggle Watch (Neotest)" },
-    },
-    config = function()
-      local neotest_rspec = require("neotest-rspec")
-      require("neotest").setup({
-        adapters = {
-          neotest_rspec({
-            rspec_cmd = "/tmp/d-rspec",
-          }),
-        },
-        output_panel = {
-          open = "botright vsplit | vertical resize 80",
-        },
-      })
-      ensure_d_rspec()
-    end,
-  },
+  -- {
+  --   "nvim-neotest/neotest",
+  --   --- commit = "52fca6717ef972113ddd6ca223e30ad0abb2800c",
+  --   lazy = true,
+  --   dependencies = {
+  --     "olimorris/neotest-rspec",
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "nvim-neotest/nvim-nio",
+  --     "nvim-lua/plenary.nvim",
+  --     "mfussenegger/nvim-dap",
+  --     "antoinemadec/FixCursorHold.nvim",
+  --   },
+  --   -- stylua: ignore
+  --   keys = {
+  --     { "<leader>t",  "",                                                                                 desc = "+test" },
+  --     { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end,                      desc = "Run File (Neotest)" },
+  --     { "<leader>tT", function() require("neotest").run.run(vim.fn.getcwd()) end,                         desc = "Run All Test Files (Neotest)" },
+  --     { "<leader>tr", function() require("neotest").run.run() end,                                        desc = "Run Nearest (Neotest)" },
+  --     { "<leader>tl", function() require("neotest").run.run_last() end,                                   desc = "Run Last (Neotest)" },
+  --     { "<leader>ts", function() require("neotest").summary.toggle() end,                                 desc = "Toggle Summary (Neotest)" },
+  --     { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output (Neotest)" },
+  --     { "<leader>tO", function() require("neotest").output_panel.toggle() end,                            desc = "Toggle Output Panel (Neotest)" },
+  --     { "<leader>tS", function() require("neotest").run.stop() end,                                       desc = "Stop (Neotest)" },
+  --     { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end,                 desc = "Toggle Watch (Neotest)" },
+  --   },
+  --   config = function()
+  --     local neotest_rspec = require("neotest-rspec")
+  --     require("neotest").setup({
+  --       adapters = {
+  --         neotest_rspec({
+  --           rspec_cmd = "/tmp/d-rspec",
+  --         }),
+  --       },
+  --       output_panel = {
+  --         open = "botright vsplit | vertical resize 80",
+  --       },
+  --     })
+  --     ensure_d_rspec()
+  --   end,
+  -- },
   {
     "mfussenegger/nvim-dap",
     dependencies = {
