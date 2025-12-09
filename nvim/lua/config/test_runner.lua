@@ -142,10 +142,24 @@ function M.run_nearest()
   end
 end
 
+-- Close the test buffer and window
+function M.close()
+  if test_buf and vim.api.nvim_buf_is_valid(test_buf) then
+    pcall(function()
+      local job_id = vim.b[test_buf].terminal_job_id
+      if job_id then vim.fn.jobstop(job_id) end
+    end)
+    vim.api.nvim_buf_delete(test_buf, { force = true })
+    test_buf = nil
+    test_win = nil
+  end
+end
+
 -- Setup keymaps
 function M.setup()
   vim.keymap.set("n", "<leader>tt", M.run_file, { desc = "Run tests in file" })
   vim.keymap.set("n", "<leader>tr", M.run_nearest, { desc = "Run test near cursor" })
+  vim.keymap.set("n", "<leader>tx", M.close, { desc = "Close test buffer" })
 end
 
 return M
