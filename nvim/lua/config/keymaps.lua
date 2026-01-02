@@ -76,4 +76,4 @@ local function restart_discourse()
   vim.notify("Restarting Discourse...")
 end
 
-map("n", "<leader>d", restart_discourse, { desc = "Restart Discourse server" })
+map("n", "<leader>D", restart_discourse, { desc = "Restart Discourse server" })

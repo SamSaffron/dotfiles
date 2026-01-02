@@ -110,5 +110,26 @@ return {
       { "<leader>lg", "<cmd>LazyGit<cr>",                  desc = "LazyGit" },
       { "<leader>lf", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGit" }
     }
-  }
+  },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose" },
+    keys = {
+      { "<leader>dv", "<cmd>DiffviewOpen<cr>", desc = "Diffview Open" },
+      { "<leader>dh", "<cmd>DiffviewFileHistory %<cr>", desc = "Diffview File History" },
+      { "<leader>dH", "<cmd>DiffviewFileHistory<cr>", desc = "Diffview Branch History" },
+      { "<leader>dc", "<cmd>DiffviewClose<cr>", desc = "Diffview Close" },
+    },
+    opts = {
+      enhanced_diff_hl = true,
+      view = {
+        default = {
+          layout = "diff2_horizontal",
+        },
+        merge_tool = {
+          layout = "diff3_horizontal",
+        },
+      },
+    },
+  },
 }
