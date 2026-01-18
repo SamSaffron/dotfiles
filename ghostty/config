@@ -1,0 +1,60 @@
+# Font
+font-family = SFMono Nerd Font Mono
+font-size = 12
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
+# Font rendering (uncomment if font looks too thin)
+# font-thicken = true
+freetype-load-flags = force-autohint
+
+# Padding
+window-padding-x = 4
+window-padding-y = 4
+
+# Gruvbox color scheme
+background = #282828
+foreground = #ebdbb2
+
+cursor-color = #928374
+
+selection-foreground = #928374
+selection-background = #3c3836
+
+# black
+palette = 0=#282828
+palette = 8=#928374
+
+# red
+palette = 1=#cc241d
+palette = 9=#fb4934
+
+# green
+palette = 2=#98971a
+palette = 10=#b8bb26
+
+# yellow
+palette = 3=#d79921
+palette = 11=#fabd2d
+
+# blue
+palette = 4=#458588
+palette = 12=#83a598
+
+# magenta
+palette = 5=#b16286
+palette = 13=#d3869b
+
+# cyan
+palette = 6=#689d6a
+palette = 14=#8ec07c
+
+# white
+palette = 7=#a89984
+palette = 15=#928374
+
+# Keybindings
+keybind = shift+enter=text:\x1b\r

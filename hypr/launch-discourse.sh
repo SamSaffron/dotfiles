@@ -20,14 +20,14 @@ if is_workspace_empty; then
   # Switch to workspace 2 first
   hyprctl dispatch workspace 2
 
-  # Launch first kitty terminal for unicorn
-  hyprctl dispatch exec "kitty --hold -e bash -c 'cd ~/Source/discourse && bin/unicorn'"
+  # Launch first ghostty terminal for unicorn
+  hyprctl dispatch exec "ghostty --wait-after-command -e bash -c 'cd ~/Source/discourse && bin/unicorn'"
 
   # Small delay to ensure first terminal is launched
   sleep 0.5
 
-  # Launch second kitty terminal for ember-cli
-  hyprctl dispatch exec "kitty --hold -e bash -c 'cd ~/Source/discourse && bin/ember-cli'"
+  # Launch second ghostty terminal for ember-cli
+  hyprctl dispatch exec "ghostty --wait-after-command -e bash -c 'cd ~/Source/discourse && bin/ember-cli'"
 
   # Notify success
   notify-send "Discourse Dev Setup" "Launched unicorn and ember-cli terminals on workspace 2" -t 3000
