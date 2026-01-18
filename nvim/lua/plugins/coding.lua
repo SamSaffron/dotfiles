@@ -692,4 +692,7 @@ return {
       vim.g.unception_block_while_host_edits = true
     end,
   },
+  {
+    dir = "~/Source/term-llm-nvim"
+  }
 }
