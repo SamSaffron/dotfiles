@@ -58,3 +58,4 @@ palette = 15=#928374
 
 # Keybindings
 keybind = shift+enter=text:\x1b\r
+gtk-single-instance = false
