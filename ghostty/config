@@ -5,7 +5,7 @@ font-size = 12
 # Cursor
 cursor-style = block
 cursor-style-blink = false
-shell-integration-features = no-cursor
+shell-integration-features = no-cursor,no-title
 
 # Font rendering (uncomment if font looks too thin)
 # font-thicken = true

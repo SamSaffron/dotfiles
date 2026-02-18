@@ -19,4 +19,4 @@ if [[ -n "$active_pid" ]] && [[ "$active_pid" =~ ^[0-9]+$ ]] && [[ "$active_pid"
   fi
 fi
 
-cd "$dir" && ghostty
+cd "$dir" && kitty
