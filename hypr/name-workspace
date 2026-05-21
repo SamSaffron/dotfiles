@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage:
+#   name-workspace                 reset the current workspace to just its id
+#   name-workspace some name       set the current workspace to "<id> some name"
+
+set -euo pipefail
+
+id="$(hyprctl activeworkspace -j | jq -r '.id')"
+
+if ! [[ "$id" =~ ^[0-9]+$ ]]; then
+    echo "error: could not determine active workspace id (got: $id)" >&2
+    exit 1
+fi
+
+if (( $# > 0 )); then
+    hyprctl dispatch renameworkspace "$id" "$id: $*"
+else
+    hyprctl dispatch renameworkspace "$id" "$id"
+fi
