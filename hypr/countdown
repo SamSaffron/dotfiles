@@ -1,73 +1,88 @@
-#!/usr/bin/env python3
+#!/usr/bin/env bash
+# shellcheck disable=SC2329 # notifier functions are invoked indirectly via $notifier.
 
-# taken from https://askubuntu.com/questions/761505/can-i-have-a-countdown-window-show-the-time-until-next-suspend
+# Small, dependency-light countdown used before delayed screenshots.
+#
+# The old version used PyGObject/GTK3 and xrandr, which is fragile on Wayland
+# and fails completely if the Python GTK bindings are not installed.  This
+# version only requires a shell for timing, and shows the countdown through the
+# first available lightweight notification mechanism:
+#   1. dunstify       - best fit here because dunst is started by the configs
+#   2. notify-send    - generic libnotify fallback
+#   3. hyprctl notify - Hyprland built-in fallback
+# If none of those are available, it still sleeps for the requested time and
+# exits successfully so the screenshot command chained with `&&` still runs.
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, Pango
-from threading import Thread
-import subprocess
-import time
-import signal
-import sys
-import os
+set -u
 
-# --- set the color (index) below (1 is the first)
-color = 1
-# ---
-textcolors = ["grey", "orange", "green", "blue", "white"]
-# --- don't change anything below
-txtcolor = textcolors[color-1]
+usage() {
+    printf 'Usage: %s [seconds] [message]\n' "${0##*/}" >&2
+}
 
-countdown = int(sys.argv[1])
+seconds="${1:-3}"
+message="${2:-Screenshot}"
 
-class CountDown(Gtk.Window):
+if [[ ! "$seconds" =~ ^[0-9]+$ ]]; then
+    usage
+    exit 2
+fi
 
-    def __init__(self):
-        Gtk.Window.__init__(self)
-        maingrid = Gtk.Grid()
-        self.add(maingrid)
-        maingrid.set_border_width(20)
-        # set initial text for the spash window
-        self.label = Gtk.Label(countdown)
-        self.label.modify_font(Pango.FontDescription('Consolas 30'))
-        self.label.set_width_chars(5)
-        maingrid.attach(self.label, 0, 0, 1, 1)
-        self.update = Thread(target=self.start_countdown, args=[countdown])
-        # daemonize the thread
-        self.update.setDaemon(True)
-        self.update.start()
+# A zero second countdown is valid and useful in scripts.
+if (( seconds == 0 )); then
+    exit 0
+fi
 
-    def start_countdown(self, countdown):
-        t = countdown
-        while t > 0:
-            time.sleep(1)
-            t -= 1
-            GObject.idle_add(self.label.set_text, str(t),
-                priority=GObject.PRIORITY_DEFAULT)
-        self.stop()
+notify_with_dunstify() {
+    local remaining="$1"
+    dunstify \
+        --replace=91190 \
+        --timeout=950 \
+        --urgency=low \
+        "$message in $remaining" \
+        >/dev/null 2>&1
+}
 
-    def stop(self):
-        Gtk.main_quit()
-        if not self.emit("delete-event", Gtk.gdk.Event(Gtk.gdk.DELETE)):
-            self.destroy()
+notify_with_notify_send() {
+    local remaining="$1"
+    # Keep this fallback conservative: older notify-send builds may not support
+    # replacement IDs, but -t/-u are widely available.
+    notify-send \
+        -t 950 \
+        -u low \
+        "$message in $remaining" \
+        >/dev/null 2>&1
+}
 
-def get_screen():
-    scr = [s.split("x") for s in subprocess.check_output([
-        "xrandr"]).decode("utf-8").split() if "+0+0" in s][0]
-    return int(scr[0]) - 400
+notify_with_hyprctl() {
+    local remaining="$1"
+    hyprctl notify -1 950 'rgb(fab387)' "$message in $remaining" >/dev/null 2>&1
+}
 
-def splashwindow():
-    window = CountDown()
-    window.set_decorated(False)
-    window.set_resizable(False)
-    window.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(0,0,0,1))
-    window.modify_fg(Gtk.StateFlags.NORMAL, Gdk.color_parse(txtcolor))
-    window.set_opacity(0.8)
-    window.move(get_screen(), 80)
-    window.set_keep_above(True)
-    window.show_all()
-    Gtk.main()
+notify_with_terminal() {
+    local remaining="$1"
+    # Only write to stdout when this was run from a terminal. Keybind invocations
+    # should stay silent.
+    if [[ -t 1 ]]; then
+        printf '\r%s in %s… ' "$message" "$remaining"
+    fi
+}
 
+notifier='notify_with_terminal'
+if command -v dunstify >/dev/null 2>&1; then
+    notifier='notify_with_dunstify'
+elif command -v notify-send >/dev/null 2>&1; then
+    notifier='notify_with_notify_send'
+elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
+    notifier='notify_with_hyprctl'
+fi
 
-splashwindow()
+for (( remaining = seconds; remaining > 0; remaining-- )); do
+    "$notifier" "$remaining" || true
+    sleep 1
+done
+
+if [[ -t 1 ]]; then
+    printf '\n'
+fi
+
+exit 0
