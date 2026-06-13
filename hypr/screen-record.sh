@@ -39,7 +39,7 @@ else
     GEOMETRY=$(echo "$GEOMETRY" | sed 's/\([0-9]*\),\([0-9]*\) \([0-9]*\)x\([0-9]*\)/\3x\4+\1+\2/')
   fi
 
-  gpu-screen-recorder -w region -region "$GEOMETRY" -f 30 -k h264 -q medium -o "$RECORDING_FILE" >"$LOGFILE" 2>&1 &
+  gpu-screen-recorder -w "$GEOMETRY" -f 30 -k h264 -q medium -o "$RECORDING_FILE" >"$LOGFILE" 2>&1 &
   GSR_PID=$!
   sleep 1
 
