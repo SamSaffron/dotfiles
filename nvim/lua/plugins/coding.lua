@@ -589,89 +589,166 @@ return {
       require("dap-ruby").setup()
     end,
   },
-  {
-    "nvim-treesitter/playground",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-  },
+  -- Treesitter playground is archived and targets the legacy nvim-treesitter
+  -- `master` API. Neovim 0.12 provides `:InspectTree` as the replacement.
   {
     "nvim-treesitter/nvim-treesitter",
-    version = false,             -- last release is way too old and doesn't work on Windows
+    branch = "main",
     build = ":TSUpdate",
-    lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
-    cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+    lazy = false, -- nvim-treesitter `main` does not support lazy-loading
     keys = {
       { "<c-space>", desc = "Increment Selection" },
       { "<bs>",      desc = "Decrement Selection", mode = "x" },
     },
     config = function()
-      local opts = {
-        highlight = { enable = true },
-        indent = { enable = true },
-        ensure_installed = {
-          "bash",
-          "c",
-          "diff",
-          "html",
-          "javascript",
-          "glimmer",
-          "jsdoc",
-          "json",
-          "jsonc",
-          "lua",
-          "luadoc",
-          "luap",
-          "markdown",
-          "markdown_inline",
-          "printf",
-          "python",
-          "query",
-          "regex",
-          "toml",
-          "tsx",
-          "typescript",
-          "vim",
-          "vimdoc",
-          "xml",
-          "yaml",
-          "ruby",
-        },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<C-space>",
-            node_incremental = "<C-space>",
-            scope_incremental = false,
-            node_decremental = "<bs>",
-          },
-        },
-        textobjects = {
-          move = {
-            enable = true,
-            goto_next_start = {
-              ["]f"] = "@function.outer",
-              ["]c"] = "@class.outer",
-              ["]a"] = "@parameter.inner",
-            },
-            goto_next_end = {
-              ["]F"] = "@function.outer",
-              ["]C"] = "@class.outer",
-              ["]A"] = "@parameter.inner",
-            },
-            goto_previous_start = {
-              ["[f"] = "@function.outer",
-              ["[c"] = "@class.outer",
-              ["[a"] = "@parameter.inner",
-            },
-            goto_previous_end = {
-              ["[F"] = "@function.outer",
-              ["[C"] = "@class.outer",
-              ["[A"] = "@parameter.inner",
-            },
-          },
-        },
+      local treesitter = require("nvim-treesitter")
+      local parsers = {
+        "bash",
+        "c",
+        "diff",
+        "html",
+        "javascript",
+        "glimmer",
+        "jsdoc",
+        "json",
+        "lua",
+        "luadoc",
+        "luap",
+        "markdown",
+        "markdown_inline",
+        "printf",
+        "python",
+        "query",
+        "regex",
+        "toml",
+        "tsx",
+        "typescript",
+        "vim",
+        "vimdoc",
+        "xml",
+        "yaml",
+        "ruby",
       }
-      require("nvim-treesitter.configs").setup(opts)
+
+      treesitter.setup({
+        install_dir = vim.fn.stdpath("data") .. "/site",
+      })
+      vim.treesitter.language.register("json", "jsonc")
+      if #vim.api.nvim_list_uis() > 0 then
+        local installed = {}
+        for _, parser in ipairs(treesitter.get_installed()) do
+          installed[parser] = true
+        end
+
+        local missing = vim.tbl_filter(function(parser)
+          return not installed[parser]
+        end, parsers)
+
+        if #missing > 0 then
+          treesitter.install(missing)
+        end
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("config_treesitter", { clear = true }),
+        callback = function(args)
+          local ok = pcall(vim.treesitter.start, args.buf)
+          if ok then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+
+      vim.keymap.set("n", "<C-space>", "van", { remap = true, desc = "Increment Selection" })
+      vim.keymap.set("x", "<C-space>", function()
+        require("vim.treesitter._select").select_parent(vim.v.count1)
+      end, { desc = "Increment Selection" })
+      vim.keymap.set("x", "<bs>", function()
+        require("vim.treesitter._select").select_child(vim.v.count1)
+      end, { desc = "Decrement Selection" })
     end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
+      move = { set_jumps = true },
+    },
+    keys = {
+      {
+        "]f",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects") end,
+        desc = "Next function start",
+      },
+      {
+        "]c",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_start("@class.outer", "textobjects") end,
+        desc = "Next class start",
+      },
+      {
+        "]a",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_start("@parameter.inner", "textobjects") end,
+        desc = "Next parameter start",
+      },
+      {
+        "]F",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_end("@function.outer", "textobjects") end,
+        desc = "Next function end",
+      },
+      {
+        "]C",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_end("@class.outer", "textobjects") end,
+        desc = "Next class end",
+      },
+      {
+        "]A",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_next_end("@parameter.inner", "textobjects") end,
+        desc = "Next parameter end",
+      },
+      {
+        "[f",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects") end,
+        desc = "Previous function start",
+      },
+      {
+        "[c",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects") end,
+        desc = "Previous class start",
+      },
+      {
+        "[a",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_start("@parameter.inner", "textobjects") end,
+        desc = "Previous parameter start",
+      },
+      {
+        "[F",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_end("@function.outer", "textobjects") end,
+        desc = "Previous function end",
+      },
+      {
+        "[C",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_end("@class.outer", "textobjects") end,
+        desc = "Previous class end",
+      },
+      {
+        "[A",
+        mode = { "n", "x", "o" },
+        function() require("nvim-treesitter-textobjects.move").goto_previous_end("@parameter.inner", "textobjects") end,
+        desc = "Previous parameter end",
+      },
+    },
   },
   -- Automatically add closing tags for HTML and JSX
   {
@@ -694,6 +771,7 @@ return {
     end,
   },
   {
-    dir = "~/Source/term-llm-nvim"
-  }
+    dir = "~/Source/term-llm-nvim",
+    enabled = vim.uv.fs_stat(vim.fn.expand("~/Source/term-llm-nvim")) ~= nil,
+  },
 }

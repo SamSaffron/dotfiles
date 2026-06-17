@@ -198,7 +198,6 @@ return {
   --     },
   --   },
   -- },
-  { "nvim-treesitter-textobjects", branch = "main", lazy = true },
   {
     "github/copilot.vim",
     event = "InsertEnter",
