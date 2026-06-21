@@ -165,9 +165,16 @@ hl.config({
             col = {
                 text = "rgba(a89984ff)",
             },
-            ["hyprbars-button"] = "rgba(665c54ff), 12, 󰅖, hyprctl dispatch killactive",
         },
     },
+})
+
+hl.plugin.hyprbars.add_button({
+    bg_color = "rgba(665c54ff)",
+    fg_color = "rgba(a89984ff)",
+    size = 12,
+    icon = "󰅖",
+    action = "hyprctl dispatch killactive",
 })
 
 -------------
