@@ -13,7 +13,13 @@ if ! [[ "$id" =~ ^[0-9]+$ ]]; then
 fi
 
 if (( $# > 0 )); then
-    hyprctl dispatch renameworkspace "$id" "$id: $*"
+    name="$id: $*"
 else
-    hyprctl dispatch renameworkspace "$id" "$id"
+    name="$id"
 fi
+
+# Hyprland 0.55+ uses Lua dispatch syntax when running a Lua config.
+# `hyprctl dispatch` wraps its argument in `hl.dispatch(...)`, so pass a
+# dispatcher expression instead of the old `renameworkspace <id> <name>` form.
+lua_name="$(printf '%s' "$name" | jq -Rs .)"
+hyprctl dispatch "hl.dsp.workspace.rename({ workspace = $id, name = $lua_name })"
