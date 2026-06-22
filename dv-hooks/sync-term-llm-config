@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Copy host term-llm configuration into a dv container.
+#
+# Copies the useful/key-bearing portions of ~/.config/term-llm while avoiding
+# bulky or machine-specific runtime state. The destination is owned by the
+# discourse user so term-llm can read it when the hub service starts.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+
+container="${1:-}"
+host_config_dir="${TERM_LLM_CONFIG_DIR:-$HOME/.config/term-llm}"
+container_config_dir="${TERM_LLM_CONTAINER_CONFIG_DIR:-/home/discourse/.config/term-llm}"
+
+if [[ -z "$container" ]]; then
+  echo "usage: $0 <container>" >&2
+  exit 64
+fi
+
+if [[ ! -d "$host_config_dir" ]]; then
+  echo "sync-term-llm-config: host config directory not found: $host_config_dir" >&2
+  exit 66
+fi
+
+if ! docker inspect "$container" >/dev/null 2>&1; then
+  echo "sync-term-llm-config: container not found: $container" >&2
+  exit 69
+fi
+
+hook_log "sync-term-llm-config: copying $host_config_dir -> $container:$container_config_dir"
+
+docker exec --user root "$container" mkdir -p "$container_config_dir"
+
+# Keep this broad enough to include auth/config/provider files, but avoid large
+# transient state that should not be cloned into every dv container.
+tar \
+  --exclude='./projects' \
+  --exclude='./containers' \
+  --exclude='./images' \
+  --exclude='./mcp-tools-cache.json' \
+  --exclude='./model_history.json' \
+  --exclude='./debug.log' \
+  -C "$host_config_dir" \
+  -cf - . \
+  | docker exec --user root -i "$container" tar -C "$container_config_dir" -xf -
+
+docker exec --user root "$container" bash -lc \
+  "chown -R discourse:discourse '$container_config_dir' && chmod -R go-rwx '$container_config_dir' || true"
+
+hook_log 'sync-term-llm-config: done'

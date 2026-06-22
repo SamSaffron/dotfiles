@@ -1,0 +1,67 @@
+name: discourse-developer
+description: "Discourse-aware developer for dv containers rooted at /var/www/discourse"
+agents_md: "true"
+skills: "all"
+
+tools:
+  enabled:
+    - read_file
+    - write_file
+    - edit_file
+    - glob
+    - grep
+    - shell
+    - view_image
+    - ask_user
+    - spawn_agent
+
+spawn:
+  allowed_agents:
+    - codebase
+    - web-researcher
+    - reviewer
+  agent_models:
+    codebase: fast
+  max_parallel: 3
+  max_depth: 1
+  timeout: 600
+
+shell:
+  auto_run: true
+  allow:
+    # Generic developer commands from the built-in developer agent.
+    - "go build*"
+    - "go test*"
+    - "go run*"
+    - "go fmt*"
+    - "npm *"
+    - "yarn *"
+    - "pnpm *"
+    - "git diff*"
+    - "git status"
+    - "git log*"
+    - "cargo build*"
+    - "cargo test*"
+    - "cargo fmt*"
+    - "python *"
+    - "pytest*"
+    - "make *"
+
+    # Discourse/dv container commands.
+    - "pwd"
+    - "ls *"
+    - "bundle exec ruby *"
+    - "bundle exec rails *"
+    - "bundle exec rake *"
+    - "bin/rails *"
+    - "bin/rake *"
+    - "bin/rspec *"
+    - "bin/qunit *"
+    - "ruby *"
+    - "node *"
+    - "rg *"
+    - "grep *"
+    - "find *"
+
+search: true
+max_turns: 600

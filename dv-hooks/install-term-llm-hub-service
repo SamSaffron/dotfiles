@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+# Install/update an in-container runit service that registers term-llm with hub.
+#
+# Defaults:
+#   node id: <dv-container-name>
+#   node name: <dv-container-name>
+#   agent: discourse-developer
+#   source/root: /var/www/discourse
+#
+# Requires a Hub registration token from env or op-cache.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+
+usage() {
+  cat >&2 <<'EOF'
+usage: install-term-llm-hub-service <container> [options]
+
+Options:
+  --hub-url URL             Hub URL (default: TERM_LLM_HUB_URL from .env)
+  --node-id ID              Hub node id (default: <container>)
+  --node-name NAME          Hub display name (default: <container>)
+  --agent NAME              term-llm agent directory/name (default: discourse-developer)
+  --root PATH               Source/root path in container (default: /var/www/discourse)
+  --service-name NAME       runit service name (default: term-llm-hub)
+  --term-llm-bin PATH       Host term-llm binary to copy into container
+  -h, --help                Show this help
+
+Environment:
+  TERM_LLM_HUB_URL is required unless --hub-url is passed.
+  HUB_REGISTRATION_TOKEN or TERM_LLM_HUB_REGISTRATION_TOKEN override token lookup.
+  Otherwise the token is read with op-cache using TERM_LLM_HUB_REGISTRATION_TOKEN_OP.
+EOF
+}
+
+container="${1:-}"
+if [[ "${container:-}" == "-h" || "${container:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+if [[ -z "$container" ]]; then
+  usage
+  exit 64
+fi
+shift
+
+hub_url="${TERM_LLM_HUB_URL:-}"
+node_id="$container"
+node_name="$container"
+agent_name="discourse-developer"
+source_root="/var/www/discourse"
+service_name="term-llm-hub"
+registration_token="${HUB_REGISTRATION_TOKEN:-${TERM_LLM_HUB_REGISTRATION_TOKEN:-}}"
+host_term_llm_bin="${TERM_LLM_BIN:-$HOME/Source/term-llm/term-llm}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --hub-url) hub_url="${2:?--hub-url requires a value}"; shift 2 ;;
+    --node-id) node_id="${2:?--node-id requires a value}"; shift 2 ;;
+    --node-name) node_name="${2:?--node-name requires a value}"; shift 2 ;;
+    --agent) agent_name="${2:?--agent requires a value}"; shift 2 ;;
+    --root|--source-root) source_root="${2:?--root requires a value}"; shift 2 ;;
+    --service-name) service_name="${2:?--service-name requires a value}"; shift 2 ;;
+    --term-llm-bin) host_term_llm_bin="${2:?--term-llm-bin requires a value}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "unknown option: $1" >&2; usage; exit 64 ;;
+  esac
+done
+
+if [[ -z "$hub_url" ]]; then
+  echo "install-term-llm-hub-service: TERM_LLM_HUB_URL is required (put it in $script_dir/.env or pass --hub-url)" >&2
+  exit 64
+fi
+
+agent_source_dir="$script_dir/$agent_name"
+if [[ ! -d "$agent_source_dir" || ! -f "$agent_source_dir/agent.yaml" ]]; then
+  echo "install-term-llm-hub-service: missing agent definition: $agent_source_dir/agent.yaml" >&2
+  exit 66
+fi
+
+if [[ ! -x "$host_term_llm_bin" ]]; then
+  echo "install-term-llm-hub-service: host term-llm binary not executable: $host_term_llm_bin" >&2
+  echo "  set TERM_LLM_BIN=/path/to/term-llm or pass --term-llm-bin" >&2
+  exit 66
+fi
+
+if [[ -z "$registration_token" ]]; then
+  if ! registration_token="$("$script_dir/hub-registration-token")"; then
+    echo "install-term-llm-hub-service: could not resolve Hub registration token" >&2
+    exit 65
+  fi
+fi
+
+if ! docker inspect "$container" >/dev/null 2>&1; then
+  echo "install-term-llm-hub-service: container not found: $container" >&2
+  exit 69
+fi
+
+hook_log "install-term-llm-hub-service: installing $service_name in $container"
+
+hook_log "install-term-llm-hub-service: copying term-llm binary $host_term_llm_bin -> $container:/home/discourse/.local/bin/term-llm"
+docker exec --user root "$container" mkdir -p /home/discourse/.local/bin
+hook_run_quiet docker cp -q "$host_term_llm_bin" "$container:/home/discourse/.local/bin/term-llm"
+docker exec --user root "$container" bash -lc 'chown discourse:discourse /home/discourse/.local/bin/term-llm && chmod 755 /home/discourse/.local/bin/term-llm'
+
+# Ensure the copied binary has the hub flags this service needs.
+if ! docker exec --user discourse "$container" bash -lc '/home/discourse/.local/bin/term-llm serve web --help | grep -q -- --hub-url'; then
+  echo "install-term-llm-hub-service: copied term-llm does not support hub flags" >&2
+  exit 69
+fi
+
+container_setup_stdout="/dev/null"
+if hook_debug_enabled; then
+  container_setup_stdout="/dev/stdout"
+fi
+
+docker exec --user root \
+  -e HUB_URL="$hub_url" \
+  -e HUB_NODE_ID="$node_id" \
+  -e HUB_NODE_NAME="$node_name" \
+  -e HUB_REGISTRATION_TOKEN="$registration_token" \
+  -e TERM_LLM_AGENT_NAME="$agent_name" \
+  -e TERM_LLM_SOURCE_ROOT="$source_root" \
+  -e TERM_LLM_SERVICE_NAME="$service_name" \
+  -i "$container" bash -s >"$container_setup_stdout" <<'CONTAINER_SCRIPT'
+set -euo pipefail
+
+config_dir="/home/discourse/.config/term-llm"
+agent_dir="$config_dir/agents/$TERM_LLM_AGENT_NAME"
+env_file="/etc/term-llm-hub.env"
+service_dir="/etc/service/$TERM_LLM_SERVICE_NAME"
+run_file="$service_dir/run"
+log_dir="/var/log/$TERM_LLM_SERVICE_NAME"
+
+mkdir -p "$config_dir" "$agent_dir" "$service_dir" "$log_dir"
+
+existing_node_token=""
+if [[ -f "$env_file" ]]; then
+  # shellcheck disable=SC1090
+  existing_node_token="$(set +u; source "$env_file" 2>/dev/null; printf '%s' "${NODE_TOKEN:-}")"
+fi
+if [[ -z "$existing_node_token" ]]; then
+  existing_node_token="$(openssl rand -hex 32 2>/dev/null || dd if=/dev/urandom bs=32 count=1 2>/dev/null | sha256sum | awk '{print $1}')"
+fi
+
+umask 077
+cat > "$env_file" <<EOF
+HUB_URL=$(printf '%q' "$HUB_URL")
+HUB_REGISTRATION_TOKEN=$(printf '%q' "$HUB_REGISTRATION_TOKEN")
+NODE_TOKEN=$(printf '%q' "$existing_node_token")
+NODE_ID=$(printf '%q' "$HUB_NODE_ID")
+NODE_NAME=$(printf '%q' "$HUB_NODE_NAME")
+TERM_LLM_AGENT_NAME=$(printf '%q' "$TERM_LLM_AGENT_NAME")
+TERM_LLM_SOURCE_ROOT=$(printf '%q' "$TERM_LLM_SOURCE_ROOT")
+EOF
+chmod 600 "$env_file"
+chown root:root "$env_file"
+
+# Agent definition is copied from the hook directory by the host script.
+
+chown -R discourse:discourse "$config_dir"
+chmod -R go-rwx "$config_dir" || true
+
+cat > "$run_file" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+env_file="/etc/term-llm-hub.env"
+if [[ ! -f "$env_file" ]]; then
+  echo "missing $env_file" >&2
+  sleep 10
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source "$env_file"
+set +a
+
+export HOME="/home/discourse"
+export USER="discourse"
+export PATH="/home/discourse/.local/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
+
+cd "${TERM_LLM_SOURCE_ROOT:-/var/www/discourse}"
+
+exec chpst -u discourse:discourse -U discourse:discourse \
+  /home/discourse/.local/bin/term-llm serve web \
+    --agent "${TERM_LLM_AGENT_NAME:-discourse-developer}" \
+    --yolo \
+    --token "$NODE_TOKEN" \
+    --hub-url "$HUB_URL" \
+    --hub-node-id "$NODE_ID" \
+    --hub-node-name "$NODE_NAME" \
+    --hub-connect reverse \
+    --hub-register \
+    --hub-registration-token "$HUB_REGISTRATION_TOKEN"
+EOF
+
+chmod 755 "$run_file"
+
+printf 'installed %s\n' "$run_file"
+printf 'node id: %s\n' "$HUB_NODE_ID"
+printf 'node name: %s\n' "$HUB_NODE_NAME"
+CONTAINER_SCRIPT
+
+container_agent_dir="/home/discourse/.config/term-llm/agents/$agent_name"
+hook_log "install-term-llm-hub-service: copying agent $agent_source_dir -> $container:$container_agent_dir"
+tar -C "$agent_source_dir" -cf - . | docker exec --user root -i "$container" tar -C "$container_agent_dir" -xf -
+docker exec --user root "$container" bash -lc "chown -R discourse:discourse '$container_agent_dir' && chmod -R go-rwx '$container_agent_dir' || true"
+
+# Nudge runit after the agent files are in place. Failure here is non-fatal:
+# runit will normally pick up /etc/service entries on its own shortly after creation.
+if ! docker exec --user root "$container" bash -lc "sv restart '$service_name' >/dev/null 2>&1 || sv start '$service_name' >/dev/null 2>&1 || true"; then
+  echo "install-term-llm-hub-service: warning: could not start $service_name" >&2
+fi
+
+if hook_debug_enabled; then
+  printf 'install-term-llm-hub-service: service status:\n'
+  docker exec --user root "$container" bash -lc "sv status '$service_name' 2>/dev/null || true"
+fi

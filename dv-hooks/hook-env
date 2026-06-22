@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Source shared hook environment from .env when present.
+# Intended to be sourced by the scripts in this directory.
+
+_hook_env_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+_hook_env_file="$_hook_env_dir/.env"
+
+if [[ -f "$_hook_env_file" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$_hook_env_file"
+  set +a
+fi
+
+hook_debug_enabled() {
+  case "${DV_HOOK_DEBUG:-${TERM_LLM_HOOK_DEBUG:-${DV_VERBOSE:-}}}" in
+    1|true|TRUE|yes|YES|on|ON) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+hook_log() {
+  if hook_debug_enabled; then
+    printf '%s\n' "$*"
+  fi
+}
+
+hook_run_quiet() {
+  if hook_debug_enabled; then
+    "$@"
+  else
+    "$@" >/dev/null
+  fi
+}
+
+unset _hook_env_dir _hook_env_file

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Print the term-llm Hub registration token.
+#
+# Resolution order:
+#   1. HUB_REGISTRATION_TOKEN
+#   2. TERM_LLM_HUB_REGISTRATION_TOKEN
+#   3. op-cache read "$TERM_LLM_HUB_REGISTRATION_TOKEN_OP"
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+
+secret_ref="${TERM_LLM_HUB_REGISTRATION_TOKEN_OP:-}"
+
+if [[ -n "${HUB_REGISTRATION_TOKEN:-}" ]]; then
+  printf '%s\n' "$HUB_REGISTRATION_TOKEN"
+  exit 0
+fi
+
+if [[ -n "${TERM_LLM_HUB_REGISTRATION_TOKEN:-}" ]]; then
+  printf '%s\n' "$TERM_LLM_HUB_REGISTRATION_TOKEN"
+  exit 0
+fi
+
+if [[ -z "$secret_ref" ]]; then
+  echo "hub-registration-token: TERM_LLM_HUB_REGISTRATION_TOKEN_OP is required (put it in $script_dir/.env)" >&2
+  exit 1
+fi
+
+if ! command -v op-cache >/dev/null 2>&1; then
+  echo "hub-registration-token: op-cache not found and no registration token env is set" >&2
+  exit 1
+fi
+
+op-cache read "$secret_ref"

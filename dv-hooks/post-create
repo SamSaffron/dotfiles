@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# dv post-create hook: prepare a dv container as a reverse term-llm hub node.
+#
+# This script intentionally lives outside the dv repo. It delegates to sibling
+# scripts in this directory so each building block can be run/tested manually.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+container="${DV_CONTAINER_NAME:-${1:-}}"
+
+if [[ -z "$container" ]]; then
+  echo "post-create: DV_CONTAINER_NAME (or argv[1]) is required" >&2
+  exit 1
+fi
+
+if ! HUB_REGISTRATION_TOKEN="$("$script_dir/hub-registration-token")"; then
+  echo "post-create: could not resolve Hub registration token" >&2
+  exit 1
+fi
+export HUB_REGISTRATION_TOKEN
+
+hub_url="${TERM_LLM_HUB_URL:-}"
+if [[ -z "$hub_url" ]]; then
+  echo "post-create: TERM_LLM_HUB_URL is required (put it in $script_dir/.env)" >&2
+  exit 1
+fi
+
+hook_log "post-create: configuring term-llm for container $container"
+"$script_dir/sync-term-llm-config" "$container"
+"$script_dir/install-term-llm-hub-service" "$container" --hub-url "$hub_url"
+
+hook_log "post-create: done for $container"

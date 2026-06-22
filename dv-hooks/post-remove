@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# dv post-remove hook: deregister a removed dv container from the term-llm hub.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+container="${DV_CONTAINER_NAME:-${1:-}}"
+if [[ -z "$container" ]]; then
+  echo "post-remove: DV_CONTAINER_NAME (or argv[1]) is required" >&2
+  exit 1
+fi
+
+hub_url="${TERM_LLM_HUB_URL:-}"
+if [[ -z "$hub_url" ]]; then
+  echo "post-remove: TERM_LLM_HUB_URL is not set; skipping hub deregistration for $container" >&2
+  exit 0
+fi
+if ! registration_token="$("$script_dir/hub-registration-token")"; then
+  echo "post-remove: could not resolve Hub registration token; skipping hub deregistration for $container" >&2
+  exit 0
+fi
+
+remove_id() {
+  local node_id="$1"
+  local endpoint="${hub_url%/}/api/register-node/$node_id"
+  hook_log "post-remove: deregistering $node_id from $endpoint"
+  local response
+  response="$(curl -fsS \
+    -X DELETE \
+    -H "Authorization: Bearer $registration_token" \
+    "$endpoint")"
+  hook_log "post-remove: hub response: $response"
+}
+
+# Current naming: node id is exactly the dv container name.
+remove_id "$container"
+
+# Backward compatibility for nodes registered by the first scaffold revision.
+legacy_id="docker-$container"
+if [[ "$legacy_id" != "$container" ]]; then
+  remove_id "$legacy_id"
+fi
