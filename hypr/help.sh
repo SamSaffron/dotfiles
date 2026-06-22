@@ -42,7 +42,7 @@ def toggle_existing(class_name, title)
   return false if addrs.empty?
 
   addrs.each do |addr|
-    system("hyprctl", "dispatch", "closewindow", "address:#{addr}", out: File::NULL, err: File::NULL)
+    system("hyprctl", "dispatch", "hl.dsp.window.close(\"address:#{addr}\")", out: File::NULL, err: File::NULL)
   end
 
   true

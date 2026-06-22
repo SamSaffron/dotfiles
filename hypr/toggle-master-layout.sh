@@ -1,5 +1,9 @@
 #!/bin/bash
 
+layout_msg() {
+  hyprctl dispatch "hl.dsp.layout(\"$1\")"
+}
+
 # Get current workspace
 workspace=$(hyprctl activeworkspace -j | jq -r '.id')
 
@@ -19,22 +23,22 @@ current_state=$(cat "$state_file")
 
 if [ "$current_state" = "dwindle" ]; then
   # Switch to master left
-  hyprctl dispatch layoutmsg orientationleft
-  hyprctl dispatch layoutmsg mfact exact 0.6
+  layout_msg "orientationleft"
+  layout_msg "mfact exact 0.6"
   echo "master-left" > "$state_file"
   echo "Switched to 2-window layout (left orientation)"
   notify-send -t 1000 "Layout: Master Left" "2-window layout"
 elif [ "$current_state" = "master-left" ]; then
   # Switch to master center
-  hyprctl dispatch layoutmsg orientationcenter
-  hyprctl dispatch layoutmsg mfact exact 0.4
+  layout_msg "orientationcenter"
+  layout_msg "mfact exact 0.4"
   echo "master-center" > "$state_file"
   echo "Switched to 3-window layout (center orientation)"
   notify-send -t 1000 "Layout: Master Center" "3-window layout"
 else
   # Switch back to dwindle (reset to default)
-  hyprctl dispatch layoutmsg orientationleft
-  hyprctl dispatch layoutmsg mfact exact 0.5
+  layout_msg "orientationleft"
+  layout_msg "mfact exact 0.5"
   echo "dwindle" > "$state_file"
   echo "Switched to dwindle layout"
   notify-send -t 1000 "Layout: Dwindle" "Tiling layout"

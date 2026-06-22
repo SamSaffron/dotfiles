@@ -174,7 +174,7 @@ hl.plugin.hyprbars.add_button({
     fg_color = "rgba(a89984ff)",
     size = 12,
     icon = "󰅖",
-    action = "hyprctl dispatch killactive",
+    action = "hyprctl dispatch 'hl.dsp.window.close()'",
 })
 
 -------------

@@ -9,7 +9,7 @@ case "$chosen" in
   systemctl reboot
   ;;
 "󰈆 Exit")
-  hyprctl dispatch exit
+  hyprctl dispatch 'hl.dsp.exit()'
   ;;
 "󰅖 Cancel")
   exit 0
