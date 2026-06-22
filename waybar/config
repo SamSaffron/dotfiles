@@ -32,7 +32,7 @@
     },
 
     "ext/workspaces": {
-        "format": "{id}",
+        "format": "{name}",
         "all-outputs": true,
         "sort-by-id": true,
         "on-click": "activate"
