@@ -34,7 +34,7 @@
     "ext/workspaces": {
         "format": "{name}",
         "all-outputs": true,
-        "sort-by-id": true,
+        "sort-by-name": true,
         "on-click": "activate"
     },
 
