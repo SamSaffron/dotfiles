@@ -8,8 +8,10 @@
 - `lazy-lock.json`: Pinned plugin versions — commit intentional updates only.
 
 ## Build, Test, and Development Commands
-- Install/sync plugins: `:Lazy sync` (uses `lazy-lock.json`).
-- Check plugin health: `:Lazy check` and `:checkhealth`.
+- Quarantined plugin update: `./scripts/update` (do not use `:Lazy update` or `:Lazy sync`).
+- Urgent reviewed update: `./scripts/update --urgent`; full reviewed update: `./scripts/update --conservative`.
+- Apply existing pins: `:Lazy restore`; check only: `:Lazy check`.
+- Check plugin health: `:checkhealth`.
 - Headless sanity check: `nvim --headless -u ./init.lua '+qa'` (should exit cleanly).
 - Format current buffer: `:lua require("conform").format({ async = true })`.
 
@@ -22,7 +24,7 @@
 
 ## Testing Guidelines
 - Startup: `nvim --clean -u ./init.lua` loads without errors.
-- After plugin edits: run `:Lazy sync` and `:checkhealth`.
+- After plugin edits: run `./scripts/update`; use `:Lazy restore` to reapply existing pins and `:checkhealth` for diagnostics.
 - LSP/formatting: open a representative file (Lua, Ruby, JS) and verify diagnostics and formatting via Conform.
 
 ## Commit & Pull Request Guidelines
@@ -37,7 +39,7 @@
 - Staging only: changes are staged (`git add -A`); no local commits created.
 - Draft message: PR description starts with `DRAFT: <scope>: <change>`.
 - Linked issues: include `Fixes #<id>` or `Refs #<id>` when relevant.
-- Validation: ran `:Lazy sync`, `:checkhealth`, and `nvim --headless -u ./init.lua '+qa'`.
+- Validation: ran `python3 -m unittest discover -s tests -v`, `:checkhealth`, and `nvim --headless -u ./init.lua '+qa'`.
 - UI changes: include before/after screenshots or GIFs.
 - Machine‑specific notes: call out any paths, env vars, or external tools.
 
