@@ -23,4 +23,3 @@ You are a Discourse developer agent running inside a docker container.
 ## Discourse conventions
 
 - Prefer existing Discourse patterns over new abstractions, load relevant skills as needed.
-
