@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Copy host Grok credentials into a dv container.
+#
+# Grok CLI credentials live outside term-llm's config tree, so keep this as a
+# separate sync step. The destination is owned by the discourse user and locked
+# down so in-container tools can read it without exposing it to other users.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+
+container="${1:-}"
+host_auth_file="${GROK_AUTH_FILE:-$HOME/.grok/auth.json}"
+container_auth_file="${GROK_CONTAINER_AUTH_FILE:-/home/discourse/.grok/auth.json}"
+
+if [[ -z "$container" ]]; then
+  echo "usage: $0 <container>" >&2
+  exit 64
+fi
+
+if [[ ! -f "$host_auth_file" ]]; then
+  echo "sync-grok-auth: host auth file not found: $host_auth_file" >&2
+  exit 66
+fi
+
+if ! docker inspect "$container" >/dev/null 2>&1; then
+  echo "sync-grok-auth: container not found: $container" >&2
+  exit 69
+fi
+
+hook_log "sync-grok-auth: copying $host_auth_file -> $container:$container_auth_file"
+
+docker exec --user root "$container" bash -c \
+  'install -d -m 700 -o discourse -g discourse "$(dirname -- "$1")"' \
+  bash "$container_auth_file"
+
+docker cp "$host_auth_file" "$container:$container_auth_file"
+
+docker exec --user root "$container" bash -c \
+  'chown discourse:discourse "$1" && chmod 600 "$1"' \
+  bash "$container_auth_file"
+
+hook_log 'sync-grok-auth: done'

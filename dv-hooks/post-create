@@ -30,6 +30,7 @@ fi
 
 hook_log "post-create: configuring term-llm for container $container"
 "$script_dir/sync-term-llm-config" "$container"
+"$script_dir/sync-grok-auth" "$container"
 "$script_dir/install-term-llm-hub-service" "$container" --hub-url "$hub_url"
 
 hook_log "post-create: done for $container"
