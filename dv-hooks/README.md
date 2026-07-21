@@ -99,6 +99,7 @@ The service runs from `/var/www/discourse` and starts:
 term-llm serve web \
   --agent discourse-developer \
   --yolo \
+  --response-timeout 3h \
   --hub-url "$TERM_LLM_HUB_URL" \
   --hub-connect reverse \
   --hub-register

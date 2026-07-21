@@ -190,6 +190,7 @@ exec chpst -u discourse:discourse -U discourse:discourse \
   /home/discourse/.local/bin/term-llm serve web \
     --agent "${TERM_LLM_AGENT_NAME:-discourse-developer}" \
     --yolo \
+    --response-timeout 3h \
     --title "$NODE_NAME" \
     --token "$NODE_TOKEN" \
     --hub-url "$HUB_URL" \
