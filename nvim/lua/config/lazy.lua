@@ -48,10 +48,11 @@ require("lazy").setup({
     missing = false,
     colorscheme = { "gruvbox" },
   },
-  -- automatically check for plugin updates
+  -- The quarantined updater is the source of truth for update eligibility.
+  -- lazy.nvim's checker only compares against the latest upstream commit, so it
+  -- would advertise updates that have not completed quarantine yet.
   checker = {
-    enabled = true,
-    frequency = 3600 * 24 * 7,
+    enabled = false,
   },
 })
 
