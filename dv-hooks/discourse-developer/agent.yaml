@@ -25,44 +25,7 @@ spawn:
     codebase: fast
   max_parallel: 3
   max_depth: 1
-  timeout: 600
-
-shell:
-  auto_run: true
-  allow:
-    # Generic developer commands from the built-in developer agent.
-    - "go build*"
-    - "go test*"
-    - "go run*"
-    - "go fmt*"
-    - "npm *"
-    - "yarn *"
-    - "pnpm *"
-    - "git diff*"
-    - "git status"
-    - "git log*"
-    - "cargo build*"
-    - "cargo test*"
-    - "cargo fmt*"
-    - "python *"
-    - "pytest*"
-    - "make *"
-
-    # Discourse/dv container commands.
-    - "pwd"
-    - "ls *"
-    - "bundle exec ruby *"
-    - "bundle exec rails *"
-    - "bundle exec rake *"
-    - "bin/rails *"
-    - "bin/rake *"
-    - "bin/rspec *"
-    - "bin/qunit *"
-    - "ruby *"
-    - "node *"
-    - "rg *"
-    - "grep *"
-    - "find *"
+  timeout: 1200
 
 search: true
 max_turns: 600

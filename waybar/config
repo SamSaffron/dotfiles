@@ -97,14 +97,10 @@
         "tooltip-format": "{ifname}: {ipaddr}"
     },
     "custom/updates": {
-      "format": "{icon} {text}",
-      "return-type": "json",
-      "format-icons": {
-          "has-updates": "󱍷",
-          "updated": "󰂪"
-      },
-      "exec-if": "which waybar-module-pacman-updates",
-      "exec": "waybar-module-pacman-updates --interval-seconds 600 --network-interval-seconds 1800"
+      "format": "󱍷 {text}",
+      "interval": 1800,
+      "exec": "checkupdates 2>/dev/null | wc -l",
+      "tooltip": false
     },
 
     "temperature": {
