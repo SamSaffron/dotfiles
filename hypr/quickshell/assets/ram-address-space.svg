@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Trial 3: bracketed rows representing addressable memory space. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dcdfe1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <title>RAM — Address Space</title>
+  <path d="M8.6 3.4H5.2v17.2h3.4"/>
+  <path d="M15.4 3.4h3.4v17.2h-3.4"/>
+  <path d="M8.4 8h7.2M8.4 12h4.8M8.4 16h8.4"/>
+</svg>

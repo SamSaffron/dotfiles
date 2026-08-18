@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dual-fan graphics card with I/O bracket and notched PCIe connector. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dcdfe1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <title>GPU</title>
+  <path d="M3.5 5v13h2"/>
+  <rect x="5.5" y="7" width="15.5" height="8" rx="1.5"/>
+  <circle cx="10.3" cy="11" r="2.1"/>
+  <circle cx="16.2" cy="11" r="2.1"/>
+  <path d="M12 15v2.5h2.2"/>
+  <path d="M16 17.5h2.2V15"/>
+</svg>

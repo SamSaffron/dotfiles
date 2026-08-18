@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Compact "o" mark derived from OpenCode's official ornate logo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 6 24 30">
+  <title>OpenCode</title>
+  <path fill="#edecec" d="M18 12H6v18h12V12Zm6 24H0V6h24v30Z"/>
+  <path fill="#706b6b" d="M18 30H6V18h12v12Z"/>
+</svg>

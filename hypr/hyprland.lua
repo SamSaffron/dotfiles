@@ -23,7 +23,7 @@ hl.config({
 
 local terminal    = "~/.config/hypr/terminal.sh"
 local fileManager = "dolphin"
-local menu        = "fuzzel"
+local menu        = "~/.config/hypr/shell-launcher"
 
 -----------------
 --- AUTOSTART ---
@@ -39,8 +39,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("awww-daemon")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("waybar")
-    hl.exec_cmd("dunst")
+    -- shell-mode keeps the existing Waybar/Fuzzel/Dunst desktop as the safe
+    -- default and can switch the whole shell to Quickshell without logging out.
+    hl.exec_cmd("~/.config/hypr/shell-mode start")
     hl.exec_cmd("hyprpm reload -n")
     hl.exec_cmd("opendeck --hide")
 
@@ -208,8 +209,10 @@ hl.bind(mainMod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized", action
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("~/.config/hypr/shell-control-center"))
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("~/.config/hypr/exit.sh"))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("~/.config/hypr/toggle-master-layout.sh"))
 
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "l" }))

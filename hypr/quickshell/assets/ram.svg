@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Trial 2: abstract capacity banks representing memory utilization. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dcdfe1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <title>RAM — Capacity Banks</title>
+  <rect x="3" y="14.5" width="3" height="5" rx="1.5"/>
+  <rect x="8" y="11" width="3" height="8.5" rx="1.5"/>
+  <rect x="13" y="7.5" width="3" height="12" rx="1.5"/>
+  <rect x="18" y="4" width="3" height="15.5" rx="1.5"/>
+</svg>

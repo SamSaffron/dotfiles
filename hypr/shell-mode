@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+state_home=${XDG_STATE_HOME:-"$HOME/.local/state"}
+state_dir="$state_home/hypr"
+mode_file="$state_dir/shell-mode"
+quickshell_config="$config_home/hypr/quickshell/shell.qml"
+log_dir="$state_home/quickshell"
+
+current_mode() {
+  if [[ -r "$mode_file" ]]; then
+    read -r mode < "$mode_file"
+    case "$mode" in
+      current|quickshell) printf '%s\n' "$mode"; return ;;
+    esac
+  fi
+  printf '%s\n' current
+}
+
+stop_quickshell() {
+  if command -v qs >/dev/null 2>&1; then
+    qs -p "$quickshell_config" kill >/dev/null 2>&1 || true
+  fi
+}
+
+start_current() {
+  stop_quickshell
+  if ! pgrep -x waybar >/dev/null; then
+    waybar >/dev/null 2>&1 &
+  fi
+  if ! pgrep -x dunst >/dev/null; then
+    dunst >/dev/null 2>&1 &
+  fi
+}
+
+start_quickshell() {
+  if ! command -v qs >/dev/null 2>&1; then
+    printf 'Quickshell is not installed. On Arch: sudo pacman -S quickshell\n' >&2
+    return 127
+  fi
+
+  mkdir -p "$log_dir"
+  pkill -x waybar >/dev/null 2>&1 || true
+  pkill -x dunst >/dev/null 2>&1 || true
+  stop_quickshell
+  nohup qs -p "$quickshell_config" >"$log_dir/hypr-shell.log" 2>&1 &
+}
+
+set_mode() {
+  local mode=$1
+  case "$mode" in
+    current)
+      mkdir -p "$state_dir"
+      printf '%s\n' current > "$mode_file"
+      start_current
+      ;;
+    quickshell)
+      # Check and start first; a missing package must never take down the
+      # currently working shell or persist a broken mode for the next login.
+      start_quickshell
+      mkdir -p "$state_dir"
+      printf '%s\n' quickshell > "$mode_file"
+      ;;
+    *)
+      printf 'Usage: %s {current|quickshell|toggle|status|start}\n' "$0" >&2
+      return 2
+      ;;
+  esac
+}
+
+command=${1:-status}
+case "$command" in
+  status)
+    current_mode
+    ;;
+  start)
+    mode=$(current_mode)
+    if [[ "$mode" == quickshell ]]; then
+      if ! start_quickshell; then
+        printf 'Falling back to the current shell.\n' >&2
+        mkdir -p "$state_dir"
+        printf '%s\n' current > "$mode_file"
+        start_current
+      fi
+    else
+      start_current
+    fi
+    ;;
+  toggle)
+    if [[ $(current_mode) == quickshell ]]; then
+      set_mode current
+    else
+      set_mode quickshell
+    fi
+    ;;
+  current|quickshell)
+    set_mode "$command"
+    ;;
+  *)
+    printf 'Usage: %s {current|quickshell|toggle|status|start}\n' "$0" >&2
+    exit 2
+    ;;
+esac
