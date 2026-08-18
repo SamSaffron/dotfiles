@@ -18,6 +18,16 @@ Scope {
         keepOnReload: true
 
         onNotification: notification => {
+            root.shell.recordNotification({
+                id: notification.id,
+                appName: notification.appName || "Notification",
+                appIcon: notification.image || Quickshell.iconPath(notification.appIcon, "dialog-information"),
+                summary: notification.summary,
+                body: notification.body,
+                urgency: notification.urgency,
+                receivedAt: new Date().toISOString()
+            }, !notification.lastGeneration)
+
             if (root.shell.doNotDisturb) {
                 notification.tracked = false
                 return

@@ -209,6 +209,7 @@ hl.bind(mainMod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized", action
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.config/hypr/shell-overview"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("~/.config/hypr/shell-control-center"))
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("~/.config/hypr/exit.sh"))

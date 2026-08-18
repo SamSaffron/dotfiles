@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+config="$config_home/hypr/quickshell/shell.qml"
+mode=$($config_home/hypr/shell-mode status 2>/dev/null || printf current)
+
+if [[ "$mode" == quickshell ]] && command -v qs >/dev/null 2>&1; then
+  if qs -p "$config" ipc call shell toggleOverview >/dev/null 2>&1; then
+    exit 0
+  fi
+fi
+
+if command -v fuzzel >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  selection=$(hyprctl clients -j | jq -r '.[] | "\(.address)\t\(.title // .class)"' | fuzzel --dmenu --prompt='Windows: ')
+  address=${selection%%$'\t'*}
+  [[ -n "$address" ]] && exec hyprctl dispatch focuswindow "address:$address"
+fi

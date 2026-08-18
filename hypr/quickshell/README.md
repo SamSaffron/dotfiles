@@ -8,8 +8,9 @@ the current bar; the difference is the integrated motion and interaction:
 - system metrics, update count, Sydney weather, PipeWire volume, and tray
 - cached ChatGPT, Claude, OpenCode Go, and Cursor subscription usage
 - searchable application launcher (`Super+D`)
-- control center with quick actions, volume, media, and metrics (`Super+C`)
-- native notification popups and do-not-disturb mode
+- searchable live window overview with workspace filtering (`Super+W`)
+- control center with controls, notification history, native MPRIS media, and metrics (`Super+C`)
+- native top-right notification popups, unread state, and do-not-disturb mode
 - one-click return to the current setup
 
 The config targets the stable **Quickshell v0.3.0** API.
@@ -45,6 +46,7 @@ installed. This config lives below `hypr/` rather than the conventional
 ```sh
 ~/.config/hypr/shell-mode status
 qs -p ~/.config/hypr/quickshell/shell.qml ipc call shell toggleLauncher
+qs -p ~/.config/hypr/quickshell/shell.qml ipc call shell toggleOverview
 qs -p ~/.config/hypr/quickshell/shell.qml ipc call shell toggleControlCenter
 tail -f ~/.local/state/quickshell/hypr-shell.log
 ```

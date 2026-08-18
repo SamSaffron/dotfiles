@@ -7,7 +7,9 @@ ShellRoot {
     id: root
 
     property bool launcherOpen: false
+    property bool overviewOpen: false
     property bool controlCenterOpen: false
+    property string controlCenterPage: "controls"
     property bool weatherOpen: false
     property bool audioOpen: false
     property bool usageOpen: false
@@ -17,6 +19,8 @@ ShellRoot {
     property string systemInfoMetric: "updates"
     property bool dockerOpen: false
     property bool doNotDisturb: false
+    property var notificationHistory: []
+    property int notificationUnread: 0
     property var popupScreen: null
     property alias clock: systemClock
     readonly property var focusedScreen: {
@@ -26,8 +30,29 @@ ShellRoot {
         return Quickshell.screens.find(screen => screen.name === monitor.name) || Quickshell.screens[0]
     }
 
+    function recordNotification(entry, unread) {
+        const existing = notificationHistory.filter(item => item.id !== entry.id)
+        notificationHistory = [entry].concat(existing).slice(0, 30)
+        if (unread)
+            notificationUnread++
+    }
+
+    function dismissNotificationHistory(id) {
+        notificationHistory = notificationHistory.filter(item => item.id !== id)
+    }
+
+    function clearNotificationHistory() {
+        notificationHistory = []
+        notificationUnread = 0
+    }
+
+    function markNotificationsRead() {
+        notificationUnread = 0
+    }
+
     function closePopups() {
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -39,6 +64,7 @@ ShellRoot {
 
     function toggleLauncher(screen) {
         popupScreen = screen || focusedScreen
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -49,21 +75,55 @@ ShellRoot {
         launcherOpen = !launcherOpen
     }
 
-    function toggleControlCenter(screen) {
+    function toggleOverview(screen) {
+        const opening = !overviewOpen
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
         usageOpen = false
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
-        controlCenterOpen = !controlCenterOpen
+        overviewOpen = opening
+    }
+
+    function toggleControlCenter(screen) {
+        const opening = !controlCenterOpen
+        popupScreen = screen || focusedScreen
+        launcherOpen = false
+        overviewOpen = false
+        weatherOpen = false
+        audioOpen = false
+        usageOpen = false
+        hardwareOpen = false
+        systemInfoOpen = false
+        dockerOpen = false
+        if (opening)
+            controlCenterPage = "controls"
+        controlCenterOpen = opening
+    }
+
+    function showNotificationCenter(screen) {
+        popupScreen = screen || focusedScreen
+        launcherOpen = false
+        overviewOpen = false
+        weatherOpen = false
+        audioOpen = false
+        usageOpen = false
+        hardwareOpen = false
+        systemInfoOpen = false
+        dockerOpen = false
+        controlCenterPage = "notifications"
+        controlCenterOpen = true
+        markNotificationsRead()
     }
 
     function toggleWeather(screen) {
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         audioOpen = false
         usageOpen = false
@@ -76,6 +136,7 @@ ShellRoot {
     function toggleAudio(screen) {
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         usageOpen = false
@@ -88,6 +149,7 @@ ShellRoot {
     function toggleUsage(screen) {
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -101,6 +163,7 @@ ShellRoot {
         const opening = !hardwareOpen || hardwareMetric !== metric
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -115,6 +178,7 @@ ShellRoot {
         const opening = !systemInfoOpen || systemInfoMetric !== metric
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -128,6 +192,7 @@ ShellRoot {
     function toggleDocker(screen) {
         popupScreen = screen || focusedScreen
         launcherOpen = false
+        overviewOpen = false
         controlCenterOpen = false
         weatherOpen = false
         audioOpen = false
@@ -157,8 +222,16 @@ ShellRoot {
             root.toggleLauncher(root.focusedScreen)
         }
 
+        function toggleOverview(): void {
+            root.toggleOverview(root.focusedScreen)
+        }
+
         function toggleControlCenter(): void {
             root.toggleControlCenter(root.focusedScreen)
+        }
+
+        function showNotifications(): void {
+            root.showNotificationCenter(root.focusedScreen)
         }
 
         function toggleUsage(): void {
@@ -212,6 +285,14 @@ ShellRoot {
         model: Quickshell.screens
 
         Launcher {
+            shell: root
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        WindowOverview {
             shell: root
         }
     }
