@@ -9,6 +9,22 @@ Scope {
 
     required property var shell
 
+    function defaultAction(notification) {
+        if (!notification)
+            return null
+        for (let index = 0; index < notification.actions.length; index++) {
+            if (notification.actions[index].identifier === "default")
+                return notification.actions[index]
+        }
+        return null
+    }
+
+    function invokeDefault(notification) {
+        const action = defaultAction(notification)
+        if (action)
+            action.invoke()
+    }
+
     NotificationServer {
         id: server
         actionsSupported: true
@@ -91,6 +107,15 @@ Scope {
                             onTriggered: card.modelData.expire()
                         }
 
+                        MouseArea {
+                            id: cardMouse
+                            anchors.fill: parent
+                            enabled: root.defaultAction(card.modelData) !== null
+                            hoverEnabled: true
+                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: root.invokeDefault(card.modelData)
+                        }
+
                         Row {
                             anchors.fill: parent
                             anchors.margins: 12
@@ -139,12 +164,14 @@ Scope {
                                     visible: text.length > 0
                                     text: card.modelData.body
                                     textFormat: Text.StyledText
+                                    linkColor: Theme.link
                                     color: Theme.text
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 11
                                     wrapMode: Text.Wrap
                                     maximumLineCount: 3
                                     elide: Text.ElideRight
+                                    onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
                                 }
                             }
 

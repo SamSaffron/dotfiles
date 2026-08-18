@@ -703,12 +703,14 @@ PopupWindow {
                                             visible: text.length > 0
                                             text: historyCard.modelData.body
                                             textFormat: Text.StyledText
+                                            linkColor: Theme.link
                                             color: Theme.textMuted
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 9
                                             maximumLineCount: 2
                                             wrapMode: Text.Wrap
                                             elide: Text.ElideRight
+                                            onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
                                         }
                                     }
 
