@@ -47,11 +47,11 @@ Scope {
             exclusionMode: ExclusionMode.Ignore
             aboveWindows: true
             margins.right: Theme.gap
-            margins.bottom: Theme.barHeight + Theme.gap * 2
+            margins.top: Theme.gap
 
             anchors {
                 right: true
-                bottom: true
+                top: true
             }
 
             Column {
