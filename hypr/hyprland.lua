@@ -24,6 +24,7 @@ hl.config({
 local terminal    = "~/.config/hypr/terminal.sh"
 local fileManager = "dolphin"
 local menu        = "~/.config/hypr/shell-launcher"
+local omasnap     = "/home/sam/Source/omasnap/build/omasnap"
 
 -----------------
 --- AUTOSTART ---
@@ -235,10 +236,10 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
-hl.bind("Print",          hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
-hl.bind("SHIFT + Print",  hl.dsp.exec_cmd("~/.config/hypr/countdown 3 && hyprshot -z -m region --clipboard-only"))
-hl.bind("CTRL + Print",   hl.dsp.exec_cmd("hyprshot -z -m output -m DP-1 --clipboard-only"))
-hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("wl-paste --type image/png --no-newline | swappy -f -"))
+hl.bind("Print",          hl.dsp.exec_cmd(omasnap .. " --capture-region --copy"))
+hl.bind("SHIFT + Print",  hl.dsp.exec_cmd(omasnap .. " --capture-region --copy --delay 3"))
+hl.bind("CTRL + Print",   hl.dsp.exec_cmd(omasnap .. " --capture-fullscreen --copy"))
+hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(omasnap .. " --clipboard"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("~/.config/hypr/help.sh"))
 
