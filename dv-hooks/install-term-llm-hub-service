@@ -213,11 +213,89 @@ hook_log "install-term-llm-hub-service: copying agent $agent_source_dir -> $cont
 tar -C "$agent_source_dir" -cf - . | docker exec --user root -i "$container" tar -C "$container_agent_dir" -xf -
 docker exec --user root "$container" bash -lc "chown -R discourse:discourse '$container_agent_dir' && chmod -R go-rwx '$container_agent_dir' || true"
 
-# Nudge runit after the agent files are in place. Failure here is non-fatal:
-# runit will normally pick up /etc/service entries on its own shortly after creation.
-if ! docker exec --user root "$container" bash -lc "sv restart '$service_name' >/dev/null 2>&1 || sv start '$service_name' >/dev/null 2>&1 || true"; then
-  echo "install-term-llm-hub-service: warning: could not start $service_name" >&2
+# Runit normally discovers the service on its own. Nudge an already-supervised
+# service, but do not mistake a not-yet-created supervise pipe for Hub failure.
+docker exec --user root "$container" bash -lc \
+  "sv restart '$service_name' >/dev/null 2>&1 || sv start '$service_name' >/dev/null 2>&1 || true"
+
+# Register synchronously instead of inferring success from runit output. Some
+# term-llm builds do not print a success message, and runit may discover a newly
+# created service before its supervise pipe is ready.
+registration_output="$(docker exec --user root -i "$container" bash -s 2>&1 <<'REGISTER_SCRIPT'
+set -euo pipefail
+
+# shellcheck disable=SC1091
+source /etc/term-llm-hub.env
+endpoint="${HUB_URL%/}/api/register-node"
+
+if ! command -v ruby >/dev/null 2>&1; then
+  echo "ruby is required to encode the Hub registration request"
+  exit 69
 fi
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required to contact the Hub"
+  exit 69
+fi
+
+payload="$(ruby -rjson -e '
+  print JSON.generate({
+    "id" => ARGV[0],
+    "name" => ARGV[1],
+    "connection" => "reverse",
+    "base_path" => "/ui",
+    "token" => ARGV[2]
+  })
+' "$NODE_ID" "$NODE_NAME" "$NODE_TOKEN")"
+response_file="$(mktemp)"
+error_file="$(mktemp)"
+trap 'rm -f "$response_file" "$error_file"' EXIT
+
+set +e
+http_status="$(curl -sS \
+  --connect-timeout 3 \
+  --max-time 12 \
+  -o "$response_file" \
+  -w '%{http_code}' \
+  -X POST \
+  -H "Authorization: Bearer $HUB_REGISTRATION_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data-binary "$payload" \
+  "$endpoint" 2>"$error_file")"
+curl_status=$?
+set -e
+
+if [[ $curl_status -ne 0 || "$http_status" != 2* ]]; then
+  echo "endpoint: $endpoint"
+  echo "curl exit status: $curl_status"
+  echo "HTTP status: ${http_status:-none}"
+  if [[ -s "$error_file" ]]; then
+    echo "curl error:"
+    sed 's/^/  /' "$error_file"
+  fi
+  if [[ -s "$response_file" ]]; then
+    echo "response body:"
+    sed 's/^/  /' "$response_file"
+  else
+    echo "response body: (empty)"
+  fi
+  exit 69
+fi
+REGISTER_SCRIPT
+)" || {
+  {
+    echo "install-term-llm-hub-service: Hub registration failed"
+    echo "  container: $container"
+    echo "  service: $service_name"
+    echo "  hub URL: $hub_url"
+    echo "  node ID: $node_id"
+    echo "  node name: $node_name"
+    if [[ -n "$registration_output" ]]; then
+      echo "  registration details:"
+      printf '%s\n' "$registration_output" | sed 's/^/    /'
+    fi
+  } >&2
+  exit 69
+}
 
 if hook_debug_enabled; then
   printf 'install-term-llm-hub-service: service status:\n'
