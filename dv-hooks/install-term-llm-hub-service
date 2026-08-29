@@ -198,7 +198,8 @@ exec chpst -u discourse:discourse -U discourse:discourse \
     --hub-node-name "$NODE_NAME" \
     --hub-connect reverse \
     --hub-register \
-    --hub-registration-token "$HUB_REGISTRATION_TOKEN"
+    --hub-registration-token "$HUB_REGISTRATION_TOKEN" \
+    --no-projects
 EOF
 
 chmod 755 "$run_file"
