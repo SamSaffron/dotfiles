@@ -26,7 +26,7 @@ PopupWindow {
     anchor.window: anchorWindow
     anchor.rect.x: anchorItem.mapToItem(anchorWindow.contentItem, 0, 0).x + anchorItem.width - width
     anchor.rect.y: -height - Theme.gap
-    implicitWidth: 550
+    implicitWidth: 810
     implicitHeight: 590
     visible: shell.usageOpen && shell.popupScreen === targetScreen
     grabFocus: true
@@ -103,7 +103,7 @@ PopupWindow {
             Grid {
                 width: parent.width
                 height: 458
-                columns: 2
+                columns: 3
                 spacing: 8
 
                 Repeater {

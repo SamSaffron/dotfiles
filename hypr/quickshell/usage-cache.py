@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-PROVIDERS = ("chatgpt", "claude-bin", "opencode-go", "cursor-bin")
+PROVIDERS = ("chatgpt", "claude-bin", "opencode-go", "cursor-bin", "grok", "agy-bin")
 CACHE_TTL_SECONDS = 3600
 
 
@@ -213,11 +213,67 @@ def normalize_cursor(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def normalize_grok(raw: dict[str, Any]) -> dict[str, Any]:
+    limits = []
+    for item in raw.get("limits", []):
+        window = item.get("primary_window") or {}
+        minutes = window.get("duration_minutes")
+        limits.append(limit(
+            item.get("name", "Usage"),
+            window.get("used_percent"),
+            window.get("resets_at"),
+            window.get("label", ""),
+            window_seconds=minutes * 60 if minutes else None,
+        ))
+    return {
+        "id": "grok",
+        "name": "Grok",
+        "icon": "𝕏",
+        "source": "grok",
+        "plan": "Subscription",
+        "limits": limits,
+    }
+
+
+def normalize_agy(raw: dict[str, Any]) -> dict[str, Any]:
+    limits = []
+    for group in raw.get("groups", []):
+        group_name = str(group.get("name", "Models"))
+        if group_name == "Gemini Models":
+            group_name = "Gemini"
+        elif group_name == "Claude and GPT models":
+            group_name = "Claude/GPT"
+        for bucket in group.get("buckets", []):
+            window = str(bucket.get("window", ""))
+            window_name = "5 hour" if window == "5h" else window.title()
+            try:
+                used_percent = (1 - float(bucket.get("remaining_fraction", 1))) * 100
+            except (TypeError, ValueError):
+                used_percent = 0
+            limits.append(limit(
+                f"{group_name} {window_name}".strip(),
+                used_percent,
+                bucket.get("reset_time"),
+                bucket.get("description", ""),
+                window_seconds=5 * 60 * 60 if window == "5h" else 7 * 24 * 60 * 60 if window == "weekly" else None,
+            ))
+    return {
+        "id": "agy-bin",
+        "name": "Gemini",
+        "icon": "✦",
+        "source": "agy-bin",
+        "plan": "Subscription",
+        "limits": limits,
+    }
+
+
 NORMALIZERS = {
     "chatgpt": normalize_chatgpt,
     "claude-bin": normalize_claude,
     "opencode-go": normalize_opencode,
     "cursor-bin": normalize_cursor,
+    "grok": normalize_grok,
+    "agy-bin": normalize_agy,
 }
 
 
@@ -274,8 +330,9 @@ def main() -> int:
     cached = read_cache(path)
     if not args.force and cached:
         try:
+            cached_ids = {item.get("id") for item in cached.get("providers", [])}
             age = datetime.now().astimezone() - datetime.fromisoformat(cached["updated_at"])
-            if age.total_seconds() < CACHE_TTL_SECONDS:
+            if age.total_seconds() < CACHE_TTL_SECONDS and set(PROVIDERS) <= cached_ids:
                 json.dump(cached, sys.stdout)
                 return 0
         except (KeyError, TypeError, ValueError):
