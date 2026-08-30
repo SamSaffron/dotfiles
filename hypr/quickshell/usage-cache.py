@@ -277,27 +277,32 @@ NORMALIZERS = {
 }
 
 
+def refresh_provider(provider: str, previous: dict[str, Any] | None) -> dict[str, Any]:
+    try:
+        normalized = NORMALIZERS[provider](fetch(provider))
+        normalized.update({"stale": False, "error": ""})
+    except Exception as error:  # Preserve the last known good data for this provider.
+        normalized = dict(previous or {
+            "id": provider,
+            "name": provider,
+            "icon": "󰅚",
+            "source": provider,
+            "plan": "Unavailable",
+            "limits": [],
+        })
+        normalized.update({"stale": True, "error": str(error)})
+    return normalized
+
+
 def refresh(previous: dict[str, Any] | None) -> dict[str, Any]:
     previous_by_id = {item.get("id"): item for item in (previous or {}).get("providers", [])}
-    providers: list[dict[str, Any]] = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(PROVIDERS)) as executor:
-        futures = {provider: executor.submit(fetch, provider) for provider in PROVIDERS}
-        for provider in PROVIDERS:
-            try:
-                normalized = NORMALIZERS[provider](futures[provider].result())
-                normalized.update({"stale": False, "error": ""})
-            except Exception as error:  # Preserve other providers and last known good data.
-                normalized = dict(previous_by_id.get(provider) or {
-                    "id": provider,
-                    "name": provider,
-                    "icon": "󰅚",
-                    "source": provider,
-                    "plan": "Unavailable",
-                    "limits": [],
-                })
-                normalized.update({"stale": True, "error": str(error)})
-            providers.append(normalized)
+        futures = [
+            executor.submit(refresh_provider, provider, previous_by_id.get(provider))
+            for provider in PROVIDERS
+        ]
+        providers = [future.result() for future in futures]
 
     return {
         "updated_at": datetime.now().astimezone().isoformat(),
