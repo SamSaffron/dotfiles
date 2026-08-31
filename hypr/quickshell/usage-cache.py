@@ -105,19 +105,41 @@ def previous_month_start(resets_at: Any) -> str | None:
         return None
 
 
+def window_detail(minutes: Any) -> str:
+    try:
+        normalized = int(minutes)
+    except (TypeError, ValueError):
+        return ""
+    if normalized <= 0:
+        return ""
+
+    units = (
+        (7 * 24 * 60, "week"),
+        (24 * 60, "day"),
+        (60, "hour"),
+    )
+    for unit_minutes, name in units:
+        if normalized % unit_minutes == 0:
+            count = normalized // unit_minutes
+            return f"{count} {name} window"
+    return f"{normalized} minute window"
+
+
 def normalize_chatgpt(raw: dict[str, Any]) -> dict[str, Any]:
     limits = []
     for item in raw.get("limits", []):
-        window = item.get("primary_window") or {}
-        minutes = window.get("duration_minutes")
-        detail = f"{round(minutes / 1440)} day window" if minutes else ""
-        limits.append(limit(
-            item.get("name", "Usage"),
-            window.get("used_percent"),
-            window.get("resets_at"),
-            detail,
-            window_seconds=minutes * 60 if minutes else None,
-        ))
+        for window_name in ("primary_window", "secondary_window"):
+            window = item.get(window_name) or {}
+            if not window:
+                continue
+            minutes = window.get("duration_minutes")
+            limits.append(limit(
+                item.get("name", "Usage"),
+                window.get("used_percent"),
+                window.get("resets_at"),
+                window_detail(minutes),
+                window_seconds=minutes * 60 if minutes else None,
+            ))
     return {
         "id": "chatgpt",
         "name": "ChatGPT",
