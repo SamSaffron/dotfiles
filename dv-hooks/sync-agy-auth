@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Copy host Antigravity CLI credentials into a dv container.
+#
+# agy stores its OAuth token outside term-llm's config tree. Keep this as a
+# separate sync step and lock down the destination to the discourse user.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./hook-env
+source "$script_dir/hook-env"
+
+container="${1:-}"
+host_auth_file="${AGY_AUTH_FILE:-$HOME/.gemini/antigravity-cli/antigravity-oauth-token}"
+container_auth_file="${AGY_CONTAINER_AUTH_FILE:-/home/discourse/.gemini/antigravity-cli/antigravity-oauth-token}"
+
+if [[ -z "$container" ]]; then
+  echo "usage: $0 <container>" >&2
+  exit 64
+fi
+
+if [[ ! -f "$host_auth_file" ]]; then
+  echo "sync-agy-auth: host auth file not found: $host_auth_file" >&2
+  exit 66
+fi
+
+if ! docker inspect "$container" >/dev/null 2>&1; then
+  echo "sync-agy-auth: container not found: $container" >&2
+  exit 69
+fi
+
+hook_log "sync-agy-auth: copying $host_auth_file -> $container:$container_auth_file"
+
+docker exec --user root "$container" bash -c \
+  'install -d -m 700 -o discourse -g discourse "$(dirname -- "$1")"' \
+  bash "$container_auth_file"
+
+docker cp "$host_auth_file" "$container:$container_auth_file"
+
+docker exec --user root "$container" bash -c \
+  'chown discourse:discourse "$1" && chmod 600 "$1"' \
+  bash "$container_auth_file"
+
+hook_log 'sync-agy-auth: done'

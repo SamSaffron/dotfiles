@@ -4,10 +4,11 @@ This directory contains a host-side `post-create` hook and helper scripts for ma
 
 ## Files
 
-- `post-create` — dv creation hook entrypoint. Resolves `DV_CONTAINER_NAME`, syncs config/Grok auth, installs service.
+- `post-create` — dv creation hook entrypoint. Resolves `DV_CONTAINER_NAME`, syncs config/provider auth, installs service.
 - `post-remove` — dv removal hook entrypoint. Deregisters the removed container from the hub.
 - `sync-term-llm-config` — copies `~/.config/term-llm` into the container as `/home/discourse/.config/term-llm`, excluding bulky runtime state like projects/containers/images.
 - `sync-grok-auth` — copies `~/.grok/auth.json` into the container as `/home/discourse/.grok/auth.json` with `discourse` ownership and private permissions.
+- `sync-agy-auth` — copies agy's OAuth token into the container with `discourse` ownership and private permissions.
 - `install-term-llm-hub-service` — copies a hub-capable `term-llm` binary into the container and installs an in-container runit service at `/etc/service/term-llm-hub/run`.
 - `hub-registration-token` — resolves the Hub registration token from env or `op-cache`.
 - `discourse-developer/` — the term-llm agent definition copied into each container.
