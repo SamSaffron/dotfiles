@@ -12,6 +12,7 @@ tools:
     - grep
     - shell
     - view_image
+    - show_media
     - ask_user
     - spawn_agent
     - update_plan
