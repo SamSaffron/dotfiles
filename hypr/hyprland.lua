@@ -43,7 +43,21 @@ hl.on("hyprland.start", function()
     -- shell-mode keeps the existing Waybar/Fuzzel/Dunst desktop as the safe
     -- default and can switch the whole shell to Quickshell without logging out.
     hl.exec_cmd("~/.config/hypr/shell-mode start")
-    hl.exec_cmd("hyprpm reload -n")
+    -- Try installed plugins first, then one update if hyprbars is still missing.
+    -- Only run at session startup: the config reload below must not retry updates.
+    hl.exec_cmd([[sh -c '
+        hyprpm reload -n
+        command -v jq >/dev/null 2>&1 || exit 0
+        hyprbars_loaded() {
+            hyprctl -j plugin list | jq -e "any(.[]; .name == \"hyprbars\")" >/dev/null
+        }
+        if ! hyprbars_loaded; then
+            hyprpm update && hyprpm reload -n
+        fi
+        if hyprbars_loaded; then
+            hyprctl reload
+        fi
+    ']])
     hl.exec_cmd("opendeck --hide")
 
     -- Pass the Hyprland session environment to user services before restarting
@@ -154,31 +168,39 @@ hl.config({
         force_default_wallpaper = -1,
         disable_hyprland_logo = false,
     },
-    plugin = {
-        hyprbars = {
-            bar_height = 26,
-            bar_text_size = 11,
-            bar_text_font = "SFMono Nerd Font Mono",
-            bar_text_align = "left",
-            bar_padding = 8,
-            bar_button_padding = 6,
-            bar_precedence_over_border = false,
-            bar_part_of_window = true,
-            bar_color = "rgba(1d2021ff)",
-            col = {
-                text = "rgba(a89984ff)",
-            },
-        },
-    },
 })
 
-hl.plugin.hyprbars.add_button({
-    bg_color = "rgba(665c54ff)",
-    fg_color = "rgba(a89984ff)",
-    size = 12,
-    icon = "󰅖",
-    action = "hyprctl dispatch 'hl.dsp.window.close()'",
-})
+-- hyprpm loads plugins asynchronously; keep the rest of the config usable
+-- when hyprbars is unavailable. Reload the config after loading the plugin.
+local hyprbars = hl.plugin and hl.plugin.hyprbars
+if hyprbars then
+    hl.config({
+        plugin = {
+            hyprbars = {
+                bar_height = 26,
+                bar_text_size = 11,
+                bar_text_font = "SFMono Nerd Font Mono",
+                bar_text_align = "left",
+                bar_padding = 8,
+                bar_button_padding = 6,
+                bar_precedence_over_border = false,
+                bar_part_of_window = true,
+                bar_color = "rgba(1d2021ff)",
+                col = {
+                    text = "rgba(a89984ff)",
+                },
+            },
+        },
+    })
+
+    hyprbars.add_button({
+        bg_color = "rgba(665c54ff)",
+        fg_color = "rgba(a89984ff)",
+        size = 12,
+        icon = "󰅖",
+        action = "hyprctl dispatch 'hl.dsp.window.close()'",
+    })
+end
 
 -------------
 --- INPUT ---
@@ -240,7 +262,8 @@ hl.bind("Print",          hl.dsp.exec_cmd(omasnap .. " --capture-region --copy")
 hl.bind("SHIFT + Print",  hl.dsp.exec_cmd(omasnap .. " --capture-region --copy --delay 3"))
 hl.bind("CTRL + Print",   hl.dsp.exec_cmd(omasnap .. " --capture-fullscreen --copy"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(omasnap .. " --clipboard"))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh")) -- Toggle region recording
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh --fullscreen")) -- Toggle whole-screen recording
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("~/.config/hypr/help.sh"))
 
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
@@ -304,9 +327,11 @@ hl.window_rule({ match = { class = "io.hypr.help" }, center = true })
 hl.window_rule({ match = { class = "io.hypr.help" }, size = { 980, 680 } })
 hl.window_rule({ match = { class = "io.hypr.help" }, border_size = 0 })
 
-hl.window_rule({ match = { class = ".*" }, ["hyprbars:no_bar"] = true })
-hl.window_rule({ match = { class = "com.mitchellh.ghostty" }, ["hyprbars:no_bar"] = false })
-hl.window_rule({ match = { class = "kitty" }, ["hyprbars:no_bar"] = false })
+if hyprbars then
+    hl.window_rule({ match = { class = ".*" }, ["hyprbars:no_bar"] = true })
+    hl.window_rule({ match = { class = "com.mitchellh.ghostty" }, ["hyprbars:no_bar"] = false })
+    hl.window_rule({ match = { class = "kitty" }, ["hyprbars:no_bar"] = false })
+end
 
 hl.layer_rule({ match = { namespace = "hyprpicker" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "selection" }, no_anim = true })

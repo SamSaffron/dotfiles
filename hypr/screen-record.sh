@@ -9,8 +9,18 @@ mkdir -p "$SCREENCAST_DIR"
 
 if [ -f "$PIDFILE" ]; then
   PID=$(cat "$PIDFILE")
+  notify-send "Screen Recording" "Stopping recording…" -i media-record
   kill -SIGINT "$PID"
-  wait "$PID" 2>/dev/null
+  # The recorder was started by a previous invocation, so it is not our child.
+  # Wait for it to finish writing the video before announcing/copying the file.
+  for ((attempt = 0; attempt < 100; attempt++)); do
+    kill -0 "$PID" 2>/dev/null || break
+    sleep 0.1
+  done
+  if kill -0 "$PID" 2>/dev/null; then
+    notify-send "Screen Recording" "Still finishing recording. Try again shortly." -i dialog-information
+    exit 1
+  fi
 
   if [ -f "$RECORDING_FILE_PATH" ]; then
     RECORDED_FILE=$(cat "$RECORDING_FILE_PATH")
@@ -26,17 +36,22 @@ if [ -f "$PIDFILE" ]; then
     notify-send "Screen Recording" "Failed to find recording file" -i dialog-error
   fi
 else
-  notify-send "Screen Recording" "Click to select window or drag to select region" -i media-record
   RECORDING_FILE="$SCREENCAST_DIR/screencast-$(date +%Y%m%d-%H%M%S).mp4"
   echo "$RECORDING_FILE" >"$RECORDING_FILE_PATH"
 
-  GEOMETRY=$(slurp 2>/dev/null)
-
-  if [ -z "$GEOMETRY" ] || [[ "$GEOMETRY" =~ ^0,0\ 0x0$ ]]; then
-    GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.size[0])x\(.size[1])+\(.at[0])+\(.at[1])"')
+  if [ "${1:-}" = "--fullscreen" ]; then
+    notify-send "Screen Recording" "Starting whole-screen recording" -i media-record
+    GEOMETRY="screen"
   else
-    # Convert slurp format "X,Y WxH" to gpu-screen-recorder format "WxH+X+Y"
-    GEOMETRY=$(echo "$GEOMETRY" | sed 's/\([0-9]*\),\([0-9]*\) \([0-9]*\)x\([0-9]*\)/\3x\4+\1+\2/')
+    notify-send "Screen Recording" "Click to select window or drag to select region" -i media-record
+    GEOMETRY=$(slurp 2>/dev/null)
+
+    if [ -z "$GEOMETRY" ] || [[ "$GEOMETRY" =~ ^0,0\ 0x0$ ]]; then
+      GEOMETRY=$(hyprctl activewindow -j | jq -r '"\(.size[0])x\(.size[1])+\(.at[0])+\(.at[1])"')
+    else
+      # Convert slurp format "X,Y WxH" to gpu-screen-recorder format "WxH+X+Y"
+      GEOMETRY=$(echo "$GEOMETRY" | sed 's/\([0-9]*\),\([0-9]*\) \([0-9]*\)x\([0-9]*\)/\3x\4+\1+\2/')
+    fi
   fi
 
   gpu-screen-recorder -w "$GEOMETRY" -f 30 -k h264 -q medium -o "$RECORDING_FILE" >"$LOGFILE" 2>&1 &
