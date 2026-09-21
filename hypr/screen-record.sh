@@ -54,7 +54,8 @@ else
     fi
   fi
 
-  gpu-screen-recorder -w "$GEOMETRY" -f 30 -k h264 -q medium -o "$RECORDING_FILE" >"$LOGFILE" 2>&1 &
+  # Cap output size for H.264, preserving aspect ratio on ultrawide displays.
+  gpu-screen-recorder -w "$GEOMETRY" -s 3840x2160 -f 30 -k h264 -q medium -o "$RECORDING_FILE" >"$LOGFILE" 2>&1 &
   GSR_PID=$!
   sleep 1
 
