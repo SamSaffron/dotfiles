@@ -18,6 +18,7 @@ ShellRoot {
     property bool systemInfoOpen: false
     property string systemInfoMetric: "updates"
     property bool dockerOpen: false
+    property bool systemHelpOpen: false
     property bool doNotDisturb: false
     property var notificationHistory: []
     property int notificationUnread: 0
@@ -60,6 +61,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
     }
 
     function toggleLauncher(screen) {
@@ -72,6 +74,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         launcherOpen = !launcherOpen
     }
 
@@ -86,6 +89,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         overviewOpen = opening
     }
 
@@ -100,6 +104,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         if (opening)
             controlCenterPage = "controls"
         controlCenterOpen = opening
@@ -115,6 +120,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         controlCenterPage = "notifications"
         controlCenterOpen = true
         markNotificationsRead()
@@ -130,6 +136,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         weatherOpen = !weatherOpen
     }
 
@@ -143,6 +150,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         audioOpen = !audioOpen
     }
 
@@ -156,6 +164,7 @@ ShellRoot {
         hardwareOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         usageOpen = !usageOpen
     }
 
@@ -170,6 +179,7 @@ ShellRoot {
         usageOpen = false
         systemInfoOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         hardwareMetric = metric
         hardwareOpen = opening
     }
@@ -185,6 +195,7 @@ ShellRoot {
         usageOpen = false
         hardwareOpen = false
         dockerOpen = false
+        systemHelpOpen = false
         systemInfoMetric = metric
         systemInfoOpen = opening
     }
@@ -199,7 +210,17 @@ ShellRoot {
         usageOpen = false
         hardwareOpen = false
         systemInfoOpen = false
+        systemHelpOpen = false
         dockerOpen = !dockerOpen
+    }
+
+    function toggleSystemHelp(screen) {
+        const opening = !systemHelpOpen
+        popupScreen = screen || focusedScreen
+        closePopups()
+        systemHelpOpen = opening
+        if (opening)
+            systemHelpService.connectAndRestore()
     }
 
     SystemClock {
@@ -213,6 +234,10 @@ ShellRoot {
 
     UsageStats {
         id: usageStats
+    }
+
+    SystemHelpService {
+        id: systemHelpService
     }
 
     IpcHandler {
@@ -262,6 +287,10 @@ ShellRoot {
             root.toggleDocker(root.focusedScreen)
         }
 
+        function toggleSystemHelp(): void {
+            root.toggleSystemHelp(root.focusedScreen)
+        }
+
         function closePopups(): void {
             root.closePopups()
         }
@@ -278,6 +307,7 @@ ShellRoot {
             shell: root
             stats: systemStats
             usage: usageStats
+            systemHelp: systemHelpService
         }
     }
 

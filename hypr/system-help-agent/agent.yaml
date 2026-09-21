@@ -1,0 +1,17 @@
+name: system-help
+description: "Conservative local system help and guided inspection"
+time_grounding: true
+agents_md: "false"
+skills: "none"
+
+tools:
+  enabled: [read_file, glob, grep, shell]
+
+shell:
+  auto_run: false
+
+mcp:
+  - name: computer-use
+
+search: true
+max_turns: 200

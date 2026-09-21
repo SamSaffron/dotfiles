@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+source_dir="$config_home/hypr/system-help-agent"
+target_dir="$config_home/term-llm/agents/system-help"
+quiet=false
+
+if [[ ${1:-} == --quiet ]]; then
+  quiet=true
+elif [[ $# -gt 0 ]]; then
+  printf 'Usage: %s [--quiet]\n' "$0" >&2
+  exit 2
+fi
+
+for file in agent.yaml system.md; do
+  if [[ ! -r "$source_dir/$file" ]]; then
+    printf 'Missing System Help agent source: %s\n' "$source_dir/$file" >&2
+    exit 1
+  fi
+done
+
+mkdir -p "$target_dir"
+chmod 700 "$target_dir"
+for file in agent.yaml system.md; do
+  tmp=$(mktemp "$target_dir/.${file}.XXXXXX")
+  trap 'rm -f "$tmp"' EXIT
+  cat "$source_dir/$file" > "$tmp"
+  chmod 600 "$tmp"
+  mv -f "$tmp" "$target_dir/$file"
+  trap - EXIT
+done
+
+if ! command -v term-llm >/dev/null 2>&1; then
+  printf 'term-llm is not installed or not on PATH.\n' >&2
+  exit 127
+fi
+if ! term-llm agents show system-help >/dev/null 2>&1; then
+  printf 'term-llm could not load the installed system-help agent.\n' >&2
+  exit 1
+fi
+
+if ! $quiet; then
+  printf 'Installed System Help agent at %s\n' "$target_dir"
+fi

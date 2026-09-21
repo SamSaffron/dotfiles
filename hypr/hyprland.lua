@@ -265,6 +265,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(omasnap .. " --clipboard"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh")) -- Toggle region recording
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("~/.config/hypr/screen-record.sh --fullscreen")) -- Toggle whole-screen recording
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("~/.config/hypr/help.sh"))
+hl.bind(mainMod .. " + SHIFT + H", hl.dsp.exec_cmd("~/.config/hypr/shell-system-help"))
 
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })

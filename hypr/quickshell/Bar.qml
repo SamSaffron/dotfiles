@@ -13,6 +13,7 @@ PanelWindow {
     required property var shell
     required property var stats
     required property var usage
+    required property var systemHelp
 
     screen: modelData
     color: Theme.transparent
@@ -118,6 +119,15 @@ PanelWindow {
             anchors.right: parent.right
             height: parent.height
             spacing: Theme.gap
+
+            BarPill {
+                id: systemHelpButton
+                text: "󰭹"
+                width: 38
+                horizontalPadding: 10
+                active: shell.systemHelpOpen && shell.popupScreen === bar.screen
+                onClicked: shell.toggleSystemHelp(bar.screen)
+            }
 
             BarPill {
                 id: usageButton
@@ -480,6 +490,14 @@ PanelWindow {
         cpuAnchor: cpuButton
         memoryAnchor: memoryButton
         gpuAnchor: gpuButton
+        targetScreen: bar.screen
+    }
+
+    SystemHelpPopup {
+        shell: bar.shell
+        service: bar.systemHelp
+        anchorWindow: bar
+        anchorItem: systemHelpButton
         targetScreen: bar.screen
     }
 
