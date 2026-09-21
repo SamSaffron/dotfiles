@@ -2,10 +2,21 @@
 
 current_scale=$(hyprctl monitors -j | jq -r '.[] | select(.name=="DP-1") | .scale')
 
-if (($(echo "$current_scale == 1.6" | bc -l))); then
-  hyprctl eval 'hl.monitor({ output = "DP-1", mode = "highrr", position = "auto", scale = 1.0 })'
-  notify-send "Display Scaling" "Switched to 100%" -t 2000
-else
-  hyprctl eval 'hl.monitor({ output = "DP-1", mode = "highrr", position = "auto", scale = 1.6 })'
-  notify-send "Display Scaling" "Switched to 160%" -t 2000
-fi
+# Cycle normal, desktop, and presentation/recording scales.
+case "$current_scale" in
+  1.6)
+    next_scale=2.5
+    percentage=250
+    ;;
+  2.5)
+    next_scale=1.0
+    percentage=100
+    ;;
+  *)
+    next_scale=1.6
+    percentage=160
+    ;;
+esac
+
+hyprctl eval "hl.monitor({ output = \"DP-1\", mode = \"highrr\", position = \"auto\", scale = $next_scale })"
+notify-send "Display Scaling" "Switched to $percentage%" -t 2000
