@@ -1,5 +1,6 @@
 import Quickshell
 import QtQuick
+import QtQuick.Controls
 import "Theme.js" as Theme
 
 PopupWindow {
@@ -27,7 +28,8 @@ PopupWindow {
     anchor.rect.x: anchorItem.mapToItem(anchorWindow.contentItem, 0, 0).x + anchorItem.width - width
     anchor.rect.y: -height - Theme.gap
     implicitWidth: 810
-    implicitHeight: 590
+    implicitHeight: Math.min(providerGrid.implicitHeight + 132,
+        targetScreen ? targetScreen.height - Theme.barHeight - Theme.gap * 3 : 900)
     visible: shell.usageOpen && shell.popupScreen === targetScreen
     grabFocus: true
     color: Theme.transparent
@@ -100,17 +102,30 @@ PopupWindow {
                 }
             }
 
-            Grid {
+            Flickable {
                 width: parent.width
-                height: 458
-                columns: 3
-                spacing: 8
+                height: popup.height - 132
+                contentWidth: width
+                contentHeight: providerGrid.implicitHeight
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                ScrollBar.vertical: ScrollBar {}
 
-                Repeater {
-                    model: usage.providers
-                    delegate: UsageProviderCard {
-                        required property var modelData
-                        provider: modelData
+                Grid {
+                    id: providerGrid
+                    width: parent.width
+                    columns: 3
+                    spacing: 8
+                    readonly property real cardHeight: Math.max(225,
+                        ...usage.providers.map(provider => 58 + 41 * (provider.limits || []).length))
+
+                    Repeater {
+                        model: usage.providers
+                        delegate: UsageProviderCard {
+                            required property var modelData
+                            provider: modelData
+                            height: providerGrid.cardHeight
+                        }
                     }
                 }
             }

@@ -143,6 +143,7 @@ class LazyQuarantineTest(unittest.TestCase):
         fake.write_text(
             "#!/usr/bin/env python3\n"
             "import os, sys\n"
+            "assert sys.argv[sys.argv.index('--max-turns') + 1] == '10'\n"
             "open(os.environ['TRIAGE_CAPTURE'], 'w').write(sys.stdin.read())\n"
             "print('{\"verdict\":\"PASS\",\"reason\":\"coherent test change\"}')\n"
         )

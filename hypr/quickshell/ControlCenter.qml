@@ -53,7 +53,7 @@ PopupWindow {
     anchor.rect.x: anchorWindow.width - width - Theme.gap
     anchor.rect.y: -height - Theme.gap
     width: 390
-    height: 590
+    height: 662
     visible: shell.controlCenterOpen && shell.popupScreen === targetScreen
     grabFocus: true
     color: Theme.transparent
@@ -242,6 +242,79 @@ PopupWindow {
                             Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.exit()"])
                         } else {
                             popup.confirmLogout = true
+                        }
+                    }
+                }
+            }
+
+            Button {
+                id: keepAwakeButton
+                width: parent.width
+                height: 58
+                padding: 12
+                checkable: true
+                checked: shell.keepAwake
+                hoverEnabled: true
+                onClicked: shell.keepAwake = checked
+                Accessible.name: "Don't sleep"
+                Accessible.description: "Pause automatic dimming, screen locking and screen off until switched off"
+
+                background: Rectangle {
+                    radius: Theme.radius
+                    color: keepAwakeButton.checked ? Theme.accentSoft
+                         : keepAwakeButton.hovered ? Theme.backgroundHover : Theme.backgroundRaised
+                    border.width: 1
+                    border.color: keepAwakeButton.checked || keepAwakeButton.visualFocus ? Theme.link : Theme.border
+                    Behavior on color { ColorAnimation { duration: 130 } }
+                }
+
+                contentItem: Row {
+                    spacing: 10
+                    Text {
+                        id: awakeIcon
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 26
+                        text: "󰅶"
+                        color: keepAwakeButton.checked ? Theme.warning : Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 24
+                    }
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - awakeIcon.width - awakeSwitch.width - parent.spacing * 2
+                        spacing: 3
+                        Text {
+                            text: "Don't sleep"
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Text {
+                            width: parent.width
+                            text: keepAwakeButton.checked ? "Awake until switched off" : "Pause automatic screen locking"
+                            color: keepAwakeButton.checked ? Theme.link : Theme.textMuted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 9
+                            elide: Text.ElideRight
+                        }
+                    }
+                    Rectangle {
+                        id: awakeSwitch
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 36
+                        height: 20
+                        radius: 10
+                        color: keepAwakeButton.checked ? Theme.accent : Theme.border
+                        Behavior on color { ColorAnimation { duration: 130 } }
+                        Rectangle {
+                            x: keepAwakeButton.checked ? 18 : 3
+                            y: 3
+                            width: 14
+                            height: 14
+                            radius: 7
+                            color: Theme.text
+                            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
                         }
                     }
                 }

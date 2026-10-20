@@ -499,7 +499,7 @@ def review_candidate(
                 "--porcelain",
                 "--no-search",
                 "--max-turns",
-                "1",
+                "10",
                 "--max-output-tokens",
                 "2000",
                 TRIAGE_PROMPT,

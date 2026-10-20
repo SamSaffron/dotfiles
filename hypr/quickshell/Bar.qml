@@ -3,6 +3,7 @@ import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
+import Quickshell.Wayland
 import QtQuick
 import "Theme.js" as Theme
 
@@ -24,6 +25,12 @@ PanelWindow {
         left: true
         right: true
         bottom: true
+    }
+
+    // Keep inhibition attached to a visible surface, not the transient popup.
+    IdleInhibitor {
+        window: bar
+        enabled: shell.keepAwake
     }
 
     PwObjectTracker {
@@ -192,6 +199,16 @@ PanelWindow {
                     }
                 }
             }
+            BarPill {
+                visible: shell.keepAwake
+                text: "󰅶"
+                width: 38
+                textColor: Theme.warning
+                font.pixelSize: 18
+                onClicked: shell.keepAwake = false
+                Accessible.name: "Don't sleep is on. Click to resume automatic screen locking."
+            }
+
             BarPill {
                 id: updatesButton
                 text: ""

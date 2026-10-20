@@ -42,6 +42,18 @@ the default, and startup automatically falls back to it if Quickshell is not
 installed. This config lives below `hypr/` rather than the conventional
 `~/.config/quickshell/` at your request, so the scripts launch it using `qs -p`.
 
+## Don't sleep
+
+The coffee toggle in the control center pauses automatic dimming, screen locking,
+and screen-off while enabled. It stays active when the popup closes and is shared
+across monitors. A small gold coffee icon appears beside the robot usage indicator
+on every panel while enabled; click that pill or the control-center toggle to
+resume normal idle behavior. The mode also resets
+when Quickshell exits or restarts. Manual Lock and locking before system suspend
+still work. This uses Quickshell's native Wayland idle inhibitor on the bar and
+hypridle's default support for Wayland inhibitors, without stopping hypridle or
+changing its timeouts.
+
 ## Useful commands
 
 ```sh

@@ -20,6 +20,7 @@ ShellRoot {
     property bool dockerOpen: false
     property bool systemHelpOpen: false
     property bool doNotDisturb: false
+    property bool keepAwake: false
     property var notificationHistory: []
     property int notificationUnread: 0
     property var popupScreen: null
