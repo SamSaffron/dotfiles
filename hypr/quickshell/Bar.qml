@@ -96,7 +96,9 @@ PanelWindow {
                                 id: workspaceMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onClicked: workspaceButton.modelData.activate()
+                                // Match the numeric-ID keyboard bindings. activate() uses the
+                                // display name, which Lua dispatch can treat as a new workspace.
+                                onClicked: Hyprland.dispatch("hl.dsp.focus({ workspace = " + workspaceButton.modelData.id + " })")
                             }
                         }
                     }
