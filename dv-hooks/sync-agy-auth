@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Copy host Antigravity CLI credentials into a dv container.
 #
-# agy stores its OAuth token outside term-llm's config tree. Keep this as a
-# separate sync step and lock down the destination to the discourse user.
+# agy stores its OAuth token in the host keyring, with a file fallback on
+# systems without a keyring (including dv containers). Export on the host;
+# the container does not need secret-tool. Keep the destination private.
 
 set -euo pipefail
 
@@ -19,8 +20,32 @@ if [[ -z "$container" ]]; then
   exit 64
 fi
 
-if [[ ! -f "$host_auth_file" ]]; then
-  echo "sync-agy-auth: host auth file not found: $host_auth_file" >&2
+auth_tmp_dir=""
+cleanup() {
+  if [[ -n "$auth_tmp_dir" ]]; then
+    rm -rf -- "$auth_tmp_dir"
+  fi
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+# An explicitly configured file wins. Otherwise prefer the current keyring
+# credential over a possibly stale file left by an older agy installation.
+if [[ -z "${AGY_AUTH_FILE:-}" ]] && command -v secret-tool >/dev/null 2>&1; then
+  auth_tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/sync-agy-auth.XXXXXXXX")"
+  chmod 700 "$auth_tmp_dir"
+  if (umask 077; secret-tool lookup service gemini username antigravity > "$auth_tmp_dir/token") &&
+      [[ -s "$auth_tmp_dir/token" ]]; then
+    host_auth_file="$auth_tmp_dir/token"
+    hook_log 'sync-agy-auth: using host keyring (service=gemini, username=antigravity)'
+  else
+    hook_log 'sync-agy-auth: keyring credential unavailable; trying legacy file'
+  fi
+fi
+
+if [[ ! -s "$host_auth_file" ]]; then
+  echo "sync-agy-auth: no credential available from host keyring or file: $host_auth_file" >&2
   exit 66
 fi
 
