@@ -16,6 +16,7 @@ tools:
     - ask_user
     - spawn_agent
     - update_plan
+    - spawn_script
 
 spawn:
   allowed_agents:
